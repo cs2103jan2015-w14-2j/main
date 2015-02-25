@@ -6,5 +6,6 @@ public enum CommandType {
 	DELETE,
 	DISPLAY,
 	EDIT,
+	SEARCH,
 	UNABLE_TO_DETERMINE
 }
