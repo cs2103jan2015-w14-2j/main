@@ -1,3 +1,4 @@
 .metadata/
 .recommenders/
 ProjectItinerary/.settings/org.eclipse.jdt.core.prefs
+.classpath
