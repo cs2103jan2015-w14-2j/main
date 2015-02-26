@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.Gson;
 //@author A0121810Y
-public class JSONConverter {
+public class JsonConverter {
 	
 	public static List<String> convertTaskList(List<Task> taskList){
 		List<String> json = new ArrayList<String>();

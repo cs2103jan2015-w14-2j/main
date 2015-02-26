@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import com.google.gson.Gson;
 //@author A0121810Y
-public class JSONConverterTest {
+public class JsonConverterTest {
 	public ArrayList<Task> convertTestList;
 	public ArrayList<String> convertJsonList;
 	public Calendar fromDate;
@@ -32,7 +32,7 @@ public class JSONConverterTest {
 		convertTestList = new ArrayList<Task>();
 		convertTestList.add(task);
 		List<String> jsonList = new ArrayList<String>();
-		jsonList = JSONConverter.convertTaskList(convertTestList);
+		jsonList = JsonConverter.convertTaskList(convertTestList);
 		assertEquals("test ConvertTaskList", gson.toJson(task),jsonList.get(0));
 	}
 
@@ -41,7 +41,7 @@ public class JSONConverterTest {
 		convertJsonList = new ArrayList<String>();
 		convertJsonList.add(gson.toJson(task));
 		List<Task> taskList = new ArrayList<Task>();
-		taskList = JSONConverter.convertJsonList(convertJsonList);
+		taskList = JsonConverter.convertJsonList(convertJsonList);
 		assertEquals("test ConvertJsonList", task.getClass(),taskList.get(0).getClass());
 	}
 
