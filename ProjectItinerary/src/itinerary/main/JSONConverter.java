@@ -2,7 +2,7 @@ package itinerary.main;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.Gson;
-
+//@author A0121810Y
 public class JSONConverter {
 	
 	public static List<String> convertTaskList(List<Task> taskList){
