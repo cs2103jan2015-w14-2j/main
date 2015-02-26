@@ -1,4 +1,5 @@
-package itinerary.main;
+package itinerary.test;
+import itinerary.main.*;
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
