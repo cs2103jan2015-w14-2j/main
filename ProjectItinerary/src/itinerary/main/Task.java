@@ -53,4 +53,32 @@ public class Task {
 	public boolean isComplete() {
 		return isComplete;
 	}
+
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public void setFromDate(Calendar fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public void setToDate(Calendar toDate) {
+		this.toDate = toDate;
+	}
+
+	public void setPriority(boolean isPriority) {
+		this.isPriority = isPriority;
+	}
+
+	public void setComplete(boolean isComplete) {
+		this.isComplete = isComplete;
+	}
 }
