@@ -2,6 +2,12 @@ package itinerary.main;
 
 //@author A0121409R
 
+/**
+ * Example format of file:
+ * 
+ * text:text category:category fromDate:fromDate toDate:toDate isPriority:isPriority isComplete:isComplete;
+ */
+
 public class FileStorage implements Storage {
 
     /*
@@ -58,4 +64,12 @@ public class FileStorage implements Storage {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
+     */
+    public State refillAll(Command command) {
+        return null;
+    }
 }

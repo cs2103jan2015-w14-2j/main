@@ -32,8 +32,7 @@ public interface Storage {
     State deleteLine(Command command);
 
     /**
-     * Call this to display all content related to a search term given within
-     * task.
+     * Call this to display all content related to a search term given.
      * 
      * @param command
      *            - A Command object.
@@ -58,5 +57,14 @@ public interface Storage {
      * @return A State object.
      */
     State clearAll(Command command);
+
+    /**
+     * Call this to undo clearAll()
+     * 
+     * @param command
+     *            - A Command object.
+     * @return A State object
+     */
+    State refillAll(Command command);
 
 }

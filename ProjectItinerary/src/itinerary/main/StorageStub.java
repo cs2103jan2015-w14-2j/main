@@ -64,4 +64,14 @@ public class StorageStub implements Storage {
                                               CommandType.REFILL), null, true);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
+     */
+    public State refillAll(Command command) {
+        return new State(command, new Command(command.getTask(),
+                                              CommandType.CLEAR), null, true);
+    }
+
 }
