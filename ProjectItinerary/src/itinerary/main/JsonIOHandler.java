@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 
 import com.google.gson.Gson;
 
-//@author A0121409R
-public class JsonWriter {
+// @author A0121409R
+public class JsonIOHandler {
 
     /**
      * Given a Task object, this converts it into a String object.
@@ -29,21 +29,25 @@ public class JsonWriter {
     }
 
     /**
-     * Writes a given Task object into the given File object in a JSON format.
+     * Appends a given Task object into the given File object in a JSON format.
      * 
+     * @param willOverwrite
+     *            Configures if the function will overwrite and delete any old
+     *            files.
      * @param currFile
      *            The File to write to.
      * @param task
      *            The Task to write into currFile.
      */
-    public static void writeJSON(File currFile, Task task) {
+    public static void writeJSON(File currFile, Task task, boolean willOverwrite) {
 
         String taskString = stringFormatter(task);
 
         try {
 
-            FileOutputStream writer = new FileOutputStream(currFile, false);
+            FileOutputStream writer = new FileOutputStream(currFile, !willOverwrite);
             writer.write(taskString.getBytes());
+            writer.write(System.getProperty("line.separator").getBytes());
             writer.close();
 
         } catch (IOException e) {
@@ -55,7 +59,7 @@ public class JsonWriter {
 
     /**
      * Reads all the lines in a given File object and returns a String object
-     * containing all the JSONs.
+     * containing all the JSONs, each separated by a newline operator.
      * 
      * @param currFile
      *            The File to read from.
@@ -74,6 +78,7 @@ public class JsonWriter {
             while ((line = bufferedReader.readLine()) != null) {
 
                 sb.append(line);
+                sb.append("\n");
             }
 
             bufferedReader.close();
