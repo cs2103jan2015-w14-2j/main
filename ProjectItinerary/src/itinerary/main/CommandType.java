@@ -7,5 +7,6 @@ public enum CommandType {
 	DISPLAY,
 	EDIT,
 	SEARCH,
+	REFILL,
 	UNABLE_TO_DETERMINE
 }
