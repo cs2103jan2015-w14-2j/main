@@ -32,7 +32,11 @@ public interface Storage {
     State deleteLine(Task task);
 
     /**
+     * Call this to display all content related to a search term given within task.
 	 * 
+	 * @param task
+	 *            - A Task object.
+	 * @return A State object.
 	 */
     State searchFor(Task task);
 
