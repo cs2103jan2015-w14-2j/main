@@ -2,3 +2,5 @@
 .recommenders/
 ProjectItinerary/.settings/org.eclipse.jdt.core.prefs
 .classpath
+ProjectItinerary/src/itinerary/main/lib/lucene-5.0.0
+ProjectItinerary/bin
