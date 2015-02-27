@@ -3,7 +3,6 @@ package itinerary.main;
 import java.util.ArrayList;
 
 //@author A0121409R
-
 public class StorageStub implements Storage {
 
     /*

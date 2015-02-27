@@ -1,7 +1,6 @@
 package itinerary.main;
 
 //@author A0121409R
-
 public interface Storage {
 
     /**
