@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 //@author A0121810Y
 public class JsonConverter {
 	
-	public static List<String> convertTaskList(List<Task> taskList){
+	public static List<String> convertTaskList(List<ScheduleTask> taskList){
 		List<String> json = new ArrayList<String>();
 		Gson gson = new Gson();
 		for (Task task : taskList ){
@@ -13,11 +13,11 @@ public class JsonConverter {
 		}
 		return json;
 	}
-	public static List<Task> convertJsonList(List<String> jsonList){
-		List<Task> taskList = new ArrayList<Task>();
+	public static List<ScheduleTask> convertJsonList(List<String> jsonList){
+		List<ScheduleTask> taskList = new ArrayList<ScheduleTask>();
 		Gson gson = new Gson();
 		for (String json : jsonList ){
-			taskList.add(gson.fromJson(json,Task.class));
+			taskList.add(gson.fromJson(json,ScheduleTask.class));
 		}
 		return taskList;
 	}
