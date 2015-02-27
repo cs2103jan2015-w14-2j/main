@@ -7,55 +7,56 @@ public interface Storage {
     /**
      * Call this to add a line to the file.
      * 
-     * @param task
-     *            - A Task object.
+     * @param command
+     *            - A Command object.
      * @return A State object.
      */
-    State addLine(Task task);
+    State addLine(Command command);
 
     /**
      * Call this to edit a line in the file.
      * 
-     * @param task
-     *            - A Task object.
+     * @param command
+     *            - A Command object.
      * @return A State object.
      */
-    State editLine(Task task);
+    State editLine(Command command);
 
     /**
      * Call this to delete a line in the file.
      * 
-     * @param task
-     *            - A Task object.
+     * @param command
+     *            - A Command object.
      * @return A State object.
      */
-    State deleteLine(Task task);
+    State deleteLine(Command command);
 
     /**
-     * Call this to display all content related to a search term given within task.
-	 * 
-	 * @param task
-	 *            - A Task object.
-	 * @return A State object.
-	 */
-    State searchFor(Task task);
+     * Call this to display all content related to a search term given within
+     * task.
+     * 
+     * @param command
+     *            - A Command object.
+     * @return A State object.
+     */
+    State searchFor(Command command);
 
     /**
      * Call this to display all current content in the file.
      * 
-     * @param task
-     *            - A Task object.
+     * @param command
+     *            - A Command object.
      * @return A State object.
      */
-    State displayAll(Task task);
+    State displayAll(Command command);
 
     /**
      * Call this to delete everything from the file.
      * 
-     * @param task
-     *            - A Task object.
+     * @param command
+     *            - A Command object.
      * @return A State object.
      */
-    State clearAll(Task task);
+    State clearAll(Command command);
 
 }

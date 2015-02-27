@@ -7,54 +7,54 @@ public class FileStorage implements Storage {
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#addLine(itinerary.main.Task)
+     * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public State addLine(Task task) {
+    public State addLine(Command command) {
         return null;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#editLine(itinerary.main.Task)
+     * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public State editLine(Task task) {
+    public State editLine(Command command) {
         return null;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#deleteLine(itinerary.main.Task)
+     * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public State deleteLine(Task task) {
+    public State deleteLine(Command command) {
         return null;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#searchFor(itinerary.main.Task)
+     * @see itinerary.main.Storage#searchFor(itinerary.main.Command)
      */
-    public State searchFor(Task task) {
+    public State searchFor(Command command) {
         return null;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#displayAll(itinerary.main.Task)
+     * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public State displayAll(Task task) {
+    public State displayAll(Command command) {
         return null;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#clearAll(itinerary.main.Task)
+     * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public State clearAll(Task task) {
+    public State clearAll(Command command) {
         return null;
     }
 

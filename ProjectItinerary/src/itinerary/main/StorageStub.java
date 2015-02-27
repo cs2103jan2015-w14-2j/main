@@ -9,61 +9,59 @@ public class StorageStub implements Storage {
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#addLine(itinerary.main.Task)
+     * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public State addLine(Task task) {
-        return new State(new Command(task, CommandType.ADD),
-                         new Command(task, CommandType.DELETE), null, true);
+    public State addLine(Command command) {
+        return new State(command, new Command(command.getTask(),
+                                              CommandType.DELETE), null, true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#editLine(itinerary.main.Task)
+     * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public State editLine(Task task) {
-        return new State(new Command(task, CommandType.EDIT),
-                         new Command(task, CommandType.EDIT), null, true);
+    public State editLine(Command command) {
+        return new State(command, new Command(command.getTask(),
+                                              CommandType.EDIT), null, true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#deleteLine(itinerary.main.Task)
+     * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public State deleteLine(Task task) {
-        return new State(new Command(task, CommandType.DELETE),
-                         new Command(task, CommandType.ADD), null, true);
+    public State deleteLine(Command command) {
+        return new State(command, new Command(command.getTask(),
+                                              CommandType.ADD), null, true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#searchFor(itinerary.main.Task)
+     * @see itinerary.main.Storage#searchFor(itinerary.main.Command)
      */
-    public State searchFor(Task task) {
-        return new State(new Command(task, CommandType.SEARCH), null,
-                         new ArrayList<Task>(), true);
+    public State searchFor(Command command) {
+        return new State(command, null, new ArrayList<Task>(), true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#displayAll(itinerary.main.Task)
+     * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public State displayAll(Task task) {
-        return new State(new Command(task, CommandType.DISPLAY), null,
-                         new ArrayList<Task>(), true);
+    public State displayAll(Command command) {
+        return new State(command, null, new ArrayList<Task>(), true);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#clearAll(itinerary.main.Task)
+     * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public State clearAll(Task task) {
-        return new State(new Command(task, CommandType.CLEAR),
-                         new Command(task, CommandType.REFILL), null, true);
+    public State clearAll(Command command) {
+        return new State(command, new Command(command.getTask(),
+                                              CommandType.REFILL), null, true);
     }
 
 }
