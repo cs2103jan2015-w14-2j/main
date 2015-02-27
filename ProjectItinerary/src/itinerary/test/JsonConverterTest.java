@@ -1,4 +1,5 @@
 package itinerary.test;
+import itinerary.main.Task;
 import itinerary.main.*;
 import java.util.Calendar;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import com.google.gson.Gson;
 //@author A0121810Y
 public class JsonConverterTest {
