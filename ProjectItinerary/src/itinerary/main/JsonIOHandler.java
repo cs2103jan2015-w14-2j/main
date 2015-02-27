@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import com.google.gson.Gson;
 
@@ -29,15 +30,16 @@ public class JsonIOHandler {
     }
 
     /**
-     * Appends a given Task object into the given File object in a JSON format.
+     * Writes/Appends a given Task object into the given File object in a JSON
+     * format.
      * 
-     * @param willOverwrite
-     *            Configures if the function will overwrite and delete any old
-     *            files.
      * @param currFile
-     *            The File to write to.
+     *            The File object to write to.
      * @param task
-     *            The Task to write into currFile.
+     *            The Task object to write into currFile.
+     * @param willOverwrite
+     *            Configures if the function will overwrite and delete any
+     *            content in currFile when writing the task.
      */
     public static void writeJSON(File currFile, Task task, boolean willOverwrite) {
 
@@ -45,7 +47,9 @@ public class JsonIOHandler {
 
         try {
 
-            FileOutputStream writer = new FileOutputStream(currFile, !willOverwrite);
+            FileOutputStream writer =
+                                      new FileOutputStream(currFile,
+                                                           !willOverwrite);
             writer.write(taskString.getBytes());
             writer.write(System.getProperty("line.separator").getBytes());
             writer.close();
@@ -58,12 +62,43 @@ public class JsonIOHandler {
     }
 
     /**
+     * Given a list of tasks, this function will write all Task objects in the
+     * given List<Task> object to the given File Object. The behavior of the
+     * function is to always overwrite whatever contents there is in the file.
+     * 
+     * @param currFile
+     *            The File object to write to.
+     * @param taskList
+     *            The List object containing all the Task objects that will be
+     *            written onto currFile.
+     */
+    public static void writeJSONList(File currFile, List<Task> taskList) {
+
+        boolean firstLineOverwrite = true;
+
+        if (taskList.isEmpty()) {
+
+            return;
+
+        } else {
+
+            for (int i = 0; i < taskList.size(); i++) {
+
+                writeJSON(currFile, taskList.get(i), firstLineOverwrite);
+                firstLineOverwrite = false;
+            }
+
+        }
+
+    }
+
+    /**
      * Reads all the lines in a given File object and returns a String object
      * containing all the JSONs, each separated by a newline operator.
      * 
      * @param currFile
-     *            The File to read from.
-     * @return The String which contains all file contents.
+     *            The File object to read from.
+     * @return The String object which contains all file contents.
      */
     public static String readJSON(File currFile) {
 
