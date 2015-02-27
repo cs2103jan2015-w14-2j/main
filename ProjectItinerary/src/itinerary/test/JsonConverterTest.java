@@ -1,6 +1,6 @@
 package itinerary.test;
-import itinerary.main.Task;
 import itinerary.main.*;
+
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+
 //@author A0121810Y
 public class JsonConverterTest {
 	public ArrayList<Task> convertTestList;
@@ -24,9 +25,8 @@ public class JsonConverterTest {
 		
 		fromDate = Calendar.getInstance();
 		toDate = Calendar.getInstance();
-		task = new Task(1, "testtest", "testcat",
-				fromDate, toDate, true,
-				true);
+		task = new ScheduleTask(1, "testtest", "testcat", true,
+				true, fromDate, toDate);
 		gson = new Gson();
 	}
 	@Test
