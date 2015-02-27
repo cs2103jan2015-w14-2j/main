@@ -156,7 +156,7 @@ public class JsonIOHandler {
 
                 sb.append(line);
                 jsonList.add(sb.toString());
-                sb.setLength(0);  //To clear buffer
+                sb.setLength(0);  // To clear buffer
             }
 
             bufferedReader.close();
