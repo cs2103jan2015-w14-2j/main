@@ -18,6 +18,7 @@ public class JsonConverter {
 		Gson gson = new Gson();
 		for (String json : jsonList ){
 			taskList.add(gson.fromJson(json,ScheduleTask.class));
+
 		}
 		return taskList;
 	}
