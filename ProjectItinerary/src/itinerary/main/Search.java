@@ -27,6 +27,7 @@ import com.google.gson.JsonParser;
 
 import java.io.IOException;
 
+//@author A0121810Y
 public class Search {
 	private static List<String> list;
 	private static JsonParser parser;
