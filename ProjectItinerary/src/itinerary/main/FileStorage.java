@@ -52,15 +52,6 @@ public class FileStorage implements Storage {
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#searchFor(itinerary.main.Command)
-     */
-    public State searchFor(Command command) {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
     public List<Task> displayAll(Command command) {

@@ -39,15 +39,6 @@ public class StorageStub implements Storage {
     /*
      * (non-Javadoc)
      * 
-     * @see itinerary.main.Storage#searchFor(itinerary.main.Command)
-     */
-    public State searchFor(Command command) {
-        return new State(command, null, new ArrayList<Task>(), true);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
     public List<Task> displayAll(Command command) {

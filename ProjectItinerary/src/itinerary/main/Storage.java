@@ -33,15 +33,6 @@ public interface Storage {
     State deleteTask(Command command);
 
     /**
-     * Call this to display all content related to a search term given.
-     * 
-     * @param command
-     *            - A Command object.
-     * @return A State object.
-     */
-    State searchFor(Command command);
-
-    /**
      * Call this to display all current content in the file.
      * 
      * @param command
