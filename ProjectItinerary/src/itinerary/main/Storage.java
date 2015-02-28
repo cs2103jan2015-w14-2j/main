@@ -1,5 +1,7 @@
 package itinerary.main;
 
+import java.util.List;
+
 //@author A0121409R
 public interface Storage {
 
@@ -46,7 +48,7 @@ public interface Storage {
      *            - A Command object.
      * @return A State object.
      */
-    State displayAll(Command command);
+    List<Task> displayAll(Command command);
 
     /**
      * Call this to delete everything from the file.

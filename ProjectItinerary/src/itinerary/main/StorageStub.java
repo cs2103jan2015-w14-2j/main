@@ -1,6 +1,7 @@
 package itinerary.main;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //@author A0121409R
 public class StorageStub implements Storage {
@@ -49,8 +50,8 @@ public class StorageStub implements Storage {
      * 
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public State displayAll(Command command) {
-        return new State(command, null, new ArrayList<Task>(), true);
+    public List<Task> displayAll(Command command) {
+        return new ArrayList<Task>();
     }
 
     /*

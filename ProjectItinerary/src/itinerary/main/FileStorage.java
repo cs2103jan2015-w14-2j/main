@@ -1,6 +1,7 @@
 package itinerary.main;
 
 import java.io.File;
+import java.util.List;
 
 //@author A0121409R
 public class FileStorage implements Storage {
@@ -62,7 +63,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public State displayAll(Command command) {
+    public List<Task> displayAll(Command command) {
         return null;
     }
 
