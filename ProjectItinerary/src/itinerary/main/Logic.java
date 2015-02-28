@@ -1,7 +1,5 @@
 package itinerary.main;
 
-import java.util.List;
-
 //@author A0121437N
 public class Logic {
 	private static final String MESSAGE_DELETE_FAIL = "failed to delete";
