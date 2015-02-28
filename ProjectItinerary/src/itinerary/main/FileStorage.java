@@ -63,7 +63,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public State clearAll(Command command) {
+    public State clearAll() {
         return null;
     }
 
@@ -72,7 +72,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
-    public State refillAll(Command command) {
+    public State refillAll(List<Task> tasks) {
         return null;
     }
 }

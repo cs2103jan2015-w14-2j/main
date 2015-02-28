@@ -41,20 +41,17 @@ public interface Storage {
 
     /**
      * Call this to delete everything from the file.
-     * 
-     * @param command
-     *            - A Command object.
+     *
      * @return A State object.
      */
-    State clearAll(Command command);
+    State clearAll();
 
     /**
      * Call this to undo clearAll()
      * 
-     * @param command
-     *            - A Command object.
+     * @param tasks
+     *            - A List<Task> object containing all the tasks to be refilled
      * @return A State object
      */
-    State refillAll(Command command);
-
+    State refillAll(List<Task> tasks);
 }

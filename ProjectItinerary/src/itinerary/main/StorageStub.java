@@ -55,9 +55,10 @@ public class StorageStub implements Storage {
      * 
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public State clearAll(Command command) {
-        return new State(command, new Command(command.getTask(),
-                                              CommandType.UNDO), null, true);
+    public State clearAll() {
+    	Command clearCommand = new Command(null, CommandType.CLEAR);
+    	List<Task> allTasks = getAllTasks();
+        return new State(clearCommand, clearCommand, allTasks, true);
     }
 
     /*
@@ -65,9 +66,8 @@ public class StorageStub implements Storage {
      * 
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
-    public State refillAll(Command command) {
-        return new State(command, new Command(command.getTask(),
-                                              CommandType.CLEAR), null, true);
+    public State refillAll(List<Task> tasks) {
+        return new State(null, null, null, true);
     }
 
 }
