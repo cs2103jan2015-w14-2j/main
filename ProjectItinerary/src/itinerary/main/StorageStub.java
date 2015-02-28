@@ -10,7 +10,7 @@ public class StorageStub implements Storage {
      * 
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public State addLine(Command command) {
+    public State addTask(Command command) {
         return new State(command, new Command(command.getTask(),
                                               CommandType.DELETE), null, true);
     }
@@ -20,7 +20,7 @@ public class StorageStub implements Storage {
      * 
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public State editLine(Command command) {
+    public State editTask(Command command) {
         return new State(command, new Command(command.getTask(),
                                               CommandType.EDIT), null, true);
     }
@@ -30,7 +30,7 @@ public class StorageStub implements Storage {
      * 
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public State deleteLine(Command command) {
+    public State deleteTask(Command command) {
         return new State(command, new Command(command.getTask(),
                                               CommandType.ADD), null, true);
     }

@@ -26,7 +26,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public State addLine(Command command) {
+    public State addTask(Command command) {
         return null;
     }
 
@@ -35,7 +35,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public State editLine(Command command) {
+    public State editTask(Command command) {
         return null;
     }
 
@@ -44,7 +44,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public State deleteLine(Command command) {
+    public State deleteTask(Command command) {
         return null;
     }
 

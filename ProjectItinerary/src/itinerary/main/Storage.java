@@ -10,7 +10,7 @@ public interface Storage {
      *            - A Command object.
      * @return A State object.
      */
-    State addLine(Command command);
+    State addTask(Command command);
 
     /**
      * Call this to edit a line in the file.
@@ -19,7 +19,7 @@ public interface Storage {
      *            - A Command object.
      * @return A State object.
      */
-    State editLine(Command command);
+    State editTask(Command command);
 
     /**
      * Call this to delete a line in the file.
@@ -28,7 +28,7 @@ public interface Storage {
      *            - A Command object.
      * @return A State object.
      */
-    State deleteLine(Command command);
+    State deleteTask(Command command);
 
     /**
      * Call this to display all content related to a search term given.
