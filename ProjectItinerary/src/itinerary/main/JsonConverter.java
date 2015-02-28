@@ -5,19 +5,27 @@ import com.google.gson.Gson;
 //@author A0121810Y
 public class JsonConverter {
 	
-	public static List<String> convertTaskList(List<ScheduleTask> taskList){
+	public static <T extends Task> List<String> convertTaskList(List<T> taskList){
 		List<String> json = new ArrayList<String>();
 		Gson gson = new Gson();
-		for (Task task : taskList ){
+		for ( T task : taskList ){
 			json.add(gson.toJson(task));
 		}
 		return json;
 	}
-	public static List<ScheduleTask> convertJsonList(List<String> jsonList){
-		List<ScheduleTask> taskList = new ArrayList<ScheduleTask>();
+	public static <T extends Task> List<T> convertJsonList(List<String> jsonList ,String classType){
+		List<T> taskList = new ArrayList<T>();
 		Gson gson = new Gson();
 		for (String json : jsonList ){
-			taskList.add(gson.fromJson(json,ScheduleTask.class));
+			if(classType.equals("task")){
+				taskList.add((T)gson.fromJson(json,Task.class));
+			}
+			if(classType.equals("scheduletask")){
+				taskList.add((T)gson.fromJson(json,ScheduleTask.class));
+			}
+			if(classType.equals("deadlinetask")){
+				taskList.add((T)gson.fromJson(json,DeadlineTask.class));
+			}
 
 		}
 		return taskList;
