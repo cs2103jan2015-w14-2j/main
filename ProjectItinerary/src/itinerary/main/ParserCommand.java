@@ -11,6 +11,8 @@ public class ParserCommand {
 	private static final String COMMAND_CLEAR = "clear";
 	private static final String COMMAND_SEARCH = "search";
 	private static final String COMMAND_EDIT = "edit";
+	private static final String COMMAND_REDO = "redo";
+	private static final String COMMAND_UNDO = "undo";
     
     public CommandType getType(String command){
     	return determineType(command);
@@ -35,6 +37,12 @@ public class ParserCommand {
 		}
 		else if(command.equalsIgnoreCase(COMMAND_EDIT)){
 			return CommandType.EDIT;
+		}		
+		else if(command.equalsIgnoreCase(COMMAND_UNDO)){
+			return CommandType.UNDO;
+		}		
+		else if(command.equalsIgnoreCase(COMMAND_REDO)){
+			return CommandType.REDO;
 		}		
 		else{
 			return CommandType.UNABLE_TO_DETERMINE;
