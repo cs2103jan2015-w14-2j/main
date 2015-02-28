@@ -44,7 +44,7 @@ public class JsonConverterTest {
 		convertJsonList = new ArrayList<String>();
 		convertJsonList.add(gson.toJson(task));
 		List<ScheduleTask> taskList = new ArrayList<ScheduleTask>();
-		taskList = JsonConverter.convertJsonList(convertJsonList);
+		taskList = JsonConverter.convertJsonList(convertJsonList,"scheduletask");
 		assertEquals("test ConvertJsonList", task.getClass(),taskList.get(0).getClass());
 	}
 
