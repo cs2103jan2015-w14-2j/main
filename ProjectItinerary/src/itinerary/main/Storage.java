@@ -35,7 +35,7 @@ public interface Storage {
     /**
      * Call this to display all current content in the file.
      * 
-     * @return A State object.
+     * @return A List<Task> object containing all the relevant content.
      */
     List<Task> getAllTasks();
 

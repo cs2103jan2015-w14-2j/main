@@ -57,7 +57,7 @@ public class StorageStub implements Storage {
      */
     public State clearAll(Command command) {
         return new State(command, new Command(command.getTask(),
-                                              CommandType.REFILL), null, true);
+                                              CommandType.UNDO), null, true);
     }
 
     /*
