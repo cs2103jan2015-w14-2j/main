@@ -42,9 +42,7 @@ public class Parser {
  }
  
  //////
- 
- 
- 
+
  public void setTask(String input){
   
  }
@@ -53,8 +51,10 @@ public class Parser {
   return null;
  }
  
-    public int getLineNumber(){
-     return -1;
+    public int getLineNumber(String[] arr){
+    	String firstElement = arr[0];
+        Integer lineNumber = Integer.parseInt(firstElement);
+        return lineNumber;
     }
     
  public String getCategory(){
