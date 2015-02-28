@@ -27,4 +27,11 @@ public class History {
 		}
 		return null;
 	}
+	
+	public State getCurrentState () {
+		if (currentPoint == null) {
+			return null;
+		}
+		return currentPoint.getCurrentState();
+	}
 }

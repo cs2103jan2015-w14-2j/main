@@ -100,8 +100,8 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeRedo() {
-		State newState = history.goForward();
-		if (newState == null) {
+		State newState;
+		if (history.getCurrentState() == null || (newState = history.goForward()) == null) {
 			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
 		}
 		
@@ -134,8 +134,8 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeUndo() {
-		State newState = history.goBack();
-		if (newState == null) {
+		State newState;
+		if (history.getCurrentState() == null || (newState = history.goForward()) == null) {
 			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
 		}
 		
