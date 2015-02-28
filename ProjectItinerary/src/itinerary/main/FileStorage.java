@@ -54,7 +54,7 @@ public class FileStorage implements Storage {
      * 
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public List<Task> displayAll(Command command) {
+    public List<Task> getAllTasks() {
         return null;
     }
 

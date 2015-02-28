@@ -35,11 +35,9 @@ public interface Storage {
     /**
      * Call this to display all current content in the file.
      * 
-     * @param command
-     *            - A Command object.
      * @return A State object.
      */
-    List<Task> displayAll(Command command);
+    List<Task> getAllTasks();
 
     /**
      * Call this to delete everything from the file.
