@@ -5,6 +5,11 @@ import java.util.List;
 
 //@author A0121409R
 public class StorageStub implements Storage {
+	private String fileName;
+	
+	public StorageStub (String fileName) {
+		this.fileName = fileName;
+	}
 
     /*
      * (non-Javadoc)
