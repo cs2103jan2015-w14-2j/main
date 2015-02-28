@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -30,54 +29,51 @@ import java.io.IOException;
 
 public class Search {
 	private static List<String> list;
-	private Gson gson;
 	private static JsonParser parser;
 	private static JsonObject obj;
 	public Search(List<String> taskList){
 		list = taskList;
-		gson = new Gson();
 		parser = new JsonParser();
 	}
+	//this function takes in the query and the field that it is supposed to check. Fields are those found in Task and its subclasses.
 	public List<String> query(String query,String field) throws IOException, ParseException {
-		// 0. Specify the analyzer for tokenizing text.
 		// The same analyzer should be used for indexing and searching
 		StandardAnalyzer analyzer = new StandardAnalyzer();
 		ArrayList<String> hitList = new ArrayList<String>();
 		// 1. create the index
 		Directory index = new RAMDirectory();
-
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
-
 		IndexWriter w = new IndexWriter(index, config);
 		
 		for ( String tasks : list  ){
 			obj = parser.parse(tasks).getAsJsonObject();
 			addDoc(w ,obj);
 		}
+		
 		w.close();
-
-	
-
-		// the "title" arg specifies the default field to use
-		// when no field is explicitly specified in the query.
+		//create the queryparser, field is the key, query is the value to be searched.
 		Query q = new QueryParser(field, analyzer).parse(query);
 		int numHits = 10;
 		IndexReader reader = DirectoryReader.open(index);
 		IndexSearcher searcher = new IndexSearcher(reader);
-		TopScoreDocCollector collector = TopScoreDocCollector
-		        .create(numHits);
+		//creates the collector, num hits is the max number of hits that it returns
+		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
 		searcher.search(q, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		for(int i = 0;i<hits.length;i++){
-			int docId = hits[i].doc;
-			Document d = searcher.doc(docId);
-			hitList.add(d.get("json"));
-		}
-		
+		//add to the hitList
+		addToHitList(hitList, searcher, hits);
 		displayHits(searcher, hits);
 		reader.close();
 		return hitList;
 	}
+	private void addToHitList(ArrayList<String> hitList,
+            IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
+	    for(int i = 0;i<hits.length;i++){
+			int docId = hits[i].doc;
+			Document d = searcher.doc(docId);
+			hitList.add(d.get("json"));
+		}
+    }
 	private void displayHits(IndexSearcher searcher, ScoreDoc[] hits)
             throws IOException {
 	    System.out.println("Found " + hits.length + " hits.");
