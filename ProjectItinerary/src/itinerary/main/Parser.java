@@ -9,6 +9,8 @@ import itinerary.main.CommandType;
 //@author A0114823M
 public class Parser {
 
+	private static final String INVALID_INDEX = "Invalid index! ";
+	
 	public Parser(String input){
 	}
 
@@ -20,13 +22,13 @@ public class Parser {
 		return command; 
 	}
 
-	 public String[] convertInputStringToArray(String input){
+	 public String[] stringToArray(String input){
 		  String[] inputWords =  input.split(" +");
 		  return inputWords;
 	  }
 			
 		public CommandType createCommandType(String input){
-			String[] inputWords = convertInputStringToArray(input);
+			String[] inputWords = stringToArray(input);
 			String firstWord = inputWords[0]; 
 			ParserCommand cmd =  new ParserCommand();   
 			return cmd.getType(firstWord);
@@ -58,53 +60,83 @@ public class Parser {
 			return undoOperation(input);
 		}
 		else{
-			return new Task(1, null, null, false, false);
+			return defaultTask();
 		}			
 	}
 
-	//////
+// check if the line number of a task is valid.
+// It will return a task with the valid line number to logic if the line number is valid.
+//Otherwise, it will return a task with line number of -1 to indicate invalidation
+	public Task targetTask(String[] words){
+		String index = words[1];
+		try { 
+			Integer.parseInt(index); 
+		} catch(NumberFormatException e) { 
+			 return new Task (-1, null, null, false, false);
+		}
+		
+		try{
+			int number = Integer.parseInt(index);
+			if(number <= 0){
+				throw new Exception(INVALID_INDEX);
+			}
+		}catch(Exception e){
+			return new Task (-1, null, null, false, false);
+	    }
+		return new Task (Integer.parseInt(index), null, null, false, false);
+	}
 
+// This is the default format of a task.
+// This format can be used when the return type of task is not needed to be known.
+// e.g when deleting a task, only the line number is necessary to be known.
+	public Task defaultTask(){
+		return new Task(-1,null,null,false,false);
+	}
+	
 	public Task addTask(String input){
-		return new Task(1, null, null, false, false);
+		String description = input.substring(4, input.length());
+		return new Task(1, description, null, false, false);
 	}
 
 	public Task deleteTask(String input){
-		return new Task(1, null, null, false, false);
+		String[] words = stringToArray(input);
+		Task task = targetTask(words);
+		return task;
 	}
 
 	public Task displayTasks(String input){
-		return new Task(1, null, null, false, false);
+		return defaultTask();
 	}
 
 	public Task clearTasks(String input){
-		return new Task(1, null, null, false, false);
+		return defaultTask();
 	}
 
 	public Task searchTask(String input){
-		return new Task(1, null, null, false, false);
+		String description = input.substring(4, input.length());
+		return new Task(1, description, null, false, false);
 	}
 
 	public Task editTask(String input){
-		return new Task(1, null, null, false, false);
+		String[] words = stringToArray(input);
+		Task task = targetTask(words);
+		task.setText("newDescription");
+		task.setCategory("newCategory");
+		task.setPriority(true);
+		task.setComplete(true);
+		return task;
 	}
 
 	public Task undoOperation(String input){
-		return new Task(1, null, null, false, false);
+		return defaultTask();
 	}
 
 	public Task redoOperation(String input){
-		return new Task(1, null, null, false, false);
+		return defaultTask();
 	}
-
-
+	
 	public String getText(){
 		return null;
-	}
-
-	public int getLineNumber(String[] arr){
-		String firstElement = arr[0];
-		Integer lineNumber = Integer.parseInt(firstElement);
-		return lineNumber;
 	}
 
 	public String getCategory(){
