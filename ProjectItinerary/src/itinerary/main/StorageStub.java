@@ -1,6 +1,7 @@
 package itinerary.main;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 //@author A0121409R
@@ -47,7 +48,16 @@ public class StorageStub implements Storage {
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
     public List<Task> getAllTasks() {
-        return new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<Task>();
+        tasks.add(new Task(1, "task 1", "cat1", false, false));
+        tasks.add(new Task(2, "task 2", "cat2", false, true));
+        tasks.add(new Task(3, "task 3", "cat3", true, false));
+        tasks.add(new Task(4, "task 4", "cat4", true, true));
+        tasks.add(new ScheduleTask(5, "stask 1", "cat5", true, true,
+        		Calendar.getInstance(), Calendar.getInstance()));
+        tasks.add(new DeadlineTask(5, "stask 1", "cat5", true, true,
+        		Calendar.getInstance()));
+        return tasks;
     }
 
     /*
