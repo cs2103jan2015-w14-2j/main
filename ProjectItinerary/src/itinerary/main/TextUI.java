@@ -78,12 +78,12 @@ public class TextUI {
 	}
 
 	private static String formatTaskDetails(Task task) {
-		String details = DATE_FORMAT;
+		String details = "";
 		details += task.getLineNumber() + "\t";
 		details += task.getText() + "\t";
 		details += task.getCategory() + "\t";
 		details += (task.isComplete() ? "Complete" : "Incomplete") + "\t";
-		details += (task.isPriority() ? "Priority\t" : DATE_FORMAT);
+		details += (task.isPriority() ? "Priority\t" : "");
 		return details;
 	}
 

@@ -55,7 +55,7 @@ public class StorageStub implements Storage {
         tasks.add(new Task(4, "task 4", "cat4", true, true));
         tasks.add(new ScheduleTask(5, "stask 1", "cat5", true, true,
         		Calendar.getInstance(), Calendar.getInstance()));
-        tasks.add(new DeadlineTask(5, "stask 1", "cat5", true, true,
+        tasks.add(new DeadlineTask(6, "dtask 1", "cat6", true, true,
         		Calendar.getInstance()));
         return tasks;
     }
