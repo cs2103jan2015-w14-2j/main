@@ -79,7 +79,7 @@ public class TextUI {
 
 	private static String formatTaskDetails(Task task) {
 		String details = "";
-		details += task.getLineNumber() + "\t";
+		details += task.getLineNumber() + ". ";
 		details += task.getText() + "\t";
 		details += task.getCategory() + "\t";
 		details += (task.isComplete() ? "Complete" : "Incomplete") + "\t";
@@ -90,7 +90,7 @@ public class TextUI {
 	private static String formatScheduleTaskDetails(ScheduleTask task) {
 		String details = "from: ";
 		details += formatCalendarDate(task.getFromDate());
-		details += "to: ";
+		details += "\tto: ";
 		details += formatCalendarDate(task.getToDate());
 		return details;
 	}
