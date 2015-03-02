@@ -2,11 +2,12 @@ package itinerary.main;
 
 //@author A0121437N
 public class Logic {
+	private static final String MESSAGE_WELCOME = "Welcome! %1$s is ready for use";
 	private static final String MESSAGE_DELETE_FAIL = "failed to delete";
 	private static final String MESSAGE_DELETE_SUCCESS = "deleted task %1$s";
 	private static final String MESSAGE_CLEAR_FAIL = "failed to clear all tasks";
 	private static final String MESSAGE_CLEAR_SUCCESS = "cleared all tasks";
-	private static final String MESSAGE_ADD_SUCCESS = "added task %1$d";
+	private static final String MESSAGE_ADD_SUCCESS = "added task %1$s";
 	private static final String MESSAGE_ADD_FAIL = "failed to add task";
 	private static final String MESSAGE_EDIT_SUCCESS = "edited task %1$d";
 	private static final String MESSAGE_EDIT_FAIL = "failed to edit task";
@@ -17,18 +18,31 @@ public class Logic {
 	private static final String MESSAGE_UNDO_ERROR = "undo error";
 	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
 	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
-	
-
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
 	
+	private String fileName;
 	private Storage storage;
-	private Search search;
 	private History history;
 	
 	public Logic (String fileName) {
+		this.fileName = fileName;
 		this.storage = new StorageStub(fileName);
-		this.search = new Search();
 		this.history = new History();
+	}
+
+	public UserInterfaceContent executeUserInput (String userInput) {
+		// TODO Replace temporary command constructor with Parser when completed
+		Task task = new Task(1, "Test", null, false, false);
+		Command userCommand = new Command(task, CommandType.ADD);
+		// Determine actions to be taken and take them
+		// Return List of Tasks and console message to UI
+		return determineActions(userCommand, userInput);
+	}
+	
+	public UserInterfaceContent initialLaunch () {
+		UserInterfaceContent displayContent = executeDisplay();
+		String welcomeMessage = formatWelcomeMessage();
+		return new UserInterfaceContent(welcomeMessage, displayContent.getTasks());
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
@@ -162,15 +176,6 @@ public class Logic {
 		return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 	}
 
-	public UserInterfaceContent executeUserInput (String userInput) {
-		// TODO Replace temporary command constructor with Parser when completed
-		Task task = new Task(1, "Test", null, false, false);
-		Command userCommand = new Command(task, CommandType.ADD);
-		// Determine actions to be taken and take them
-		// Return List of Tasks and console message to UI
-		return determineActions(userCommand, userInput);
-	}
-
 	private String formatAddSuccess(String text) {
 		return String.format(MESSAGE_ADD_SUCCESS, text);
 	}
@@ -187,6 +192,10 @@ public class Logic {
 		return String.format(MESSAGE_INVALID_COMMAND, userInput);
 	}
 
+	private String formatWelcomeMessage() {
+		return String.format(MESSAGE_WELCOME, fileName);
+	}
+	
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
