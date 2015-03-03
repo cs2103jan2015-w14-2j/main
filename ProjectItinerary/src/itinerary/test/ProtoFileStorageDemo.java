@@ -8,8 +8,8 @@ import itinerary.main.*;
 // @author A0121409R
 
 /**
- * Demonstrates how to use FileStorage. Can also be considered as an
- * "unofficial" test of FileStorage.
+ * Demonstrates the likely behavior of FileStorage. Can also be considered as an
+ * "unofficial" test of ProtoFileStorage.
  */
 public class ProtoFileStorageDemo {
 
