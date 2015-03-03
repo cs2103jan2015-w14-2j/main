@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
 import itinerary.main.*;
 
 //@author A0121409R
@@ -52,7 +53,12 @@ public class JsonIOHandlerDemo {
                 add(task3);
             }
         };
-
+        
+        JsonIOHandler.writeJSONList(testFile, null);     
+        List<Task> testList = JsonIOHandler.readJsonFileListTask(testFile);
+        System.out.println(testList.size());
+        System.out.println();
+        
         JsonIOHandler.writeJSONList(testFile, taskList);
 
         // Without type Strings
@@ -75,12 +81,13 @@ public class JsonIOHandlerDemo {
         
         // Get a List of Tasks
         
-        List<Task> testList = JsonIOHandler.readJsonFileListTask(testFile);
+        testList = JsonIOHandler.readJsonFileListTask(testFile);
         
         for (Task item : testList) {
             
             System.out.println(item.getLineNumber() + " " + item.getText());
         }
+        
 
     }
 

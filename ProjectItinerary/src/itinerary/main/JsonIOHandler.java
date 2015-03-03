@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-//@author A0121409R
+// @author A0121409R
 public class JsonIOHandler {
 
     /**
@@ -47,7 +47,12 @@ public class JsonIOHandler {
      *            The Task object to be converted into a String object.
      * @return The String version of the Task Object.
      */
-    public static String stringFormatter(Task task) {
+    public static String stringFormatter(Task task) throws NullPointerException {
+
+        if (task == null) {
+
+            throw new NullPointerException();
+        }
 
         Gson gson = new Gson();
         String s = task.getClass().getSimpleName() + " " + gson.toJson(task);
@@ -70,21 +75,24 @@ public class JsonIOHandler {
      */
     public static void writeJSON(File currFile, Task task, boolean willOverwrite) {
 
-        String taskString = stringFormatter(task);
-
         try {
 
             FileOutputStream writer =
                                       new FileOutputStream(currFile,
                                                            !willOverwrite);
 
-            writer.write(taskString.getBytes());
-            writer.write(System.getProperty("line.separator").getBytes());
+            if (task != null) {
+                String taskString = stringFormatter(task);
+                writer.write(taskString.getBytes());
+                writer.write(System.getProperty("line.separator").getBytes());
+            }
+
             writer.close();
 
         } catch (IOException e) {
 
             e.printStackTrace();
+
         }
 
     }
@@ -104,9 +112,9 @@ public class JsonIOHandler {
 
         boolean firstLineOverwrite = true;
 
-        if (taskList.isEmpty()) {
+        if (taskList == null || taskList.isEmpty()) {
 
-            return;
+            writeJSON(currFile, null, true);
 
         } else {
 
