@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-//@author A0121409R
+// @author A0121409R
 public class StorageStub implements Storage {
-	private String fileName;
-	
-	public StorageStub (String fileName) {
-		this.fileName = fileName;
-	}
+    private String fileName;
+
+    public StorageStub(String fileName) {
+        this.fileName = fileName;
+    }
 
     /*
      * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
     public State addTask(Command command) {
@@ -24,7 +23,6 @@ public class StorageStub implements Storage {
 
     /*
      * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
     public State editTask(Command command) {
@@ -34,7 +32,6 @@ public class StorageStub implements Storage {
 
     /*
      * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
     public State deleteTask(Command command) {
@@ -44,7 +41,6 @@ public class StorageStub implements Storage {
 
     /*
      * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
     public List<Task> getAllTasks() {
@@ -54,26 +50,25 @@ public class StorageStub implements Storage {
         tasks.add(new Task(3, "task 3", "cat3", true, false));
         tasks.add(new Task(4, "task 4", "cat4", true, true));
         tasks.add(new ScheduleTask(5, "stask 1", "cat5", true, true,
-        		Calendar.getInstance(), Calendar.getInstance()));
+                                   Calendar.getInstance(),
+                                   Calendar.getInstance()));
         tasks.add(new DeadlineTask(6, "dtask 1", "cat6", true, true,
-        		Calendar.getInstance()));
+                                   Calendar.getInstance()));
         return tasks;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
     public State clearAll() {
-    	Command clearCommand = new Command(null, CommandType.CLEAR);
-    	List<Task> allTasks = getAllTasks();
+        Command clearCommand = new Command(null, CommandType.CLEAR);
+        List<Task> allTasks = getAllTasks();
         return new State(clearCommand, clearCommand, allTasks, true);
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
     public State refillAll(List<Task> tasks) {
