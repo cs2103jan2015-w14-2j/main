@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 
 // @author A0121409R
 public class JsonIOHandler {
+    
+    public static final String STRING_DELIMITER = "<SPLIT>"; 
 
     /**
      * Given a String array object, this method checks if the array is suitable
@@ -31,7 +33,7 @@ public class JsonIOHandler {
             return false;
         }
 
-        if (stringArray.length <= 1) {
+        if (stringArray.length <= 2) {
 
             return false;
         }
@@ -41,7 +43,8 @@ public class JsonIOHandler {
 
     /**
      * Given a Task object, this converts it into a String object containing the
-     * type of Task object and it's JSON String representation.
+     * lineNumber of the Task object, the type of Task object and it's JSON
+     * String representation.
      * 
      * @param task
      *            The Task object to be converted into a String object.
@@ -55,15 +58,14 @@ public class JsonIOHandler {
         }
 
         Gson gson = new Gson();
-        String s = task.getClass().getSimpleName() + " " + gson.toJson(task);
+        String s = task.getLineNumber()+ STRING_DELIMITER + task.getClass().getSimpleName() + STRING_DELIMITER + gson.toJson(task);
 
         return s;
     }
 
     /**
      * Writes/Appends a given Task object into the given File object in a JSON
-     * format. Inserts the type of task it corresponds to for each JSON String
-     * written.
+     * format. Inserts the lineNumber of each task before the JSON String.
      * 
      * @param currFile
      *            The File object to write to.
@@ -134,12 +136,11 @@ public class JsonIOHandler {
      * 
      * @param currFile
      *            The File object to read from.
-     * @param toAddTaskTypeStr
-     *            If true, it adds in the name of the underlying class to the
-     *            final String.
+     * @param toAddTags
+     *            If true, it adds in the tags in each line to the final String object.
      * @return The String object which contains all file contents.
      */
-    public static String readJSON(File currFile, boolean toAddTaskTypeStr) {
+    public static String readJSON(File currFile, boolean toAddTags) {
 
         StringBuilder sb = new StringBuilder();
         String line = "";
@@ -151,13 +152,15 @@ public class JsonIOHandler {
 
             while ((line = bufferedReader.readLine()) != null) {
 
-                String stringArray[] = line.split(" ");
+                String stringArray[] = line.split(STRING_DELIMITER);
 
-                if (!toAddTaskTypeStr) {
+                if (toAddTags) {
 
                     if (checkStringArray(stringArray)) {
-
-                        sb.append(stringArray[1]);
+                        
+                        sb.append(stringArray[0] + " ");
+                        sb.append(stringArray[1] + " ");
+                        sb.append(stringArray[2]);
                     }
 
                 } else {
@@ -172,8 +175,8 @@ public class JsonIOHandler {
             bufferedReader.close();
 
         } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
+            
+            writeJSON(currFile, null, true);
 
         } catch (IOException e) {
 
@@ -189,14 +192,13 @@ public class JsonIOHandler {
      * 
      * @param currFile
      *            The File object to be read from.
-     * @param toAddTaskTypeStr
-     *            If true, it adds in the name of the underlying class to the
-     *            final String.
+     * @param toAddTags
+     *            If true, it adds the tags in each line to the final String object.
      * @return A List<String> object containing all separated JSON strings in
      *         cuffFile.
      */
     public static List<String> readJSONFileListString(File currFile,
-                                                      boolean toAddTaskTypeStr) {
+                                                      boolean toAddTags) {
 
         StringBuilder sb = new StringBuilder();
         String line = "";
@@ -209,13 +211,15 @@ public class JsonIOHandler {
 
             while ((line = bufferedReader.readLine()) != null) {
 
-                String stringArray[] = line.split(" ");
+                String stringArray[] = line.split(STRING_DELIMITER);
 
-                if (!toAddTaskTypeStr) {
+                if (toAddTags) {
 
                     if (checkStringArray(stringArray)) {
 
-                        sb.append(stringArray[1]);
+                        sb.append(stringArray[0] + " ");
+                        sb.append(stringArray[1] + " ");
+                        sb.append(stringArray[2]);
                     }
 
                 } else {
@@ -231,8 +235,8 @@ public class JsonIOHandler {
             bufferedReader.close();
 
         } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
+            
+            writeJSON(currFile, null, true);
 
         } catch (IOException e) {
 
@@ -268,8 +272,8 @@ public class JsonIOHandler {
             bufferedReader.close();
 
         } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
+            
+            writeJSON(currFile, null, true);
 
         } catch (IOException e) {
 

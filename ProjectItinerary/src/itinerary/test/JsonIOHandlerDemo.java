@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
 import itinerary.main.*;
 
 //@author A0121409R
@@ -61,25 +60,31 @@ public class JsonIOHandlerDemo {
         
         JsonIOHandler.writeJSONList(testFile, taskList);
 
-        // Without type Strings
-
+        System.out.println("Without additional tags: ");
+        System.out.println();
+        
+        //Get a printable String from the file, without the additional tags.
         String test = JsonIOHandler.readJSON(testFile, false);
         System.out.println(test);
 
+        //Get a List of printable Strings from the file, without the additional tags.
         List<String> stringList = JsonIOHandler.readJSONFileListString(testFile, false);
         printList(stringList);
         System.out.println();
 
-        // With type Strings
-
+        System.out.println("With additional tags: ");
+        System.out.println();
+        
+        //Get a printable String from the file, with the additional tags.
         test = JsonIOHandler.readJSON(testFile, true);
         System.out.println(test);
 
+        //Get a List of printable Strings from the file, with the additional tags.
         stringList = JsonIOHandler.readJSONFileListString(testFile, true);
         printList(stringList);
         System.out.println();
         
-        // Get a List of Tasks
+        // Get a List of Tasks from the file.
         
         testList = JsonIOHandler.readJsonFileListTask(testFile);
         

@@ -54,22 +54,23 @@ public class JsonConverter {
 
         Gson gson = new Gson();
 
-        String stringArray[] = taggedJSONString.split(" ");
+        String stringArray[] = taggedJSONString.split(JsonIOHandler.STRING_DELIMITER);
 
         if (JsonIOHandler.checkStringArray(stringArray)) {
 
-            if (stringArray[0].equals(ScheduleTask.class.getName())) {
+            if (stringArray[1].equals(ScheduleTask.class.getSimpleName())) {
 
-                return gson.fromJson(stringArray[1], ScheduleTask.class);
+                return gson.fromJson(stringArray[2], ScheduleTask.class);
 
-            } else if (stringArray[0].equals(DeadlineTask.class)) {
+            } else if (stringArray[1].equals(DeadlineTask.class.getSimpleName())) {
 
-                return gson.fromJson(stringArray[1], DeadlineTask.class);
+                return gson.fromJson(stringArray[2], DeadlineTask.class);
 
             } else {
-
+                
+                System.out.println(stringArray[1]);
                 // Default Task Object
-                return gson.fromJson(stringArray[1], Task.class);
+                return gson.fromJson(stringArray[2], Task.class);
 
             }
         }
