@@ -23,7 +23,7 @@ import java.util.List;
  * <ul>
  * <p>
  */
-public class FileStorage implements Storage {
+public class ProtoFileStorage implements Storage {
 
     // Variables
     private static int numOfInstances = 0;
@@ -34,12 +34,12 @@ public class FileStorage implements Storage {
 
     // Constructors
 
-    public FileStorage() {
+    public ProtoFileStorage() {
 
         this("default.txt");
     }
 
-    public FileStorage(String fileName) {
+    public ProtoFileStorage(String fileName) {
 
         numOfInstances++;
 
@@ -50,7 +50,7 @@ public class FileStorage implements Storage {
         this.updateLineNum();
     }
 
-    public FileStorage(FileStorage fileStorage) {
+    public ProtoFileStorage(ProtoFileStorage fileStorage) {
 
         numOfInstances++;
 

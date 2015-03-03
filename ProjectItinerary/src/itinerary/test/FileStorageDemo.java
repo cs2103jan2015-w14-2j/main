@@ -39,7 +39,7 @@ public class FileStorageDemo {
 
     public static void main(String args[]) {
 
-        FileStorage fileStorage = new FileStorage("mytestfile.txt");
+        ProtoFileStorage fileStorage = new ProtoFileStorage("mytestfile.txt");
 
         // Clear any old content (for this test only)
         fileStorage.clearAll();
@@ -58,7 +58,7 @@ public class FileStorageDemo {
         listTask = fileStorage.deleteTask(command4).getTasks();
 
         System.out.println("Make a copy of fileStorage: ");
-        FileStorage fileStorage2 = new FileStorage(fileStorage);
+        ProtoFileStorage fileStorage2 = new ProtoFileStorage(fileStorage);
 
         displayFileStorages(fileStorage, fileStorage2);
 
@@ -113,8 +113,8 @@ public class FileStorageDemo {
         displayFileStorages(fileStorage, fileStorage2);
     }
 
-    public static void displayFileStorages(FileStorage fileStorage,
-                                           FileStorage fileStorage2) {
+    public static void displayFileStorages(ProtoFileStorage fileStorage,
+                                           ProtoFileStorage fileStorage2) {
         System.out.println("Items in fileStorage: ");
         System.out.println(fileStorage.currentListTaskString(true));
 
