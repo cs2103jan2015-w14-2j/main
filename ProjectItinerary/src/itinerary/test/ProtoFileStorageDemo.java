@@ -11,7 +11,7 @@ import itinerary.main.*;
  * Demonstrates how to use FileStorage. Can also be considered as an
  * "unofficial" test of FileStorage.
  */
-public class FileStorageDemo {
+public class ProtoFileStorageDemo {
 
     // Starting state:
 
