@@ -18,7 +18,7 @@ public class StorageStub implements Storage {
      */
     public State addTask(Command command) {
         return new State(command, new Command(command.getTask(),
-                                              CommandType.DELETE), null, true);
+                                              CommandType.DELETE, null), null, true);
     }
 
     /*
@@ -27,7 +27,7 @@ public class StorageStub implements Storage {
      */
     public State editTask(Command command) {
         return new State(command, new Command(command.getTask(),
-                                              CommandType.EDIT), null, true);
+                                              CommandType.EDIT, null), null, true);
     }
 
     /*
@@ -36,7 +36,7 @@ public class StorageStub implements Storage {
      */
     public State deleteTask(Command command) {
         return new State(command, new Command(command.getTask(),
-                                              CommandType.ADD), null, true);
+                                              CommandType.ADD, null), null, true);
     }
 
     /*
@@ -62,7 +62,7 @@ public class StorageStub implements Storage {
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
     public State clearAll() {
-        Command clearCommand = new Command(null, CommandType.CLEAR);
+        Command clearCommand = new Command(null, CommandType.CLEAR, null);
         List<Task> allTasks = getAllTasks();
         return new State(clearCommand, clearCommand, allTasks, true);
     }

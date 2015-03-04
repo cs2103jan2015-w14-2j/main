@@ -33,7 +33,7 @@ public class Logic {
 	public UserInterfaceContent executeUserInput (String userInput) {
 		// TODO Replace temporary command constructor with Parser when completed
 		Task task = new Task(1, "Test", null, false, false);
-		Command userCommand = new Command(task, CommandType.ADD);
+		Command userCommand = new Command(task, CommandType.ADD, null);
 		// Determine actions to be taken and take them
 		// Return List of Tasks and console message to UI
 		return determineActions(userCommand, userInput);
