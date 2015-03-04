@@ -9,7 +9,10 @@ import itinerary.main.CommandType;
 //@author A0114823M
 public class Parser {
 
-	private static final String INVALID_INDEX = "Invalid index! ";
+	private static final String INVALID_INDEX = "Invalid index ";
+	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
+	private static final String INVALID_DATE_TIME = "Invalid date";
+	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
 	
 	public Parser(String input){
 	}
@@ -18,10 +21,16 @@ public class Parser {
 	public Command  getCommand(String input){
 		Task task = createTask(input);
 		CommandType commandType = createCommandType(input);
-		Command command = new Command(task, commandType);
+		String message = createMessage();
+		Command command = new Command(task, commandType, message);
 		return command; 
 	}
 
+	//The message will be null if the command and input format is valid,
+	// It will return an error message if the input is not valid
+	 public String createMessage(){
+		 return ERROR_MESSAGE;
+	 }
 	 public String[] stringToArray(String input){
 		  String[] inputWords =  input.split(" +");
 		  return inputWords;
