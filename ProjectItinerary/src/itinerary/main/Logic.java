@@ -26,7 +26,7 @@ public class Logic {
 	
 	public Logic (String fileName) {
 		this.fileName = fileName;
-		this.storage = new StorageStub(fileName);
+		this.storage = new ProtoFileStorage(fileName);
 		this.history = new History();
 	}
 
