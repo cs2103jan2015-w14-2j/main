@@ -83,12 +83,17 @@ public class Parser {
 			for(int j=0; j < KEYWORD.length; j++){
 				if(inputWords[i].equals(KEYWORD[j])){
 					inputWords[i] = "";
+					for(int k=i+1; k < inputWords.length; k++){
+						inputWords[k] = "";
+					}
 				}
 			}
 		}
 		String content = "";
 		for(int i=0; i < inputWords.length; i++){
-			content = content + inputWords[i] + " ";
+			if(! inputWords[i].equals("")){
+				content = content + inputWords[i] + " ";
+			}
 		}
 		return content;
 	}
