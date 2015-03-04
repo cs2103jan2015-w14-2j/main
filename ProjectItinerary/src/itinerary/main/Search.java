@@ -32,12 +32,16 @@ public class Search {
 	private static List<String> list;
 	private static JsonParser parser;
 	private static JsonObject obj;
-	public Search(List<String> taskList){
-		list = taskList;
+	private static List<String> typeList;
+	ArrayList<String> hitTypeList;
+
+	public <T extends Task> Search(List<T> taskList){
+		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
+		typeList = JsonConverter.getTypeList(taskList);
 	}
 	//this function takes in the query and the field that it is supposed to check. Fields are those found in Task and its subclasses.
-	public List<String> query(String query,String field) throws IOException, ParseException {
+	public <T extends Task> List<T> query(String query,String field) throws IOException, ParseException {
 		// The same analyzer should be used for indexing and searching
 		StandardAnalyzer analyzer = new StandardAnalyzer();
 		ArrayList<String> hitList = new ArrayList<String>();
@@ -65,14 +69,16 @@ public class Search {
 		addToHitList(hitList, searcher, hits);
 		displayHits(searcher, hits);
 		reader.close();
-		return hitList;
+		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
 	private void addToHitList(ArrayList<String> hitList,
             IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
+		hitTypeList = new ArrayList<String>();
 	    for(int i = 0;i<hits.length;i++){
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
 			hitList.add(d.get("json"));
+			hitTypeList.add(typeList.get(docId));
 		}
     }
 	private void displayHits(IndexSearcher searcher, ScoreDoc[] hits)
