@@ -1,5 +1,6 @@
 package itinerary.main;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TextUI {
 		UserInterfaceContent content = logic.initialLaunch();
 		String userInput;
 		do {
+			clearConsole();
 			printSequence(content);
 			userInput = requestUserInput(scanner);
 			content = logic.executeUserInput(userInput);
@@ -104,5 +106,22 @@ public class TextUI {
 	private static String formatCalendarDate(Calendar date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 		return dateFormat.format(date.getTime());
+	}
+	
+	private static void clearConsole () {
+		final String operatingSystem = System.getProperty("os.name");
+		if (operatingSystem.contains("Windows")) {
+			try {
+				Runtime.getRuntime().exec("cls");
+			} catch (IOException e) {
+				System.out.println("an error occurred when trying to clear console");
+			}
+		} else {
+			try {
+				Runtime.getRuntime().exec("clear");
+			} catch (IOException e) {
+				System.out.println("an error occurred when trying to clear console");
+			}
+		}
 	}
 }
