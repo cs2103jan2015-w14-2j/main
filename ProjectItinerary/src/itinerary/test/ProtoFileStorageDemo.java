@@ -26,16 +26,17 @@ public class ProtoFileStorageDemo {
                                          true, true, Calendar.getInstance());
 
     static Command command1 = new Command(task1, CommandType.ADD, null); // Add
-                                                                   // command
-                                                                   // for Task1
+    // command
+    // for Task1
 
     static Command command2 = new Command(task2, CommandType.ADD, null); // Add
-                                                                   // command
-                                                                   // for Task2
+    // command
+    // for Task2
 
     static Command command3 = new Command(task3, CommandType.ADD, null); // Add
-                                                                   // Command
-                                                                   // for Task3
+
+    // Command
+    // for Task3
 
     public static void main(String args[]) {
 
@@ -53,7 +54,9 @@ public class ProtoFileStorageDemo {
         listTask = fileStorage.addTask(command3).getTasks();
 
         // Delete Task 1
-        Command command4 = new Command(listTask.get(0), CommandType.DELETE, null);
+        Command command4 =
+                           new Command(listTask.get(0), CommandType.DELETE,
+                                       null);
 
         listTask = fileStorage.deleteTask(command4).getTasks();
 
@@ -65,14 +68,18 @@ public class ProtoFileStorageDemo {
         List<Task> listTask2 = fileStorage2.getAllTasks();
 
         System.out.println("Delete Line 1 in fileStorage: ");
-        Command command5 = new Command(listTask.get(0), CommandType.DELETE, null);
+        Command command5 =
+                           new Command(listTask.get(0), CommandType.DELETE,
+                                       null);
 
         listTask = fileStorage.deleteTask(command5).getTasks();
 
         displayFileStorages(fileStorage, fileStorage2);
 
         System.out.println("Delete Line 2 in fileStorage2: ");
-        Command command6 = new Command(listTask2.get(1), CommandType.DELETE, null);
+        Command command6 =
+                           new Command(listTask2.get(1), CommandType.DELETE,
+                                       null);
 
         listTask = fileStorage.getAllTasks();
         listTask2 = fileStorage2.deleteTask(command6).getTasks();
@@ -88,8 +95,7 @@ public class ProtoFileStorageDemo {
 
         displayFileStorages(fileStorage, fileStorage2);
 
-        /* Uncommenting this will produce an infinite loop from sortList() in FileStorage.java
-        
+        // BUG
         System.out.println("To demonstrate duplicate Command entry failure: ");
         System.out.println("Add Line 1 from fileStorage2 into fileStorage1: ");
         listTask = fileStorage.addTask(command7).getTasks();
@@ -97,19 +103,19 @@ public class ProtoFileStorageDemo {
         displayFileStorages(fileStorage, fileStorage2);
 
         System.out.println("Delete malfunctioning line: ");
-        Command command8 = new Command(listTask.get(0), CommandType.DELETE);
+        Command command8 =
+                           new Command(listTask.get(0), CommandType.DELETE,
+                                       null);
         listTask = fileStorage.deleteTask(command8).getTasks();
 
         displayFileStorages(fileStorage, fileStorage2);
-        
-        */
-        
+
         System.out.println("Edit line 1 of fileStorage: ");
         Task toEdit = listTask.get(0);
         toEdit.setText("Changed the Text");
         Command command9 = new Command(toEdit, CommandType.EDIT, null);
         listTask = fileStorage.editTask(command9).getTasks();
-        
+
         displayFileStorages(fileStorage, fileStorage2);
     }
 

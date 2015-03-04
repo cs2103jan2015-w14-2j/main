@@ -13,12 +13,11 @@ import java.util.List;
  * <p>
  * <ul>
  * <li>1) BUG: Adding in duplicated Tasks or Commands WILL NOT WORK.
- * <li>2) BUG: updateLineNum() DOES NOT WORK AS INTENDED.
- * <li>3) Writes to file before returning State object.
- * <li>4) Assume Task lineNumbers start from 1, not 0.
- * <li>5) When returning the list of Tasks being held in an instance of
+ * <li>2) Writes to file before returning State object.
+ * <li>3) Assume Task lineNumbers start from 1, not 0.
+ * <li>4) When returning the list of Tasks being held in an instance of
  * fileStorage, it will return a duplicated copy and not the direct reference.
- * <li>6) After adding or removing a certain item in listTask, the lineNumbers
+ * <li>5) After adding or removing a certain item in listTask, the lineNumbers
  * for each of the Task objects in listTask will be auto-updated.
  * <ul>
  * <p>
@@ -170,55 +169,26 @@ public class ProtoFileStorage implements Storage {
     }
 
     /**
-     * Sorts listTasks according to lineNumber. This function doesn't work as
-     * intended.
-     */
-    public void sortList() {
-
-        List<Task> tempTaskList = new ArrayList<Task>();
-
-        int currLineNum = 1;
-
-        if (this.listTask != null) {
-            while (tempTaskList.size() != this.listTask.size()) {
-    
-                for (Task item : this.listTask) {
-    
-                    if (item.getLineNumber() == currLineNum) {
-    
-                        tempTaskList.add(item);
-                        currLineNum++;
-                        break;
-                    }
-                }
-    
-            }
-        }
-
-        this.listTask = tempTaskList;
-    }
-
-    /**
      * Update the lineNumber variables in each Task object after operation.
      */
     private void updateLineNum() {
 
-        if (this.listTask != null || this.listTask.size() != 0) {
+        if (this.listTask != null && this.listTask.size() != 0) {
+
             List<Task> tempTaskList = this.getAllTasks();
-    
+
             int currLineNum = 1;
-    
+
             for (Task item : tempTaskList) {
-    
+
                 item.setLineNumber(currLineNum);
                 currLineNum++;
             }
-    
+
             this.listTask = tempTaskList;
-    
-            sortList();
+
         } else {
-            
+
             this.listTask = new ArrayList<Task>();
         }
     }
@@ -229,11 +199,13 @@ public class ProtoFileStorage implements Storage {
      */
     public State addTask(Command command) {
 
+        Task toAdd = command.getTask();
+
         listTask.add(command.getTask().getLineNumber() - 1, command.getTask());
         updateLineNum();
+
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(command, new Command(command.getTask(),
-                                              CommandType.DELETE, null),
+        return new State(command, new Command(toAdd, CommandType.DELETE, null),
                          getAllTasks(), true);
     }
 
@@ -246,9 +218,11 @@ public class ProtoFileStorage implements Storage {
         Task originalTask =
                             listTask.remove(command.getTask().getLineNumber() - 1);
         listTask.add(command.getTask());
+        updateLineNum();
+
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(command, new Command(originalTask, CommandType.EDIT, null),
-                         getAllTasks(), true);
+        return new State(command, new Command(originalTask, CommandType.EDIT,
+                                              null), getAllTasks(), true);
     }
 
     /*
@@ -270,8 +244,8 @@ public class ProtoFileStorage implements Storage {
             JsonIOHandler.writeJSONList(currFile, listTask);
         }
 
-        return new State(command, new Command(originalTask, CommandType.ADD, null),
-                         getAllTasks(), isValid);
+        return new State(command, new Command(originalTask, CommandType.ADD,
+                                              null), getAllTasks(), isValid);
     }
 
     private boolean isValidDeleteOp(Command command) {
@@ -326,6 +300,7 @@ public class ProtoFileStorage implements Storage {
 
         List<Task> originalState = getAllTasks();
         listTask.clear();
+
         JsonIOHandler.writeJSONList(currFile, listTask);
         return new State(null, new Command(null, CommandType.UNDO, null),
                          originalState, true);
@@ -339,6 +314,8 @@ public class ProtoFileStorage implements Storage {
 
         listTask.addAll(tasks);
         updateLineNum();
+
+        JsonIOHandler.writeJSONList(currFile, listTask);
         return new State(null, new Command(null, CommandType.CLEAR, null),
                          duplicateCurrentListTask(true), true);
     }
