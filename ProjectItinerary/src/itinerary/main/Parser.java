@@ -13,6 +13,9 @@ public class Parser {
 	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
 	private static final String INVALID_DATE_TIME = "Invalid date";
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
+	private static final String[] KEYWORD = {"by", "ti", "ca", "pri", "des"};
+	
+	private static String showMessage = null;
 	
 	public Parser(String input){
 	}
@@ -29,8 +32,9 @@ public class Parser {
 	//The message will be null if the command and input format is valid,
 	// It will return an error message if the input is not valid
 	 public String createMessage(){
-		 return ERROR_MESSAGE;
+		 return showMessage;
 	 }
+	 
 	 public String[] stringToArray(String input){
 		  String[] inputWords =  input.split(" +");
 		  return inputWords;
@@ -73,6 +77,23 @@ public class Parser {
 		}			
 	}
 
+	public String extractContent(String input){
+		String[] inputWords = stringToArray(input);
+		for(int i=0; i < inputWords.length; i++){
+			for(int j=0; j < KEYWORD.length; j++){
+				if(inputWords[i].equals(KEYWORD[j])){
+					inputWords[i] = "";
+				}
+			}
+		}
+		String content = "";
+		for(int i=0; i < inputWords.length; i++){
+			content = content + inputWords[i] + " ";
+		}
+		return content;
+	}
+	
+	
 // check if the line number of a task is valid.
 // It will return a task with the valid line number to logic if the line number is valid.
 //Otherwise, it will return a task with line number of -1 to indicate invalidation
@@ -81,6 +102,7 @@ public class Parser {
 		try { 
 			Integer.parseInt(index); 
 		} catch(NumberFormatException e) { 
+			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
 			 return new Task (-1, null, null, false, false);
 		}
 		
@@ -90,6 +112,7 @@ public class Parser {
 				throw new Exception(INVALID_INDEX);
 			}
 		}catch(Exception e){
+			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
 			return new Task (-1, null, null, false, false);
 	    }
 		return new Task (Integer.parseInt(index), null, null, false, false);
@@ -102,9 +125,14 @@ public class Parser {
 		return new Task(-1,null,null,false,false);
 	}
 	
+	public Task setTaskAttributes(String input){
+		return new Task(-1, null, null, false, false);
+	}
+	
 	public Task addTask(String input){
 		String description = input.substring(4, input.length());
-		return new Task(1, description, null, false, false);
+		String content = extractContent(description);
+		return new Task(-1, content, null, false, false);
 	}
 
 	public Task deleteTask(String input){
@@ -122,14 +150,15 @@ public class Parser {
 	}
 
 	public Task searchTask(String input){
-		String description = input.substring(4, input.length());
+		String description = input.substring(7, input.length());
 		return new Task(1, description, null, false, false);
 	}
 
 	public Task editTask(String input){
 		String[] words = stringToArray(input);
+		String newDescription = input.substring(5);
 		Task task = targetTask(words);
-		task.setText("newDescription");
+		task.setText(newDescription);
 		task.setCategory("newCategory");
 		task.setPriority(true);
 		task.setComplete(true);
