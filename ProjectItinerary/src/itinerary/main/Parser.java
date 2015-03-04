@@ -17,7 +17,7 @@ public class Parser {
 	
 	private static String showMessage = null;
 	
-	public Parser(String input){
+	public Parser(){
 	}
 
 	//returns a command object and it is called by logic
