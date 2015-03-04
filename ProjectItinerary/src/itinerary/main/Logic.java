@@ -46,6 +46,10 @@ public class Logic {
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
+		if (command.getMessage() != null) {
+			return unknownCommand(userInput);
+		}
+		
 		if (command.getType() == CommandType.ADD) {
 			return executeAdd(command);
 		} else if (command.getType() == CommandType.CLEAR) {
@@ -63,7 +67,7 @@ public class Logic {
 		} else if (command.getType() == CommandType.UNDO) {
 			return executeUndo();
 		} else {
-			return unknownCommand (userInput);
+			return unknownCommand(userInput);
 		}
 	}
 	
