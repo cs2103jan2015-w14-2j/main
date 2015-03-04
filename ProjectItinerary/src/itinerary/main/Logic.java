@@ -33,7 +33,7 @@ public class Logic {
 	public UserInterfaceContent executeUserInput (String userInput) {
 		// TODO Replace temporary command constructor with Parser when completed
 		Task task = new Task(1, "Test", null, false, false);
-		Command userCommand = new Command(task, CommandType.ADD, null);
+		Command userCommand = new Command(task, new ParserCommand().getType(userInput), null);
 		// Determine actions to be taken and take them
 		// Return List of Tasks and console message to UI
 		return determineActions(userCommand, userInput);
@@ -47,7 +47,7 @@ public class Logic {
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
 		if (command.getMessage() != null) {
-			return unknownCommand(userInput);
+			return invalidCommand(userInput);
 		}
 		
 		if (command.getType() == CommandType.ADD) {
@@ -198,6 +198,10 @@ public class Logic {
 
 	private String formatWelcomeMessage() {
 		return String.format(MESSAGE_WELCOME, fileName);
+	}
+	
+	private UserInterfaceContent invalidCommand(String message) {
+		return new UserInterfaceContent(message, storage.getAllTasks());
 	}
 	
 	private UserInterfaceContent unknownCommand(String userInput) {
