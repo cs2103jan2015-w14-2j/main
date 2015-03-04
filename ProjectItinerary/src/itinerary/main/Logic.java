@@ -153,7 +153,7 @@ public class Logic {
 
 	private UserInterfaceContent executeUndo() {
 		State newState;
-		if (history.getCurrentState() == null || (newState = history.goForward()) == null) {
+		if (history.getCurrentState() == null || (newState = history.goBack()) == null) {
 			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
 		}
 		
