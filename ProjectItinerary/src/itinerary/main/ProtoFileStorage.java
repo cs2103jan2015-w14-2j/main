@@ -233,7 +233,7 @@ public class ProtoFileStorage implements Storage {
         updateLineNum();
         JsonIOHandler.writeJSONList(currFile, listTask);
         return new State(command, new Command(command.getTask(),
-                                              CommandType.DELETE),
+                                              CommandType.DELETE, null),
                          getAllTasks(), true);
     }
 
@@ -247,7 +247,7 @@ public class ProtoFileStorage implements Storage {
                             listTask.remove(command.getTask().getLineNumber() - 1);
         listTask.add(command.getTask());
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(command, new Command(originalTask, CommandType.EDIT),
+        return new State(command, new Command(originalTask, CommandType.EDIT, null),
                          getAllTasks(), true);
     }
 
@@ -270,7 +270,7 @@ public class ProtoFileStorage implements Storage {
             JsonIOHandler.writeJSONList(currFile, listTask);
         }
 
-        return new State(command, new Command(originalTask, CommandType.ADD),
+        return new State(command, new Command(originalTask, CommandType.ADD, null),
                          getAllTasks(), isValid);
     }
 
@@ -327,7 +327,7 @@ public class ProtoFileStorage implements Storage {
         List<Task> originalState = getAllTasks();
         listTask.clear();
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(null, new Command(null, CommandType.UNDO),
+        return new State(null, new Command(null, CommandType.UNDO, null),
                          originalState, true);
     }
 
@@ -339,7 +339,7 @@ public class ProtoFileStorage implements Storage {
 
         listTask.addAll(tasks);
         updateLineNum();
-        return new State(null, new Command(null, CommandType.CLEAR),
+        return new State(null, new Command(null, CommandType.CLEAR, null),
                          duplicateCurrentListTask(true), true);
     }
 }
