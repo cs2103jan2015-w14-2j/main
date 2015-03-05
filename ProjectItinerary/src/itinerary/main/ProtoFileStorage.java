@@ -308,7 +308,7 @@ public class ProtoFileStorage implements Storage {
      */
     public State clearAll() {
 
-        List<Task> originalState = getAllTasks();
+        List<Task> originalState = duplicateCurrentListTask(true);
         listTask.clear();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
@@ -327,7 +327,7 @@ public class ProtoFileStorage implements Storage {
         updateLineNum();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(null, new Command(null, CommandType.CLEAR, null),
+        return new State(null, null,
                          duplicateCurrentListTask(true), true);
     }
 }
