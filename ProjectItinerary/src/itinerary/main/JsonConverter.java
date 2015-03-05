@@ -79,7 +79,6 @@ public class JsonConverter {
 
             } else {
                 
-                System.out.println(stringArray[1]);
                 // Default Task Object
                 return gson.fromJson(stringArray[2], Task.class);
 
