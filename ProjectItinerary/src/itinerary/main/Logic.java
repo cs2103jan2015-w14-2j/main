@@ -117,7 +117,7 @@ public class Logic {
 
 	private UserInterfaceContent executeRedo() {
 		State newState;
-		if (history.getCurrentState() == null || (newState = history.goForward()) == null) {
+		if ((newState = history.goForward()) == null) {
 			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
 		}
 		
