@@ -45,15 +45,14 @@ public class StorageStub implements Storage {
      */
     public List<Task> getAllTasks() {
         List<Task> tasks = new ArrayList<Task>();
-        tasks.add(new Task(1, "task 1", "cat1", false, false));
-        tasks.add(new Task(2, "task 2", "cat2", false, true));
-        tasks.add(new Task(3, "task 3", "cat3", true, false));
-        tasks.add(new Task(4, "task 4", "cat4", true, true));
-        tasks.add(new ScheduleTask(5, "stask 1", "cat5", true, true,
-                                   Calendar.getInstance(),
-                                   Calendar.getInstance()));
-        tasks.add(new DeadlineTask(6, "dtask 1", "cat6", true, true,
-                                   Calendar.getInstance()));
+        tasks.add(new DeadlineTask(1, "Finish homework", "cat6", true, false,
+                Calendar.getInstance()));
+        tasks.add(new ScheduleTask(2, "Team meeting", "cat5", true, false,
+                        Calendar.getInstance(),
+                        Calendar.getInstance()));
+        tasks.add(new Task(3, "Feed the dog", "cat1", false, false));
+        tasks.add(new Task(4, "Have dinner", "cat2", false, true));
+        
         return tasks;
     }
 
