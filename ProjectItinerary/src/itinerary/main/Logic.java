@@ -21,21 +21,19 @@ public class Logic {
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
 	
 	private String fileName;
+	private Parser parser;
 	private Storage storage;
 	private History history;
 	
 	public Logic (String fileName) {
 		this.fileName = fileName;
+		this.parser = new Parser();
 		this.storage = new ProtoFileStorage(fileName);
 		this.history = new History();
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
-		// TODO Replace temporary command constructor with Parser when completed
-		Task task = new Task(1, "Test", null, false, false);
-		Command userCommand = new Command(task, new ParserCommand().getType(userInput), null);
-		// Determine actions to be taken and take them
-		// Return List of Tasks and console message to UI
+		Command userCommand = parser.getCommand(userInput);
 		return determineActions(userCommand, userInput);
 	}
 	
