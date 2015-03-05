@@ -205,7 +205,7 @@ public class ProtoFileStorage implements Storage {
         	taskId = listTask.size();
         	toAdd.setLineNumber(taskId);
         }
-        listTask.add(command.getTask().getLineNumber() - 1, command.getTask());
+        listTask.add(taskId, command.getTask());
         updateLineNum();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
