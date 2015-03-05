@@ -10,6 +10,7 @@ public interface Storage {
      * 
      * @param command
      *            - A Command object.
+     *            - If lineNumber in command.getTask() is equal to -1, add task to end.
      * @return A State object.
      */
     State addTask(Command command);
