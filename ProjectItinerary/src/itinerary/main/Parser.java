@@ -136,8 +136,8 @@ public class Parser {
 	
 	public Task addTask(String input){
 		String description = input.substring(4, input.length());
-		String content = extractContent(description);
-		return new Task(-1, content, null, false, false);
+		//String content = extractContent(description);
+		return new Task(-1, description, null, false, false);
 	}
 
 	public Task deleteTask(String input){
@@ -161,7 +161,7 @@ public class Parser {
 
 	public Task editTask(String input){
 		String[] words = stringToArray(input);
-		String newDescription = input.substring(5);
+		String newDescription = input.substring(5, input.length());
 		Task task = targetTask(words);
 		task.setText(newDescription);
 		task.setCategory("newCategory");
