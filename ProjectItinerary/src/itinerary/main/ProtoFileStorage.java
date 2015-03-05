@@ -312,7 +312,8 @@ public class ProtoFileStorage implements Storage {
         listTask.clear();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(null, new Command(null, CommandType.UNDO, null),
+        Command clearCommand = new Command(null, CommandType.CLEAR, null);
+        return new State(clearCommand, clearCommand,
                          originalState, true);
     }
 
