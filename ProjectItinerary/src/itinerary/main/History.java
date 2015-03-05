@@ -5,7 +5,7 @@ public class History {
 	private HistoryNode currentPoint;
 	
 	public History() {
-		this.currentPoint = null;
+		this.currentPoint = HistoryNode.createNewNode(null, null);
 	}
 	
 	public void addNewState (State state) {

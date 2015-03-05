@@ -7,7 +7,7 @@ public class Logic {
 	private static final String MESSAGE_DELETE_SUCCESS = "deleted task %1$s";
 	private static final String MESSAGE_CLEAR_FAIL = "failed to clear all tasks";
 	private static final String MESSAGE_CLEAR_SUCCESS = "cleared all tasks";
-	private static final String MESSAGE_ADD_SUCCESS = "added task %1$s";
+	private static final String MESSAGE_ADD_SUCCESS = "added \"%1$s\"";
 	private static final String MESSAGE_ADD_FAIL = "failed to add task";
 	private static final String MESSAGE_EDIT_SUCCESS = "edited task %1$d";
 	private static final String MESSAGE_EDIT_FAIL = "failed to edit task";
@@ -150,18 +150,18 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeUndo() {
-		State newState;
-		if (history.getCurrentState() == null || (newState = history.goBack()) == null) {
+		if (history.getCurrentState() == null) {
 			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
 		}
+		State currentState = history.getCurrentState();
 		
 		State undoState;
-		Command undoCommand = newState.getUndoCommand();
+		Command undoCommand = currentState.getUndoCommand();
 		
 		if (undoCommand.getType() == CommandType.ADD) {
 			undoState = storage.addTask(undoCommand);
 		} else if (undoCommand.getType() == CommandType.CLEAR) {
-			undoState = storage.refillAll(newState.getTasks());
+			undoState = storage.refillAll(currentState.getTasks());
 		} else if (undoCommand.getType() == CommandType.DELETE) {
 			undoState = storage.deleteTask(undoCommand);
 		} else if (undoCommand.getType() == CommandType.EDIT) {
@@ -171,10 +171,9 @@ public class Logic {
 		}
 		
 		if (undoState.isSuccessful()) {
+			history.goBack();
 			return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
 		}
-		
-		history.goForward();
 		return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 	}
 
