@@ -161,7 +161,11 @@ public class Parser {
 
 	public Task editTask(String input){
 		String[] words = stringToArray(input);
-		String newDescription = input.substring(5, input.length());
+		String newDescription = "";
+		for(int i=2; i<words.length; i++){
+			newDescription = newDescription + words[i] + " ";
+		}
+		
 		Task task = targetTask(words);
 		task.setText(newDescription);
 		task.setCategory("newCategory");
