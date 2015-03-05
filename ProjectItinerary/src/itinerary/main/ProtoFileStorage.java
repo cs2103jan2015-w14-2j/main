@@ -200,7 +200,11 @@ public class ProtoFileStorage implements Storage {
     public State addTask(Command command) {
 
         Task toAdd = command.getTask();
-
+        int taskId = command.getTask().getLineNumber();
+        if (taskId == -1) {
+        	taskId = listTask.size();
+        	toAdd.setLineNumber(taskId);
+        }
         listTask.add(command.getTask().getLineNumber() - 1, command.getTask());
         updateLineNum();
 
