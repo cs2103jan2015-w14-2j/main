@@ -274,6 +274,11 @@ public class ProtoFileStorage implements Storage {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean isSameTask(Command command) {
+
         if (!JsonIOHandler.stringFormatter(command.getTask())
                           .equals(JsonIOHandler.stringFormatter(listTask.get(command.getTask()
                                                                                     .getLineNumber() - 1)))) {
@@ -285,7 +290,6 @@ public class ProtoFileStorage implements Storage {
                                                                                  .getLineNumber() - 1)));
             return false;
         }
-
         return true;
     }
 
