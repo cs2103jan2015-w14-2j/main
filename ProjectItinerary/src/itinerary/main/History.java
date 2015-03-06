@@ -5,11 +5,11 @@ public class History {
 	private HistoryNode currentPoint;
 	
 	public History() {
-		this.currentPoint = HistoryNode.createNewNode(null, null);
+		this.currentPoint = new HistoryNode(null, null);
 	}
 	
 	public void addNewState (State state) {
-		currentPoint = HistoryNode.createNewNode(currentPoint, state);
+		currentPoint = new HistoryNode(currentPoint, state);
 	}
 	
 	public State goBack () {
@@ -33,5 +33,31 @@ public class History {
 			return null;
 		}
 		return currentPoint.getCurrentState();
+	}
+	
+	private class HistoryNode {
+		private HistoryNode back = null;
+		private HistoryNode forward = null;
+		private State currentState = null;
+		
+		private HistoryNode (HistoryNode back, State state) {
+			if (back != null) {
+				back.forward = this;
+			}
+			this.back = back;
+			this.currentState = state;
+		}
+
+		protected HistoryNode getBack() {
+			return back;
+		}
+
+		protected HistoryNode getForward() {
+			return forward;
+		}
+
+		protected State getCurrentState() {
+			return currentState;
+		}
 	}
 }
