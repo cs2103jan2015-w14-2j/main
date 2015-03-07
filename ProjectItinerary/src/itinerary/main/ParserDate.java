@@ -23,12 +23,12 @@ public class ParserDate {
 	public Task determineTaskType (List<Date> dates){
 		if(dates.size() == 1){
 			Calendar endDate = convertToCalendar(dates.get(0));
-			return new DeadlineTask(-1, null, null, false,false, endDate);
+			return new DeadlineTask(-1, "", "", false,false, endDate);
 		}
 		else{
 		    Calendar startDate = convertToCalendar(dates.get(0));
 		    Calendar endDate = convertToCalendar(dates.get(1));
-			return new ScheduleTask(-1, null, null, false, false, startDate, endDate);
+			return new ScheduleTask(-1, "", "", false, false, startDate, endDate);
 		}
 	}
 	
