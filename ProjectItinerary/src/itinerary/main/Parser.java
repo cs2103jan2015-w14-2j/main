@@ -92,7 +92,7 @@ public class Parser {
 		}			
 	}
 
-	public Task checkDuplicatedKeyword(String[] inputWords){
+	public boolean hasDuplicatedKeywords(String[] inputWords){
 		int[] keyWordCounter = {0,0,0};	
 
 		for(int i=0; i < inputWords.length; i++){
@@ -110,66 +110,71 @@ public class Parser {
 		for(int i=0; i < keyWordCounter.length; i++){
 			if(keyWordCounter[0] > 1){
 				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_PRI);
-				return defaultTask();
+				return true;
 			}
 			if(keyWordCounter[1] > 1){
 				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_CA);
-				return defaultTask();
+				return true;
 			}
 			if(keyWordCounter[2] > 1){
 				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_TIME);
-				return defaultTask();
+				return true;
 			}
 		}
-		return defaultTask();
+		return false;
 	}
 
 	//KEYWORD = {"pri",  "ca", "by", "ti"}
-	public Task extractContent(String input){		
+	public Task extractContent(String input){	
+		Task task = defaultTask();
 		String[] inputWords = stringToArray(input);
-		Task task = checkDuplicatedKeyword(inputWords);
+		if(hasDuplicatedKeywords(inputWords)){
+			return defaultTask();
+		}
 
-		String content = "";
-		String category = "";
-		String time = "";
-		int endOfContent = 0;
-		
-		for(int i=0; !inputWords[i].equals(KEYWORD[0]) && !inputWords[i].equals(KEYWORD[1]) && 
-			   !inputWords[i].equals(KEYWORD[2])  && !inputWords[i].equals(KEYWORD[3]) ; i++){
-			    	content = content + inputWords[i];
-			    	endOfContent = i;
-	   }
-		task.setText(content);
-		
-		for(int i = endOfContent + 1; i < inputWords.length; i++){
+		else{
+			String content = "";
+			String category = "";
+			String time = "";
+			int endOfContent = 0;
 
-			if(inputWords[i].equals(KEYWORD[0])){
-				task.setPriority(true);
+			for(int i=0; !inputWords[i].equals(KEYWORD[0]) && !inputWords[i].equals(KEYWORD[1]) && 
+					!inputWords[i].equals(KEYWORD[2])  && !inputWords[i].equals(KEYWORD[3]) ; i++){
+				content = content + inputWords[i];
+				endOfContent = i;
 			}
-			if(inputWords[i].equals(KEYWORD[1])){
-				for(int j=i+1; !inputWords[j+1].equals(KEYWORD[0]) && !inputWords[j+1].equals(KEYWORD[2])
-						&&!inputWords[j+1].equals(KEYWORD[3]); j++){
-					category = inputWords[j];
+			task.setText(content);
+
+			for(int i = endOfContent + 1; i < inputWords.length; i++){
+
+				if(inputWords[i].equals(KEYWORD[0])){
+					task.setPriority(true);
 				}
-				task.setCategory(category);
-			}
-			if(inputWords[i].equals(KEYWORD[2]) || inputWords[i].equals(KEYWORD[3])){
-				for(int j=i+1;  !inputWords[j+1].equals(KEYWORD[0]) && !inputWords[j+1].equals(KEYWORD[1]); j++){
-					time = inputWords[j];
+				if(inputWords[i].equals(KEYWORD[1])){
+					for(int j=i+1; !inputWords[j+1].equals(KEYWORD[0]) && !inputWords[j+1].equals(KEYWORD[2])
+							&&!inputWords[j+1].equals(KEYWORD[3]); j++){
+						category = inputWords[j];
+					}
+					task.setCategory(category);
 				}
-                ParserDate parserDate = new ParserDate();
-				Task dateTask = parserDate.getTask(time);
-                if(dateTask instanceof ScheduleTask){
-                	task = (ScheduleTask) task;
-                	dateTask = (ScheduleTask) dateTask;
-                	//task.setFromDate(dateTask.getFromDate());
-                //	task.setToDate(dateTask.getToDate());
-                }
-                if(dateTask instanceof DeadlineTask){
-                	task = (DeadlineTask) task;
-                	dateTask = (DeadlineTask) dateTask;
-                //	task.setFromDate(dateTask.getFromDate());
-                }
+				if(inputWords[i].equals(KEYWORD[2]) || inputWords[i].equals(KEYWORD[3])){
+					for(int j=i+1;  !inputWords[j+1].equals(KEYWORD[0]) && !inputWords[j+1].equals(KEYWORD[1]); j++){
+						time = inputWords[j];
+					}
+					ParserDate parserDate = new ParserDate();
+					Task dateTask = parserDate.getTask(time);
+					if(dateTask instanceof ScheduleTask){
+						task = (ScheduleTask) task;
+						dateTask = (ScheduleTask) dateTask;
+						//task.setFromDate(dateTask.getFromDate());
+						//	task.setToDate(dateTask.getToDate());
+					}
+					if(dateTask instanceof DeadlineTask){
+						task = (DeadlineTask) task;
+						dateTask = (DeadlineTask) dateTask;
+						//	task.setFromDate(dateTask.getFromDate());
+					}
+				}
 			}
 		}
 		return task;
