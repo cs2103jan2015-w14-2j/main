@@ -2,7 +2,7 @@ package itinerary.main;
 
 import com.google.gson.Gson;
 
-// @author A0121409R
+//@author A0121409R
 public class JsonStringTagger {
 
     public static final String STRING_DELIMITER = "<SPLIT>";

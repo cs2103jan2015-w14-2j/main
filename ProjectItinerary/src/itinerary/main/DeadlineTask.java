@@ -2,11 +2,11 @@ package itinerary.main;
 
 import java.util.Calendar;
 
-// @author A0121437N
+//@author A0121437N
 public class DeadlineTask extends Task implements Cloneable {
     private Calendar deadline;
 
-    // @author generated
+    //@author generated
     public DeadlineTask(int lineNumber, String text, String category,
                         boolean isPriority, boolean isComplete,
                         Calendar deadline) {
@@ -22,7 +22,7 @@ public class DeadlineTask extends Task implements Cloneable {
         this.deadline = deadline;
     }
 
-    // @author A0121409R
+    //@author A0121409R
 
     public DeadlineTask clone() {
 

@@ -1,6 +1,6 @@
 package itinerary.main;
 
-// @author A0121437N
+//@author A0121437N
 public class Task implements Cloneable {
     private int lineNumber;
     private String text;
@@ -8,7 +8,7 @@ public class Task implements Cloneable {
     private boolean isPriority;
     private boolean isComplete;
 
-    // @author generated
+    //@author generated
     public Task(int lineNumber, String text, String category,
                 boolean isPriority, boolean isComplete) {
         super();
@@ -71,7 +71,7 @@ public class Task implements Cloneable {
         this.isComplete = isComplete;
     }
 
-    // @author A0121409R
+    //@author A0121409R
 
     public Task clone() {
 

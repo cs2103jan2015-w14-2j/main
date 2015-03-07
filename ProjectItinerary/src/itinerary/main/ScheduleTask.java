@@ -2,12 +2,12 @@ package itinerary.main;
 
 import java.util.Calendar;
 
-// @author A0121437N
+//@author A0121437N
 public class ScheduleTask extends Task implements Cloneable {
     private Calendar fromDate;
     private Calendar toDate;
 
-    // @author generated
+    //@author generated
 
     public ScheduleTask(int lineNumber, String text, String category,
                         boolean isPriority, boolean isComplete,
@@ -33,7 +33,7 @@ public class ScheduleTask extends Task implements Cloneable {
         this.toDate = toDate;
     }
 
-    // @author A0121409R
+    //@author A0121409R
 
     public ScheduleTask clone() {
 
