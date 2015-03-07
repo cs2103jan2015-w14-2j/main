@@ -13,8 +13,6 @@ import java.util.List;
 // @author A0121409R
 public class JsonIOHandler {
 
-    public static final String STRING_DELIMITER = "<SPLIT>";
-
     /**
      * Writes/Appends a given Task object into the given File object in a JSON
      * format. Inserts the lineNumber of each task before the JSON String.
@@ -105,7 +103,7 @@ public class JsonIOHandler {
 
             while ((line = bufferedReader.readLine()) != null) {
 
-                String stringArray[] = line.split(STRING_DELIMITER);
+                String stringArray[] = line.split(JsonStringTagger.STRING_DELIMITER);
 
                 if (toAddTags) {
 
@@ -165,7 +163,7 @@ public class JsonIOHandler {
 
             while ((line = bufferedReader.readLine()) != null) {
 
-                String stringArray[] = line.split(STRING_DELIMITER);
+                String stringArray[] = line.split(JsonStringTagger.STRING_DELIMITER);
 
                 if (toAddTags) {
 

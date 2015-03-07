@@ -47,9 +47,9 @@ public class JsonStringTagger {
 
         Gson gson = new Gson();
         String s =
-                   task.getLineNumber() + JsonIOHandler.STRING_DELIMITER
+                   task.getLineNumber() + JsonStringTagger.STRING_DELIMITER
                            + task.getClass().getSimpleName()
-                           + JsonIOHandler.STRING_DELIMITER + gson.toJson(task);
+                           + JsonStringTagger.STRING_DELIMITER + gson.toJson(task);
 
         return s;
     }
@@ -71,7 +71,7 @@ public class JsonStringTagger {
         Gson gson = new Gson();
 
         String stringArray[] =
-                               taggedJSONString.split(JsonIOHandler.STRING_DELIMITER);
+                               taggedJSONString.split(JsonStringTagger.STRING_DELIMITER);
 
         if (checkStringArray(stringArray)) {
 
@@ -93,5 +93,7 @@ public class JsonStringTagger {
 
         return null;
     }
+
+    public static final String STRING_DELIMITER = "<SPLIT>";
 
 }
