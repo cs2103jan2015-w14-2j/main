@@ -57,7 +57,7 @@ public class Task implements Cloneable {
         
         if (category == null) {
             
-            text = "";
+            category = "";
         }
         
         this.category = category;
