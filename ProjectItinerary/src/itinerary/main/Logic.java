@@ -1,6 +1,9 @@
 package itinerary.main;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.apache.lucene.queryparser.classic.ParseException;
 
 //@author A0121437N
 public class Logic {
@@ -141,7 +144,16 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeSearch(Command command) {
-		// TODO Execute search
+		Search search = new Search(storage.getAllTasks());
+		try {
+	        search.query(command.getTask().getText(),"text");
+        } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        } catch (ParseException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
 		return null;
 	}
 

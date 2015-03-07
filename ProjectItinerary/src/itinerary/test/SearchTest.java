@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+
+
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,8 +55,10 @@ public class SearchTest {
 		try {
 	        testList = search.query("wan pis","text");
         } catch (IOException e) {
+	        // TODO Auto-generated catch block
 	        e.printStackTrace();
         } catch (ParseException e) {
+	        // TODO Auto-generated catch block
 	        e.printStackTrace();
         }
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));

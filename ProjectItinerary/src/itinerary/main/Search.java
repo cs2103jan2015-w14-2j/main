@@ -59,7 +59,6 @@ public class Search {
 		addDocs(w);
 		closeWriter(w);
 		String[] splitQuery = splitQuery(query);
-		//creates a boolean query using wildcardquery and fuzzyquery
 		createQuery(field, q, splitQuery);
 		IndexReader reader = DirectoryReader.open(index);
 		IndexSearcher searcher = new IndexSearcher(reader);
