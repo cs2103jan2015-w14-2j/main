@@ -80,61 +80,11 @@ public class ProtoFileStorage implements Storage {
     }
 
     /**
-     * Deep copies a Task object.
-     * 
-     * @param item
-     *            The Task object to be duplicated.
-     * @return A duplicated Task object
-     */
-    public Task deepCopyTask(Task item) {
-
-        if (item instanceof DeadlineTask) {
-
-            DeadlineTask newItem =
-                                   new DeadlineTask(item.getLineNumber(),
-                                                    item.getText(),
-                                                    item.getCategory(), false,
-                                                    false, null);
-
-            newItem.setComplete(item.isComplete());
-            newItem.setPriority(item.isPriority());
-            newItem.setDeadline(((DeadlineTask) item).getDeadline());
-
-            return newItem;
-        } else if (item instanceof ScheduleTask) {
-
-            ScheduleTask newItem =
-                                   new ScheduleTask(item.getLineNumber(),
-                                                    item.getText(),
-                                                    item.getCategory(), false,
-                                                    false, null, null);
-
-            newItem.setComplete(item.isComplete());
-            newItem.setPriority(item.isPriority());
-            newItem.setFromDate(((ScheduleTask) item).getFromDate());
-            newItem.setToDate(((ScheduleTask) item).getToDate());
-
-            return newItem;
-        } else {
-
-            Task newItem =
-                           new Task(item.getLineNumber(), item.getText(),
-                                    item.getCategory(), false, false);
-
-            newItem.setComplete(item.isComplete());
-            newItem.setPriority(item.isPriority());
-
-            return newItem;
-
-        }
-    }
-
-    /**
      * Duplicates the current state of the list of Tasks held in this instance
      * of FileStorage, not inclusive of the Task objects within it.
      * 
      * @param duplicateTask
-     *            If true, will deep copy task objects as well
+     *            If true, will deep copy task objects as well.
      * @return A duplicated list of Tasks held in this instance of FileStorage.
      */
     public List<Task> duplicateCurrentListTask(boolean duplicateTask) {
@@ -146,7 +96,7 @@ public class ProtoFileStorage implements Storage {
             if (!duplicateTask) {
                 duplicateList.add(item);
             } else {
-                duplicateList.add(deepCopyTask(item));
+                duplicateList.add(item.clone());
             }
         }
 
