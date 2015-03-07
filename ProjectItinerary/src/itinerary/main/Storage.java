@@ -50,4 +50,17 @@ public abstract class Storage {
      * @throws StorageException thrown if any error occurs trying to refill all tasks
      */
     abstract void refillAll(List<Task> tasks) throws StorageException;
+    
+    /**
+     * Called by editTask to overwrite originalTask's non-null variables in details
+     * 
+     * @param originalTask the task object to be edited
+     * @param details the details to be added or replaced
+     * @return a new Task object with updated details
+     */
+    static Task updateTaskDetails (Task originalTask, Task details) {
+    	Task template = originalTask.clone();
+    	// TODO Edit template details
+    	return template;
+    }
 }
