@@ -12,11 +12,11 @@ public class Task implements Cloneable {
     public Task(int lineNumber, String text, String category,
                 boolean isPriority, boolean isComplete) {
         super();
-        this.lineNumber = lineNumber;
-        this.text = text;
-        this.category = category;
-        this.isPriority = isPriority;
-        this.isComplete = isComplete;
+        this.setLineNumber(lineNumber);
+        this.setText(text);
+        this.setCategory(category);
+        this.setPriority(isPriority);
+        this.setComplete(isComplete);
     }
 
     public int getLineNumber() {
@@ -44,10 +44,22 @@ public class Task implements Cloneable {
     }
 
     public void setText(String text) {
+        
+        if (text == null) {
+            
+            text = "";
+        }
+        
         this.text = text;
     }
 
     public void setCategory(String category) {
+        
+        if (category == null) {
+            
+            text = "";
+        }
+        
         this.category = category;
     }
 
