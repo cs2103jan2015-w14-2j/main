@@ -16,6 +16,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
@@ -62,7 +65,7 @@ public class Search {
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		IndexWriter w = new IndexWriter(index, config);
-		
+		BooleanQuery q = new BooleanQuery();
 		for ( String tasks : list  ){
 			obj = parser.parse(tasks).getAsJsonObject();
 			addDoc(w ,obj);
@@ -79,7 +82,10 @@ public class Search {
 		//WildcardQuery wildcard = new WildcardQuery(new Term(field, query));
 		//SpanQuery s = new SpanMultiTermQueryWrapper<WildcardQuery>(wildcard);
 		//SpanFirstQuery q = new SpanFirstQuery(s,5);
-		Query q = getQuery(field, splitQuery);
+		Query wildQ = getWildCardQuery(field, splitQuery);
+		Query fuzzyQ = getFuzzyQuery(field,splitQuery);
+		q.add(fuzzyQ,BooleanClause.Occur.SHOULD);
+		q.add(wildQ,BooleanClause.Occur.SHOULD);
 		//Term term = new Term(field,searchString);
 		//Automaton fuzzy = new LevenshteinAutomata(query, true).toAutomaton(2);
 		//Automaton fuzzyPrefix = Operations.concatenate(Automata.makeAnyString(),fuzzy);
@@ -98,11 +104,20 @@ public class Search {
 		reader.close();
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
-	private Query getQuery(String field, String[] splitQuery) {
+	private Query getWildCardQuery(String field, String[] splitQuery) {
 	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
 	    for (int i = 0; i < splitQuery.length; i++) {
 	        WildcardQuery wildQuery = new WildcardQuery(new Term(field, splitQuery[i]));
 	        queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(wildQuery);
+	    }
+	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
+	    return q;
+    }
+	private Query getFuzzyQuery(String field, String[] splitQuery) {
+	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
+	    for (int i = 0; i < splitQuery.length; i++) {
+	        FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field, splitQuery[i]));
+	        queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(fuzzyQuery);
 	    }
 	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
 	    return q;

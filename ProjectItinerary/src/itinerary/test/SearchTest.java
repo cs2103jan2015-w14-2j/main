@@ -30,7 +30,7 @@ public class SearchTest {
 		task = new ScheduleTask(1, "testtest gjhjy", "testcat",
 				 true,
 				true,fromDate, toDate);
-		task2 = new ScheduleTask(2, "test i want to eat pie", "testcat",
+		task2 = new ScheduleTask(2, "test i want to eat pies", "testcat",
 				 true,
 				true,fromDate, toDate);
 		gson = new Gson();
@@ -51,7 +51,7 @@ public class SearchTest {
 		List<Task> testList = new ArrayList<Task>();
 		Search search = new Search(jsonList);
 		try {
-	        testList = search.query("wan","text");
+	        testList = search.query("wan pis","text");
         } catch (IOException e) {
 	        e.printStackTrace();
         } catch (ParseException e) {
