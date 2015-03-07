@@ -138,7 +138,6 @@ public class ProtoFileStorage extends Storage {
 
     	int taskIndex = task.getTaskId() - 1;
     	if (isInvalidIndex(taskIndex)) {
-    		// TODO Extract error message as constant
     		throw new StorageException(ERROR_EDIT_TASK_ID);
     	}
     	
@@ -165,7 +164,6 @@ public class ProtoFileStorage extends Storage {
     public void deleteTask(Task task) throws StorageException {
     	int taskIndex = task.getTaskId() - 1;
     	if (isInvalidIndex(taskIndex)) {
-    		// TODO Extract error message as constant
     		throw new StorageException(ERROR_DELETE_TASK_ID);
     	}
     	

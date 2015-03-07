@@ -1,9 +1,11 @@
 package itinerary.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
 import itinerary.main.*;
 
 //@author A0121409R
@@ -31,7 +33,7 @@ public class JsonIOHandlerDemo {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Task task1 = new Task(1, "ExampleText1", "ExampleCategory1", true, true);
         Task task2 =
