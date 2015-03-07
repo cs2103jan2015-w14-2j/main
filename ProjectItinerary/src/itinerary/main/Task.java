@@ -58,21 +58,16 @@ public class Task implements Cloneable {
     public void setComplete(boolean isComplete) {
         this.isComplete = isComplete;
     }
-    
-    //@author A0121409R
 
-    public Task clone(Task toClone) {
+    // @author A0121409R
+
+    public Task clone() {
 
         // Note the String objects might not be deep copied.
 
-        if (toClone == null) {
-
-            return null;
-        }
-
-        return new Task(toClone.getLineNumber(), toClone.getText(),
-                        toClone.getCategory(), toClone.isPriority(),
-                        toClone.isComplete());
+        return new Task(this.getLineNumber(), this.getText(),
+                        this.getCategory(), this.isPriority(),
+                        this.isComplete());
     }
 
     public boolean equals(Task toCheck) {

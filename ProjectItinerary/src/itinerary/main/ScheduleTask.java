@@ -33,21 +33,16 @@ public class ScheduleTask extends Task implements Cloneable {
         this.toDate = toDate;
     }
 
-    //@author A0121409R
-    
-    public ScheduleTask clone(ScheduleTask toClone) {
+    // @author A0121409R
+
+    public ScheduleTask clone() {
 
         // Note the String objects might not be deep copied.
 
-        if (toClone == null) {
-
-            return null;
-        }
-
-        return new ScheduleTask(toClone.getLineNumber(), toClone.getText(),
-                                toClone.getCategory(), toClone.isPriority(),
-                                toClone.isComplete(), toClone.getFromDate(),
-                                toClone.getToDate());
+        return new ScheduleTask(this.getLineNumber(), this.getText(),
+                                this.getCategory(), this.isPriority(),
+                                this.isComplete(), this.getFromDate(),
+                                this.getToDate());
     }
 
     public boolean equals(ScheduleTask toCheck) {
@@ -81,14 +76,14 @@ public class ScheduleTask extends Task implements Cloneable {
 
             return false;
         }
-        
+
         if (!toCheck.fromDate.equals(this.fromDate)) {
-            
+
             return false;
         }
-        
+
         if (!toCheck.toDate.equals(this.toDate)) {
-            
+
             return false;
         }
 

@@ -2,39 +2,35 @@ package itinerary.main;
 
 import java.util.Calendar;
 
-//@author A0121437N
-public class DeadlineTask extends Task implements Cloneable{
-	private Calendar deadline;
+// @author A0121437N
+public class DeadlineTask extends Task implements Cloneable {
+    private Calendar deadline;
 
-	//@author generated
-	public DeadlineTask(int lineNumber, String text, String category,
-			boolean isPriority, boolean isComplete, Calendar deadline) {
-		super(lineNumber, text, category, isPriority, isComplete);
-		this.deadline = deadline;
-	}
+    // @author generated
+    public DeadlineTask(int lineNumber, String text, String category,
+                        boolean isPriority, boolean isComplete,
+                        Calendar deadline) {
+        super(lineNumber, text, category, isPriority, isComplete);
+        this.deadline = deadline;
+    }
 
-	public Calendar getDeadline() {
-		return deadline;
-	}
+    public Calendar getDeadline() {
+        return deadline;
+    }
 
-	public void setDeadline(Calendar deadline) {
-		this.deadline = deadline;
-	}
-	
-    //@author A0121409R
-    
-    public DeadlineTask clone(DeadlineTask toClone) {
+    public void setDeadline(Calendar deadline) {
+        this.deadline = deadline;
+    }
+
+    // @author A0121409R
+
+    public DeadlineTask clone() {
 
         // Note the String objects might not be deep copied.
 
-        if (toClone == null) {
-
-            return null;
-        }
-
-        return new DeadlineTask(toClone.getLineNumber(), toClone.getText(),
-                                toClone.getCategory(), toClone.isPriority(),
-                                toClone.isComplete(), toClone.getDeadline());
+        return new DeadlineTask(this.getLineNumber(), this.getText(),
+                                this.getCategory(), this.isPriority(),
+                                this.isComplete(), this.getDeadline());
     }
 
     public boolean equals(DeadlineTask toCheck) {
@@ -70,7 +66,7 @@ public class DeadlineTask extends Task implements Cloneable{
         }
 
         if (toCheck.deadline != this.deadline) {
-            
+
             return false;
         }
 
