@@ -32,6 +32,7 @@ public class ParserTest {
 		assertTrue(expectedTaskOne.equals(createdTaskOne));
 	}
 	
+	@Test
 	public void testHasDuplicatedKeywords() {
 		String inputOne = "add do homework pri catagory study";
 		String[] inputWordsOne = parser.stringToArray(inputOne);
@@ -45,5 +46,15 @@ public class ParserTest {
 		String[] inputWordsThree = parser.stringToArray(inputThree);
 		assertEquals(true, parser.hasDuplicatedKeywords(inputWordsThree));
 	}
+	
+	@Test
+	public void testExtractContent(){
+		String inputOne = "add go to sleep pri";
+		Task expectedTaskOne = new Task(-1, "go to sleep", "", true, false);
+		Task taskOne = parser.extractContent(inputOne,1);
+		assertTrue(expectedTaskOne.equals(taskOne));
+		
+	}
+	
 	
 }

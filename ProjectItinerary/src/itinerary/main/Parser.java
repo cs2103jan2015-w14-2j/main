@@ -125,7 +125,7 @@ public class Parser {
 	}
 
 	//KEYWORD = {"pri",  "ca", "by", "ti"}
-	public Task extractContent(String input){	
+	public Task extractContent(String input, int startIndex){	
 		Task task = defaultTask();
 		String[] inputWords = stringToArray(input);
 		if(hasDuplicatedKeywords(inputWords)){
@@ -138,7 +138,7 @@ public class Parser {
 			String time = "";
 			int endOfContent = 0;
 
-			for(int i=0; !inputWords[i].equals(KEYWORD[0]) && !inputWords[i].equals(KEYWORD[1]) && 
+			for(int i=startIndex; !inputWords[i].equals(KEYWORD[0]) && !inputWords[i].equals(KEYWORD[1]) && 
 					!inputWords[i].equals(KEYWORD[2])  && !inputWords[i].equals(KEYWORD[3]) ; i++){
 				content = content + inputWords[i];
 				endOfContent = i;
@@ -227,8 +227,8 @@ public class Parser {
 
 	public Task addTask(String input){
 		String description = input.substring(4, input.length());
-		//String content = extractContent(description);
 		return new Task(-1, description, null, false, false);
+		//return extractContent(description);
 	}
 
 	public Task deleteTask(String input){
@@ -268,6 +268,7 @@ public class Parser {
 			task.setPriority(true);
 			task.setComplete(true);
 			return task;
+		//return extractContent(input);
 		}
 	}
 
