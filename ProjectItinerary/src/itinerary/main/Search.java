@@ -1,12 +1,7 @@
 package itinerary.main;
-import org.apache.lucene.util.automaton.Automata;
-import org.apache.lucene.util.automaton.Automaton;
-import org.apache.lucene.util.automaton.LevenshteinAutomata;
-import org.apache.lucene.util.automaton.Operations;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -14,19 +9,14 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.complexPhrase.ComplexPhraseQueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.search.AutomatonQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.search.spans.SpanFirstQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -66,44 +56,49 @@ public class Search {
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		IndexWriter w = new IndexWriter(index, config);
 		BooleanQuery q = new BooleanQuery();
-		for ( String tasks : list  ){
-			obj = parser.parse(tasks).getAsJsonObject();
-			addDoc(w ,obj);
-		}
-		
-		w.close();
-		String[] splitQuery = query.split(" ");
-		for(int i=0;i<splitQuery.length;i++){
-			splitQuery[i] = splitQuery[i]+"*";
-		}
-		//create the queryparser, field is the key, query is the value to be searched.
-		//Query q = new QueryParser(field, analyzer).parse(query);
-		
-		//WildcardQuery wildcard = new WildcardQuery(new Term(field, query));
-		//SpanQuery s = new SpanMultiTermQueryWrapper<WildcardQuery>(wildcard);
-		//SpanFirstQuery q = new SpanFirstQuery(s,5);
-		Query wildQ = getWildCardQuery(field, splitQuery);
-		Query fuzzyQ = getFuzzyQuery(field,splitQuery);
-		q.add(fuzzyQ,BooleanClause.Occur.SHOULD);
-		q.add(wildQ,BooleanClause.Occur.SHOULD);
-		//Term term = new Term(field,searchString);
-		//Automaton fuzzy = new LevenshteinAutomata(query, true).toAutomaton(2);
-		//Automaton fuzzyPrefix = Operations.concatenate(Automata.makeAnyString(),fuzzy);
-		//AutomatonQuery q = new AutomatonQuery(term, fuzzyPrefix);
-
-		int numHits = 10;
+		addDocs(w);
+		closeWriter(w);
+		String[] splitQuery = splitQuery(query);
+		//creates a boolean query using wildcardquery and fuzzyquery
+		createQuery(field, q, splitQuery);
 		IndexReader reader = DirectoryReader.open(index);
 		IndexSearcher searcher = new IndexSearcher(reader);
-		//creates the collector, num hits is the max number of hits that it returns
-		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
-		searcher.search(q, collector);
-		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		//add to the hitList
+		ScoreDoc[] hits = searchQuery(q, searcher);
 		addToHitList(hitList, searcher, hits);
 		displayHits(searcher, hits);
 		reader.close();
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
+	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
+            throws IOException {
+	    int numHits = 10;
+		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
+		searcher.search(q, collector);
+		ScoreDoc[] hits = collector.topDocs().scoreDocs;
+	    return hits;
+    }
+	private void closeWriter(IndexWriter w) throws IOException {
+	    w.close();
+    }
+	private void addDocs(IndexWriter w) throws IOException {
+	    for ( String tasks : list  ){
+			obj = parser.parse(tasks).getAsJsonObject();
+			addDoc(w ,obj);
+		}
+    }
+	private String[] splitQuery(String query) {
+	    String[] splitQuery = query.split(" ");
+		for(int i=0;i<splitQuery.length;i++){
+			splitQuery[i] = splitQuery[i]+"*";
+		}
+	    return splitQuery;
+    }
+	private void createQuery(String field, BooleanQuery q, String[] splitQuery) {
+	    Query wildQ = getWildCardQuery(field, splitQuery);
+		Query fuzzyQ = getFuzzyQuery(field,splitQuery);
+		q.add(fuzzyQ,BooleanClause.Occur.SHOULD);
+		q.add(wildQ,BooleanClause.Occur.SHOULD);
+    }
 	private Query getWildCardQuery(String field, String[] splitQuery) {
 	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
 	    for (int i = 0; i < splitQuery.length; i++) {

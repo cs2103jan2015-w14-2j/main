@@ -57,7 +57,7 @@ public class SearchTest {
         } catch (ParseException e) {
 	        e.printStackTrace();
         }
-		assertEquals("test query",gson.toJson(task),gson.toJson(testList.get(0)));
+		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 	}
 	
 }
