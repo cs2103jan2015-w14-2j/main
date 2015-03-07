@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 // @author A0121409R
 public class JsonStringTagger {
 
+    public static final String STRING_DELIMITER = "<SPLIT>";
+
     /**
      * Given a String array object, this method checks if the array is suitable
      * for use in the methods below.
@@ -38,7 +40,8 @@ public class JsonStringTagger {
      *            The Task object to be converted into a String object.
      * @return The String version of the Task Object.
      */
-    public static String convertTasktoTaggedJsonString(Task task) throws NullPointerException {
+    public static String convertTasktoTaggedJsonString(Task task)
+                                                                 throws NullPointerException {
 
         if (task == null) {
 
@@ -49,14 +52,16 @@ public class JsonStringTagger {
         String s =
                    task.getLineNumber() + JsonStringTagger.STRING_DELIMITER
                            + task.getClass().getSimpleName()
-                           + JsonStringTagger.STRING_DELIMITER + gson.toJson(task);
+                           + JsonStringTagger.STRING_DELIMITER
+                           + gson.toJson(task);
 
         return s;
     }
 
     /**
-     * Given a tagged JSON String object made from the stringFormatter() method
-     * it will convert it to the corresponding Task object.
+     * Given a tagged JSON String object made from the
+     * convertTasktoTaggedJsonString() method it will convert it to the
+     * corresponding Task object.
      * 
      * @param taggedJSONString
      *            A String object that has an additional tag in front of the
@@ -93,7 +98,5 @@ public class JsonStringTagger {
 
         return null;
     }
-
-    public static final String STRING_DELIMITER = "<SPLIT>";
 
 }
