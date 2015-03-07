@@ -113,14 +113,20 @@ public class TextUI {
 			try {
 				Runtime.getRuntime().exec("cls");
 			} catch (IOException e) {
-				System.out.println("an error occurred when trying to clear console");
+				printEnters();
 			}
 		} else {
 			try {
 				Runtime.getRuntime().exec("clear");
 			} catch (IOException e) {
-				System.out.println("an error occurred when trying to clear console");
+				printEnters();
 			}
+		}
+	}
+
+	private static void printEnters() {
+		for (int i = 0; i < 20; i++) {
+			System.out.println();
 		}
 	}
 }
