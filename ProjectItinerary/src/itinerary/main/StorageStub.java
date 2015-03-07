@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 //@author A0121409R
-public class StorageStub implements Storage {
+public class StorageStub extends Storage {
     private static final String ERROR_INVALID_ID = "Invalid Task ID!";
 	private String fileName;
     private List<Task> tasks;

@@ -21,7 +21,7 @@ import java.util.List;
  * <ul>
  * <p>
  */
-public class ProtoFileStorage implements Storage {
+public class ProtoFileStorage extends Storage {
 
     private File currFile;
     private List<Task> listTask;

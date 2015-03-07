@@ -3,7 +3,7 @@ package itinerary.main;
 import java.util.List;
 
 //@author A0121409R
-public interface Storage {
+public abstract class Storage {
 
     /**
      * Call this to add a task to the file.
@@ -11,7 +11,7 @@ public interface Storage {
      * @param task the task to be added
      * @throws StorageException thrown if any error occurs trying to add task
      */
-    void addTask(Task task) throws StorageException;
+    abstract void addTask(Task task) throws StorageException;
 
     /**
      * Call this to edit a task in the file.
@@ -19,7 +19,7 @@ public interface Storage {
      * @param task the taskId to be edited with the details to be modified
      * @throws StorageException thrown if any error occurs trying to edit task
      */
-    void editTask(Task task) throws StorageException;
+    abstract void editTask(Task task) throws StorageException;
 
     /**
      * Call this to delete a line in the file.
@@ -27,21 +27,21 @@ public interface Storage {
      * @param task the taskId to be deleted
      * @throws StorageException thrown if any error occurs trying to delete task
      */
-    void deleteTask(Task task) throws StorageException;
+    abstract void deleteTask(Task task) throws StorageException;
 
     /**
      * Call this to get all current content in the file.
      * 
      * @return A List<Task> object containing all tasks.
      */
-    List<Task> getAllTasks();
+    abstract List<Task> getAllTasks();
 
     /**
      * Call this to delete everything from the file.
      * 
      * @throws StorageException thrown if any error occurs trying to clear all tasks
      */
-    void clearAll() throws StorageException;
+    abstract void clearAll() throws StorageException;
 
     /**
      * Call this to undo replace all the tasks in file with the tasks in tasks.
@@ -49,5 +49,5 @@ public interface Storage {
      * @param tasks A List<Task> object containing all the tasks to be refilled
      * @throws StorageException thrown if any error occurs trying to refill all tasks
      */
-    void refillAll(List<Task> tasks) throws StorageException;
+    abstract void refillAll(List<Task> tasks) throws StorageException;
 }
