@@ -108,7 +108,7 @@ public class Parser {
 			Integer.parseInt(index); 
 		} catch(NumberFormatException e) { 
 			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
-			 return new Task (-1, null, null, false, false);
+			 return new Task (-1, "", "", false, false);
 		}
 		
 		try{
@@ -118,7 +118,7 @@ public class Parser {
 			}
 		}catch(Exception e){
 			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
-			return new Task (-1, null, null, false, false);
+			return new Task (-1, "", "", false, false);
 	    }
 		return new Task (Integer.parseInt(index), null, null, false, false);
 	}
@@ -161,10 +161,9 @@ public class Parser {
 
 	public Task editTask(String input){
 		String[] words = stringToArray(input);
-		String newDescription = "";
-		for(int i=2; i<words.length; i++){
-			newDescription = newDescription + words[i] + " ";
-		}
+		String newDescription = "xx";
+		newDescription = input.substring(input.indexOf(" ")+1);
+		newDescription = newDescription.substring(newDescription.indexOf(" ")+1);
 		
 		Task task = targetTask(words);
 		task.setText(newDescription);
