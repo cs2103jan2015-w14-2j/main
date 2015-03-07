@@ -2,25 +2,25 @@ package itinerary.main;
 
 //@author A0121437N
 public class Task implements Cloneable {
-    private int lineNumber;
+    private int taskId;
     private String text;
     private String category;
     private boolean isPriority;
     private boolean isComplete;
 
     //@author generated
-    public Task(int lineNumber, String text, String category,
+    public Task(int taskId, String text, String category,
                 boolean isPriority, boolean isComplete) {
         super();
-        this.setLineNumber(lineNumber);
+        this.setTaskId(taskId);
         this.setText(text);
         this.setCategory(category);
         this.setPriority(isPriority);
         this.setComplete(isComplete);
     }
 
-    public int getLineNumber() {
-        return lineNumber;
+    public int getTaskId() {
+        return taskId;
     }
 
     public String getText() {
@@ -39,27 +39,15 @@ public class Task implements Cloneable {
         return isComplete;
     }
 
-    public void setLineNumber(int lineNumber) {
-        this.lineNumber = lineNumber;
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
     }
 
-    public void setText(String text) {
-        
-        if (text == null) {
-            
-            text = "";
-        }
-        
+    public void setText(String text) {        
         this.text = text;
     }
 
     public void setCategory(String category) {
-        
-        if (category == null) {
-            
-            category = "";
-        }
-        
         this.category = category;
     }
 
@@ -70,47 +58,56 @@ public class Task implements Cloneable {
     public void setComplete(boolean isComplete) {
         this.isComplete = isComplete;
     }
+    
+    //@author A0121437N
+    public void updateDetails (Task details) {
+    	if (details.getText() != null) {
+    		this.setText(details.getText());
+    	}
+    	
+    	if (details.getCategory() != null) {
+    		this.setCategory(details.getCategory());
+    	}
+    	
+    	if (details.isComplete() != this.isComplete()) {
+    		this.setComplete(details.isComplete());
+    	}
+    	
+    	if (details.isPriority() != this.isPriority()) {
+    		this.setPriority(details.isPriority());
+    	}
+    }
 
     //@author A0121409R
-
     public Task clone() {
-
         // Note the String objects might not be deep copied.
-
-        return new Task(this.getLineNumber(), this.getText(),
+        return new Task(this.getTaskId(), this.getText(),
                         this.getCategory(), this.isPriority(),
                         this.isComplete());
     }
 
-    public boolean equals(Task toCheck) {
-
-        if (toCheck == null) {
-
+    public boolean equals(Task task) {
+        if (task == null) {
             return false;
         }
 
-        if (toCheck.getLineNumber() != this.lineNumber) {
-
+        if (task.getTaskId() != this.taskId) {
             return false;
         }
 
-        if (!toCheck.getText().equals(this.text)) {
-
+        if (!task.getText().equals(this.text)) {
             return false;
         }
 
-        if (!toCheck.getCategory().equals(this.category)) {
-
+        if (!task.getCategory().equals(this.category)) {
             return false;
         }
 
-        if (toCheck.isPriority() != this.isPriority) {
-
+        if (task.isPriority() != this.isPriority) {
             return false;
         }
 
-        if (toCheck.isComplete() != this.isComplete) {
-
+        if (task.isComplete() != this.isComplete) {
             return false;
         }
 
