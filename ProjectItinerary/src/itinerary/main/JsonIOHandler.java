@@ -10,101 +10,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.Gson;
-
 // @author A0121409R
 public class JsonIOHandler {
 
     public static final String STRING_DELIMITER = "<SPLIT>";
-
-    /**
-     * Given a String array object, this method checks if the array is suitable
-     * for use in the methods below.
-     * 
-     * @param stringArray
-     *            The String array to be checked.
-     * @return A boolean indicating if the array can be used in the methods
-     *         below.
-     */
-    public static boolean checkStringArray(String stringArray[]) {
-
-        if (stringArray == null) {
-
-            return false;
-        }
-
-        if (stringArray.length <= 2) {
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Given a Task object, this converts it into a String object containing the
-     * lineNumber of the Task object, the type of Task object and it's JSON
-     * String representation.
-     * 
-     * @param task
-     *            The Task object to be converted into a String object.
-     * @return The String version of the Task Object.
-     */
-    public static String stringFormatter(Task task) throws NullPointerException {
-
-        if (task == null) {
-
-            throw new NullPointerException();
-        }
-
-        Gson gson = new Gson();
-        String s =
-                   task.getLineNumber() + STRING_DELIMITER
-                           + task.getClass().getSimpleName() + STRING_DELIMITER
-                           + gson.toJson(task);
-
-        return s;
-    }
-
-    /**
-     * Given a tagged JSON String object made from the stringFormatter() method
-     * in JsonIOHandler.java it will convert it to the corresponding Task
-     * object.
-     * 
-     * @param taggedJSONString
-     *            A String object that has an additional tag in front of the
-     *            JSON String stating what type of Task the JSON String part
-     *            represents.
-     * @return The corresponding Task object that formattedJSONString
-     *         represents. If taggedJSONString is in the wrong format, method
-     *         will return null.
-     */
-    public static Task convertTaggedJsonString(String taggedJSONString) {
-
-        Gson gson = new Gson();
-
-        String stringArray[] = taggedJSONString.split(STRING_DELIMITER);
-
-        if (checkStringArray(stringArray)) {
-
-            if (stringArray[1].equals(ScheduleTask.class.getSimpleName())) {
-
-                return gson.fromJson(stringArray[2], ScheduleTask.class);
-
-            } else if (stringArray[1].equals(DeadlineTask.class.getSimpleName())) {
-
-                return gson.fromJson(stringArray[2], DeadlineTask.class);
-
-            } else {
-
-                // Default Task Object
-                return gson.fromJson(stringArray[2], Task.class);
-
-            }
-        }
-
-        return null;
-    }
 
     /**
      * Writes/Appends a given Task object into the given File object in a JSON
@@ -127,7 +36,7 @@ public class JsonIOHandler {
                                                            !willOverwrite);
 
             if (task != null) {
-                String taskString = stringFormatter(task);
+                String taskString = JsonStringTagger.convertTasktoTaggedJsonString(task);
                 writer.write(taskString.getBytes());
                 writer.write(System.getProperty("line.separator").getBytes());
             }
@@ -200,7 +109,7 @@ public class JsonIOHandler {
 
                 if (toAddTags) {
 
-                    if (checkStringArray(stringArray)) {
+                    if (JsonStringTagger.checkStringArray(stringArray)) {
 
                         sb.append(stringArray[0] + " ");
                         sb.append(stringArray[1] + " ");
@@ -260,7 +169,7 @@ public class JsonIOHandler {
 
                 if (toAddTags) {
 
-                    if (checkStringArray(stringArray)) {
+                    if (JsonStringTagger.checkStringArray(stringArray)) {
 
                         sb.append(stringArray[0] + " ");
                         sb.append(stringArray[1] + " ");
@@ -311,7 +220,7 @@ public class JsonIOHandler {
 
             while ((line = bufferedReader.readLine()) != null) {
 
-                taskList.add(convertTaggedJsonString(line));
+                taskList.add(JsonStringTagger.convertTaggedJsonStringtoTask(line));
             }
 
             bufferedReader.close();

@@ -279,14 +279,14 @@ public class ProtoFileStorage implements Storage {
 
     private boolean isSameTask(Command command) {
 
-        if (!JsonIOHandler.stringFormatter(command.getTask())
-                          .equals(JsonIOHandler.stringFormatter(listTask.get(command.getTask()
+        if (!JsonStringTagger.convertTasktoTaggedJsonString(command.getTask())
+                          .equals(JsonStringTagger.convertTasktoTaggedJsonString(listTask.get(command.getTask()
                                                                                     .getLineNumber() - 1)))) {
 
             System.out.println("Task given and Task in " + this.personalID
                                + " do not match.");
-            System.out.println(JsonIOHandler.stringFormatter(command.getTask()));
-            System.out.println(JsonIOHandler.stringFormatter(listTask.get(command.getTask()
+            System.out.println(JsonStringTagger.convertTasktoTaggedJsonString(command.getTask()));
+            System.out.println(JsonStringTagger.convertTasktoTaggedJsonString(listTask.get(command.getTask()
                                                                                  .getLineNumber() - 1)));
             return false;
         }

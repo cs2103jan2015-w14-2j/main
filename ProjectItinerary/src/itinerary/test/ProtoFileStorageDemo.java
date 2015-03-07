@@ -132,7 +132,7 @@ public class ProtoFileStorageDemo {
 
         for (Task item : listTask) {
 
-            System.out.println(JsonIOHandler.stringFormatter(item));
+            System.out.println(JsonStringTagger.convertTasktoTaggedJsonString(item));
         }
     }
 }
