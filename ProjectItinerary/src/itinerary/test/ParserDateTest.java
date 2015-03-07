@@ -60,11 +60,11 @@ public class ParserDateTest {
 		Task taskOne = parserDate.determineTaskType(deadlineDate);
 		Task taskTwo = parserDate.determineTaskType(scheduleDates);
 
-		DeadlineTask expectedTaskOne = new DeadlineTask (-1, null, null, false,false, parserDate.convertToCalendar(dateOne));
-		ScheduleTask expectedTaskTwo = new ScheduleTask (-1, null, null, false,false, parserDate.convertToCalendar(dateOne),
-				parserDate.convertToCalendar(dateTwo));
-		assertEquals(expectedTaskOne, taskOne);
-		assertEquals(expectedTaskTwo, taskTwo);
+		DeadlineTask expectedTaskOne = new DeadlineTask (-1, "", "", false,false, parserDate.convertToCalendar(dateOne));
+		ScheduleTask expectedTaskTwo = new ScheduleTask (-1, "", "", false,false, parserDate.convertToCalendar(dateOne),
+				                                                                                  parserDate.convertToCalendar(dateTwo));
+		assertTrue(expectedTaskOne.equals(taskOne));
+		assertTrue(expectedTaskTwo.equals(taskTwo));
 	}
 
 	public void testGetTask() {
@@ -74,15 +74,15 @@ public class ParserDateTest {
         @SuppressWarnings("deprecation")
 		Date dateOne = new Date(115, 2, 5, 18, 50);
         Task taskOne = parserDate.getTask(inputTimeOne);
-        DeadlineTask expectedTaskOne = new DeadlineTask (-1, null, null, false,false, parserDate.convertToCalendar(dateOne));
+        DeadlineTask expectedTaskOne = new DeadlineTask (-1, "", "", false,false, parserDate.convertToCalendar(dateOne));
         assertEquals(expectedTaskOne, taskOne);
 
 		@SuppressWarnings("deprecation")
 		Date dateTwo = new Date(115, 2, 6, 19, 50);
 		Task taskTwo = parserDate.getTask(inputTimeTwo);
-		 ScheduleTask expectedTaskTwo = new ScheduleTask (-1, null, null, false,false, parserDate.convertToCalendar(dateOne),
+		 ScheduleTask expectedTaskTwo = new ScheduleTask (-1, "", "", false,false, parserDate.convertToCalendar(dateOne),
                                                                                                     parserDate.convertToCalendar(dateTwo));
-		assertEquals(expectedTaskTwo, taskTwo);
+		assertTrue(expectedTaskTwo.equals(taskTwo));
 	}
 }
 
