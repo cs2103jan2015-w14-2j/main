@@ -60,28 +60,8 @@ public class ScheduleTask extends Task implements Cloneable {
     }
 
     public boolean equals(ScheduleTask scheduleTask) {
-        if (scheduleTask == null) {
-            return false;
-        }
-
-        if (scheduleTask.getLineNumber() != this.getLineNumber()) {
-            return false;
-        }
-
-        if (!scheduleTask.getText().equals(this.getText())) {
-            return false;
-        }
-
-        if (!scheduleTask.getCategory().equals(this.getCategory())) {
-            return false;
-        }
-
-        if (scheduleTask.isPriority() != this.isPriority()) {
-            return false;
-        }
-
-        if (scheduleTask.isComplete() != this.isComplete()) {
-            return false;
+        if (!super.equals(scheduleTask)) {
+        	return false;
         }
 
         if (!scheduleTask.fromDate.equals(this.fromDate)) {

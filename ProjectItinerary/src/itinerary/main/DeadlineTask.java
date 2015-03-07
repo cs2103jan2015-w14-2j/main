@@ -44,28 +44,8 @@ public class DeadlineTask extends Task implements Cloneable {
     }
 
 	public boolean equals(DeadlineTask deadlineTask) {
-        if (deadlineTask == null) {
-            return false;
-        }
-
-        if (deadlineTask.getLineNumber() != this.getLineNumber()) {
-            return false;
-        }
-
-        if (!deadlineTask.getText().equals(this.getText())) {
-            return false;
-        }
-
-        if (!deadlineTask.getCategory().equals(this.getCategory())) {
-            return false;
-        }
-
-        if (deadlineTask.isPriority() != this.isPriority()) {
-            return false;
-        }
-
-        if (deadlineTask.isComplete() != this.isComplete()) {
-            return false;
+        if (!super.equals(deadlineTask)) {
+        	return false;
         }
 
         if (!deadlineTask.deadline.equals(this.deadline)) {
