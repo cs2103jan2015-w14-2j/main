@@ -43,23 +43,11 @@ public class Task implements Cloneable {
         this.lineNumber = lineNumber;
     }
 
-    public void setText(String text) {
-        
-        if (text == null) {
-            
-            text = "";
-        }
-        
+    public void setText(String text) {        
         this.text = text;
     }
 
     public void setCategory(String category) {
-        
-        if (category == null) {
-            
-            category = "";
-        }
-        
         this.category = category;
     }
 
