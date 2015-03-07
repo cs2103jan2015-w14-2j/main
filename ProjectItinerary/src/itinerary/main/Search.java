@@ -8,7 +8,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.FuzzyQuery;
@@ -40,6 +39,7 @@ public class Search {
 	private static JsonObject obj;
 	private static List<String> typeList;
 	ArrayList<String> hitTypeList;
+	private static final String ERROR_IO = "Error attempting to search.";
 
 	public <T extends Task> Search(List<T> taskList){
 		list = JsonConverter.convertTaskList(taskList);
@@ -47,25 +47,29 @@ public class Search {
 		typeList = JsonConverter.getTypeList(taskList);
 	}
 	//this function takes in the query and the field that it is supposed to check. Fields are those found in Task and its subclasses.
-	public <T extends Task> List<T> query(String query,String field) throws IOException, ParseException {
+	public <T extends Task> List<T> query(String query,String field) throws SearchException {
 		// The same analyzer should be used for indexing and searching
 		StandardAnalyzer analyzer = new StandardAnalyzer();
 		ArrayList<String> hitList = new ArrayList<String>();
 		// 1. create the index
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
-		IndexWriter w = new IndexWriter(index, config);
-		BooleanQuery q = new BooleanQuery();
-		addDocs(w);
-		closeWriter(w);
-		String[] splitQuery = splitQuery(query);
-		createQuery(field, q, splitQuery);
-		IndexReader reader = DirectoryReader.open(index);
-		IndexSearcher searcher = new IndexSearcher(reader);
-		ScoreDoc[] hits = searchQuery(q, searcher);
-		addToHitList(hitList, searcher, hits);
-		displayHits(searcher, hits);
-		reader.close();
+		try {
+			IndexWriter w = new IndexWriter(index, config);
+			BooleanQuery q = new BooleanQuery();
+			addDocs(w);
+			closeWriter(w);
+			String[] splitQuery = splitQuery(query);
+			createQuery(field, q, splitQuery);
+			IndexReader reader = DirectoryReader.open(index);
+			IndexSearcher searcher = new IndexSearcher(reader);
+			ScoreDoc[] hits = searchQuery(q, searcher);
+			addToHitList(hitList, searcher, hits);
+			displayHits(searcher, hits);
+			reader.close();
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
 	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)

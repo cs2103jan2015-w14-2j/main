@@ -10,6 +10,7 @@ import java.util.List;
 
 
 
+
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,15 +53,14 @@ public class SearchTest {
 	public void testQuery() {
 		List<Task> testList = new ArrayList<Task>();
 		Search search = new Search(jsonList);
-		try {
+		
+	    try {
 	        testList = search.query("wan pis","text");
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (SearchException e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
         }
+		
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 	}
 	

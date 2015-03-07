@@ -1,9 +1,8 @@
 package itinerary.main;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 
 //@author A0121437N
 public class Logic {
@@ -20,6 +19,8 @@ public class Logic {
 	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
 	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
+	private static final String MESSAGE_SEARCH_ERROR = "search error";
+	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
 	
 	private String fileName;
 	private Parser parser;
@@ -145,16 +146,14 @@ public class Logic {
 
 	private UserInterfaceContent executeSearch(Command command) {
 		Search search = new Search(storage.getAllTasks());
-		try {
-	        search.query(command.getTask().getText(),"text");
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (ParseException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
-		return null;
+		List<Task> searchList= new ArrayList<Task>();
+	        try {
+	            searchList = search.query(command.getTask().getText(),"text");
+            } catch (SearchException e) {
+    			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
+            }
+       
+		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList);
 	}
 
 	private UserInterfaceContent executeUndo() {
