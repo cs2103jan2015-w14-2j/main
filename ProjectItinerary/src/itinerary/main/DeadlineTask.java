@@ -21,52 +21,54 @@ public class DeadlineTask extends Task implements Cloneable {
     public void setDeadline(Calendar deadline) {
         this.deadline = deadline;
     }
+    
+    //@author A0121437N
+    @Override
+	public void updateDetails(Task details) {
+		super.updateDetails(details);
+		if (details instanceof DeadlineTask) {
+			DeadlineTask deadlineDetails = (DeadlineTask) details;
+			if (deadlineDetails.getDeadline() != null) {
+				this.setDeadline(deadlineDetails.getDeadline());
+			}
+		}
+	}
+    
 
     //@author A0121409R
-
     public DeadlineTask clone() {
-
         // Note the String objects might not be deep copied.
-
         return new DeadlineTask(this.getLineNumber(), this.getText(),
                                 this.getCategory(), this.isPriority(),
                                 this.isComplete(), this.getDeadline());
     }
 
-    public boolean equals(DeadlineTask toCheck) {
-
-        if (toCheck == null) {
-
+	public boolean equals(DeadlineTask deadlineTask) {
+        if (deadlineTask == null) {
             return false;
         }
 
-        if (toCheck.getLineNumber() != this.getLineNumber()) {
-
+        if (deadlineTask.getLineNumber() != this.getLineNumber()) {
             return false;
         }
 
-        if (!toCheck.getText().equals(this.getText())) {
-
+        if (!deadlineTask.getText().equals(this.getText())) {
             return false;
         }
 
-        if (!toCheck.getCategory().equals(this.getCategory())) {
-
+        if (!deadlineTask.getCategory().equals(this.getCategory())) {
             return false;
         }
 
-        if (toCheck.isPriority() != this.isPriority()) {
-
+        if (deadlineTask.isPriority() != this.isPriority()) {
             return false;
         }
 
-        if (toCheck.isComplete() != this.isComplete()) {
-
+        if (deadlineTask.isComplete() != this.isComplete()) {
             return false;
         }
 
-        if (!toCheck.deadline.equals(this.deadline)) {
-
+        if (!deadlineTask.deadline.equals(this.deadline)) {
             return false;
         }
 

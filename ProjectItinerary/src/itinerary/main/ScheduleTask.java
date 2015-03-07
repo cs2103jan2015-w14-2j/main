@@ -33,57 +33,62 @@ public class ScheduleTask extends Task implements Cloneable {
         this.toDate = toDate;
     }
 
-    //@author A0121409R
+    //@author A0121437N
+    @Override
+	public void updateDetails(Task details) {
+		super.updateDetails(details);
+		if (details instanceof ScheduleTask) {
+			ScheduleTask scheduleDetails = (ScheduleTask) details;
+			
+			if (scheduleDetails.getFromDate() != null) {
+				this.setFromDate(scheduleDetails.getFromDate());
+			}
+			
+			if (scheduleDetails.getToDate() != null){
+				this.setToDate(scheduleDetails.getToDate());
+			}
+		}
+	}
 
+	//@author A0121409R
     public ScheduleTask clone() {
-
         // Note the String objects might not be deep copied.
-
         return new ScheduleTask(this.getLineNumber(), this.getText(),
                                 this.getCategory(), this.isPriority(),
                                 this.isComplete(), this.getFromDate(),
                                 this.getToDate());
     }
 
-    public boolean equals(ScheduleTask toCheck) {
-
-        if (toCheck == null) {
-
+    public boolean equals(ScheduleTask scheduleTask) {
+        if (scheduleTask == null) {
             return false;
         }
 
-        if (toCheck.getLineNumber() != this.getLineNumber()) {
-
+        if (scheduleTask.getLineNumber() != this.getLineNumber()) {
             return false;
         }
 
-        if (!toCheck.getText().equals(this.getText())) {
-
+        if (!scheduleTask.getText().equals(this.getText())) {
             return false;
         }
 
-        if (!toCheck.getCategory().equals(this.getCategory())) {
-
+        if (!scheduleTask.getCategory().equals(this.getCategory())) {
             return false;
         }
 
-        if (toCheck.isPriority() != this.isPriority()) {
-
+        if (scheduleTask.isPriority() != this.isPriority()) {
             return false;
         }
 
-        if (toCheck.isComplete() != this.isComplete()) {
-
+        if (scheduleTask.isComplete() != this.isComplete()) {
             return false;
         }
 
-        if (!toCheck.fromDate.equals(this.fromDate)) {
-
+        if (!scheduleTask.fromDate.equals(this.fromDate)) {
             return false;
         }
 
-        if (!toCheck.toDate.equals(this.toDate)) {
-
+        if (!scheduleTask.toDate.equals(this.toDate)) {
             return false;
         }
 
