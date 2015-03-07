@@ -29,7 +29,6 @@ public class ProtoFileStorage extends Storage {
     // Constructors
 
     public ProtoFileStorage() {
-
         this("default.txt");
     }
 
@@ -43,7 +42,6 @@ public class ProtoFileStorage extends Storage {
     // Getters
 
     public String getCurrFileName() {
-
         return currFile.toString();
     }
 
@@ -57,7 +55,6 @@ public class ProtoFileStorage extends Storage {
      * @return A duplicated list of Tasks held in this instance of FileStorage.
      */
     public List<Task> duplicateCurrentListTask(boolean duplicateTask) {
-
         List<Task> duplicateList = new ArrayList<Task>();
 
         for (Task item : this.listTask) {
@@ -83,7 +80,6 @@ public class ProtoFileStorage extends Storage {
      *         JSON format.
      */
     public String currentListTaskString(boolean toAddTags) {
-
         return JsonIOHandler.readJSON(currFile, toAddTags);
     }
 
@@ -91,23 +87,17 @@ public class ProtoFileStorage extends Storage {
      * Update the lineNumber variables in each Task object after operation.
      */
     private void updateLineNum() {
-
         if (this.listTask != null && this.listTask.size() != 0) {
-
             List<Task> tempTaskList = this.getAllTasks();
-
             int currLineNum = 1;
-
+            
             for (Task item : tempTaskList) {
-
                 item.setLineNumber(currLineNum);
                 currLineNum++;
             }
 
             this.listTask = tempTaskList;
-
         } else {
-
             this.listTask = new ArrayList<Task>();
         }
     }
