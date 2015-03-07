@@ -15,30 +15,15 @@ public class ProtoFileStorageDemo {
 
     // Starting state:
 
-    static Task task1 = new Task(1, "ExampleText1", "ExampleCategory1", true,
+    static Task task1 = new Task(-1, "ExampleText1", "ExampleCategory1", true,
                                  true);
-
-    static Task task2 = new ScheduleTask(2, "ExampleText2", "ExampleCategory2",
+    static Task task2 = new ScheduleTask(-1, "ExampleText2", "ExampleCategory2",
                                          true, true, Calendar.getInstance(),
                                          Calendar.getInstance());
-
-    static Task task3 = new DeadlineTask(3, "ExampleText3", "ExampleCategory3",
+    static Task task3 = new DeadlineTask(-1, "ExampleText3", "ExampleCategory3",
                                          true, true, Calendar.getInstance());
 
-    static Command command1 = new Command(task1, CommandType.ADD, null); // Add
-    // command
-    // for Task1
-
-    static Command command2 = new Command(task2, CommandType.ADD, null); // Add
-    // command
-    // for Task2
-
-    static Command command3 = new Command(task3, CommandType.ADD, null); // Add
-
-    // Command
-    // for Task3
-
-    public static void main(String args[]) {
+    public static void main(String args[]) throws StorageException{
 
         ProtoFileStorage fileStorage = new ProtoFileStorage("mytestfile.txt");
 
@@ -49,89 +34,84 @@ public class ProtoFileStorageDemo {
         List<Task> listTask = fileStorage.getAllTasks();
 
         // Add Tasks to file
-        listTask = fileStorage.addTask(command1).getTasks();
-        listTask = fileStorage.addTask(command2).getTasks();
-        listTask = fileStorage.addTask(command3).getTasks();
-
-        // Delete Task 1
-        Command command4 =
-                           new Command(listTask.get(0), CommandType.DELETE,
-                                       null);
-
-        listTask = fileStorage.deleteTask(command4).getTasks();
-
-        System.out.println("Make a copy of fileStorage: ");
-        ProtoFileStorage fileStorage2 = new ProtoFileStorage(fileStorage);
-
-        displayFileStorages(fileStorage, fileStorage2);
-
-        List<Task> listTask2 = fileStorage2.getAllTasks();
-
-        System.out.println("Delete Line 1 in fileStorage: ");
-        Command command5 =
-                           new Command(listTask.get(0), CommandType.DELETE,
-                                       null);
-
-        listTask = fileStorage.deleteTask(command5).getTasks();
-
-        displayFileStorages(fileStorage, fileStorage2);
-
-        System.out.println("Delete Line 2 in fileStorage2: ");
-        Command command6 =
-                           new Command(listTask2.get(1), CommandType.DELETE,
-                                       null);
-
+        System.out.println("Add all tasks to fileStorage: ");
+        addAllTasksToStorage(fileStorage);
         listTask = fileStorage.getAllTasks();
-        listTask2 = fileStorage2.deleteTask(command6).getTasks();
+        
+        printList(listTask);
+        System.out.println();
+        
+        // Delete Task 1
+        System.out.println("Delete Line 1 in fileStorage: ");
+        fileStorage.deleteTask(listTask.get(0));
+        List<Task> listTask2 = fileStorage.getAllTasks();
 
-        displayFileStorages(fileStorage, fileStorage2);
-
-        System.out.println("Add Line 1 from fileStorage2 into fileStorage1: ");
-        Command command7 =
-                           new Command(fileStorage2.getAllTasks().get(0),
-                                       CommandType.ADD, null);
-
-        listTask = fileStorage.addTask(command7).getTasks();
-
-        displayFileStorages(fileStorage, fileStorage2);
-
-        // BUG
-        System.out.println("To demonstrate duplicate Command entry failure: ");
-        System.out.println("Add Line 1 from fileStorage2 into fileStorage1: ");
-        listTask = fileStorage.addTask(command7).getTasks();
-
-        displayFileStorages(fileStorage, fileStorage2);
-
-        System.out.println("Delete malfunctioning line: ");
-        Command command8 =
-                           new Command(listTask.get(0), CommandType.DELETE,
-                                       null);
-        listTask = fileStorage.deleteTask(command8).getTasks();
-
-        displayFileStorages(fileStorage, fileStorage2);
-
-        System.out.println("Edit line 1 of fileStorage: ");
-        Task toEdit = listTask.get(0);
-        toEdit.setText("Changed the Text");
-        Command command9 = new Command(toEdit, CommandType.EDIT, null);
-        listTask = fileStorage.editTask(command9).getTasks();
-
-        displayFileStorages(fileStorage, fileStorage2);
+        printList(listTask2);
+        System.out.println();
+        
+        // Delete Task 2
+        System.out.println("Delete Line 2 in fileStorage: ");
+        fileStorage.deleteTask(listTask.get(1));
+        List<Task> listTask3 = fileStorage.getAllTasks();
+        
+        printList(listTask3);
+        System.out.println();
+        
+        // Clear all tasks
+        System.out.println("Clear all in fileStorage: ");
+        fileStorage.clearAll();
+        List<Task> listTask4 = fileStorage.getAllTasks();
+        
+        printList(listTask4);
+        System.out.println();
+        
+        // Refill all tasks
+        System.out.println("Refill all in fileStorage: ");
+        fileStorage.refillAll(listTask);
+        List<Task> listTask5 = fileStorage.getAllTasks();
+        
+        printList(listTask5);
+        System.out.println();
+        
+        // Edit task1
+        System.out.println("Edit 1 in fileStorage: ");
+        Task editDetails = new Task(1, "edited task 1", null, false, false);
+        fileStorage.editTask(editDetails);
+        List<Task> listTask6 = fileStorage.getAllTasks();
+        
+        printList(listTask6);
+        System.out.println();
+        
+        // Delete out of range SHOULD RESULT IN ERROR
+        System.out.println("Attempt to delete OOR in fileStorage: ");
+        Task deleteDetails = new Task(0, null, null, false, false);
+        try {
+        	fileStorage.deleteTask(deleteDetails);
+        	System.out.println("Deleted " + deleteDetails.getLineNumber());
+        } catch (StorageException e) {
+        	System.out.println("ERROR! " + e.getMessage());
+        }
+        
+        // Edit out of range SHOULD RESULT IN ERROR
+        System.out.println("Attempt to edit OOR in fileStorage: ");
+        Task editOORDetails = new Task(100, null, null, false, false);
+        try {
+        	fileStorage.editTask(editOORDetails);
+        	System.out.println("Edited " + editOORDetails.getLineNumber());
+        } catch (StorageException e) {
+        	System.out.println("ERROR! " + e.getMessage());
+        }
     }
 
-    public static void displayFileStorages(ProtoFileStorage fileStorage,
-                                           ProtoFileStorage fileStorage2) {
-        System.out.println("Items in fileStorage: ");
-        System.out.println(fileStorage.currentListTaskString(true));
-
-        System.out.println("Items in fileStorage2: ");
-        System.out.println(fileStorage2.currentListTaskString(true));
-    }
+	private static void addAllTasksToStorage(ProtoFileStorage fileStorage)
+			throws StorageException {
+		fileStorage.addTask(task1);
+        fileStorage.addTask(task2);
+        fileStorage.addTask(task3);
+	}
 
     public static void printList(List<Task> listTask) {
-
         for (Task item : listTask) {
-
             System.out.println(JsonStringTagger.convertTasktoTaggedJsonString(item));
         }
     }
