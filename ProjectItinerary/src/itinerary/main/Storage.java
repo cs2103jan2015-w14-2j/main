@@ -60,7 +60,7 @@ public abstract class Storage {
      */
     static Task updateTaskDetails (Task originalTask, Task details) {
     	Task template = originalTask.clone();
-    	// TODO Edit template details
+    	template.updateDetails(details);
     	return template;
     }
 }
