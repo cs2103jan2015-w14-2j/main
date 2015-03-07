@@ -14,8 +14,8 @@ import com.google.gson.Gson;
 
 // @author A0121409R
 public class JsonIOHandler {
-    
-    public static final String STRING_DELIMITER = "<SPLIT>"; 
+
+    public static final String STRING_DELIMITER = "<SPLIT>";
 
     /**
      * Given a String array object, this method checks if the array is suitable
@@ -58,9 +58,52 @@ public class JsonIOHandler {
         }
 
         Gson gson = new Gson();
-        String s = task.getLineNumber()+ STRING_DELIMITER + task.getClass().getSimpleName() + STRING_DELIMITER + gson.toJson(task);
+        String s =
+                   task.getLineNumber() + STRING_DELIMITER
+                           + task.getClass().getSimpleName() + STRING_DELIMITER
+                           + gson.toJson(task);
 
         return s;
+    }
+
+    /**
+     * Given a tagged JSON String object made from the stringFormatter() method
+     * in JsonIOHandler.java it will convert it to the corresponding Task
+     * object.
+     * 
+     * @param taggedJSONString
+     *            A String object that has an additional tag in front of the
+     *            JSON String stating what type of Task the JSON String part
+     *            represents.
+     * @return The corresponding Task object that formattedJSONString
+     *         represents. If taggedJSONString is in the wrong format, method
+     *         will return null.
+     */
+    public static Task convertTaggedJsonString(String taggedJSONString) {
+
+        Gson gson = new Gson();
+
+        String stringArray[] = taggedJSONString.split(STRING_DELIMITER);
+
+        if (checkStringArray(stringArray)) {
+
+            if (stringArray[1].equals(ScheduleTask.class.getSimpleName())) {
+
+                return gson.fromJson(stringArray[2], ScheduleTask.class);
+
+            } else if (stringArray[1].equals(DeadlineTask.class.getSimpleName())) {
+
+                return gson.fromJson(stringArray[2], DeadlineTask.class);
+
+            } else {
+
+                // Default Task Object
+                return gson.fromJson(stringArray[2], Task.class);
+
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -137,7 +180,8 @@ public class JsonIOHandler {
      * @param currFile
      *            The File object to read from.
      * @param toAddTags
-     *            If true, it adds in the tags in each line to the final String object.
+     *            If true, it adds in the tags in each line to the final String
+     *            object.
      * @return The String object which contains all file contents.
      */
     public static String readJSON(File currFile, boolean toAddTags) {
@@ -157,7 +201,7 @@ public class JsonIOHandler {
                 if (toAddTags) {
 
                     if (checkStringArray(stringArray)) {
-                        
+
                         sb.append(stringArray[0] + " ");
                         sb.append(stringArray[1] + " ");
                         sb.append(stringArray[2]);
@@ -175,7 +219,7 @@ public class JsonIOHandler {
             bufferedReader.close();
 
         } catch (FileNotFoundException e) {
-            
+
             writeJSON(currFile, null, true);
 
         } catch (IOException e) {
@@ -193,7 +237,8 @@ public class JsonIOHandler {
      * @param currFile
      *            The File object to be read from.
      * @param toAddTags
-     *            If true, it adds the tags in each line to the final String object.
+     *            If true, it adds the tags in each line to the final String
+     *            object.
      * @return A List<String> object containing all separated JSON strings in
      *         cuffFile.
      */
@@ -235,7 +280,7 @@ public class JsonIOHandler {
             bufferedReader.close();
 
         } catch (FileNotFoundException e) {
-            
+
             writeJSON(currFile, null, true);
 
         } catch (IOException e) {
@@ -266,13 +311,13 @@ public class JsonIOHandler {
 
             while ((line = bufferedReader.readLine()) != null) {
 
-                taskList.add(JsonConverter.convertTaggedJsonString(line));
+                taskList.add(convertTaggedJsonString(line));
             }
 
             bufferedReader.close();
 
         } catch (FileNotFoundException e) {
-            
+
             writeJSON(currFile, null, true);
 
         } catch (IOException e) {
@@ -282,4 +327,5 @@ public class JsonIOHandler {
 
         return taskList;
     }
+
 }
