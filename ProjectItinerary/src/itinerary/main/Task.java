@@ -43,23 +43,11 @@ public class Task implements Cloneable {
         this.lineNumber = lineNumber;
     }
 
-    public void setText(String text) {
-        
-        if (text == null) {
-            
-            text = "";
-        }
-        
+    public void setText(String text) {        
         this.text = text;
     }
 
     public void setCategory(String category) {
-        
-        if (category == null) {
-            
-            category = "";
-        }
-        
         this.category = category;
     }
 
@@ -70,47 +58,56 @@ public class Task implements Cloneable {
     public void setComplete(boolean isComplete) {
         this.isComplete = isComplete;
     }
+    
+    //@author A0121437N
+    public void updateDetails (Task details) {
+    	if (details.getText() != null) {
+    		this.setText(details.getText());
+    	}
+    	
+    	if (details.getCategory() != null) {
+    		this.setCategory(details.getCategory());
+    	}
+    	
+    	if (details.isComplete() != this.isComplete()) {
+    		this.setComplete(details.isComplete());
+    	}
+    	
+    	if (details.isPriority() != this.isPriority()) {
+    		this.setPriority(details.isPriority());
+    	}
+    }
 
     //@author A0121409R
-
     public Task clone() {
-
         // Note the String objects might not be deep copied.
-
         return new Task(this.getLineNumber(), this.getText(),
                         this.getCategory(), this.isPriority(),
                         this.isComplete());
     }
 
-    public boolean equals(Task toCheck) {
-
-        if (toCheck == null) {
-
+    public boolean equals(Task task) {
+        if (task == null) {
             return false;
         }
 
-        if (toCheck.getLineNumber() != this.lineNumber) {
-
+        if (task.getLineNumber() != this.lineNumber) {
             return false;
         }
 
-        if (!toCheck.getText().equals(this.text)) {
-
+        if (!task.getText().equals(this.text)) {
             return false;
         }
 
-        if (!toCheck.getCategory().equals(this.category)) {
-
+        if (!task.getCategory().equals(this.category)) {
             return false;
         }
 
-        if (toCheck.isPriority() != this.isPriority) {
-
+        if (task.isPriority() != this.isPriority) {
             return false;
         }
 
-        if (toCheck.isComplete() != this.isComplete) {
-
+        if (task.isComplete() != this.isComplete) {
             return false;
         }
 

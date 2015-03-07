@@ -1,18 +1,22 @@
 package itinerary.main;
 
+import java.util.List;
+
 //@author A0121437N
 public class History {
 	private HistoryNode currentPoint;
 	
-	public History() {
-		this.currentPoint = new HistoryNode(null, null);
+	public History(List<Task> initialState) {
+		assert initialState != null;
+		
+		this.currentPoint = new HistoryNode(null, initialState);
 	}
 	
-	public void addNewState (State state) {
-		currentPoint = new HistoryNode(currentPoint, state);
+	public void addNewState (List<Task> tasks) {
+		currentPoint = new HistoryNode(currentPoint, tasks);
 	}
 	
-	public State goBack () {
+	public List<Task> goBack () {
 		if (currentPoint.getBack() != null) {
 			currentPoint = currentPoint.getBack();
 			return currentPoint.getCurrentState();
@@ -20,7 +24,7 @@ public class History {
 		return null;
 	}
 	
-	public State goForward () {
+	public List<Task> goForward () {
 		if (currentPoint.getForward() != null) {
 			currentPoint = currentPoint.getForward();
 			return currentPoint.getCurrentState();
@@ -28,7 +32,7 @@ public class History {
 		return null;
 	}
 	
-	public State getCurrentState () {
+	public List<Task> getCurrentState () {
 		if (currentPoint == null) {
 			return null;
 		}
@@ -38,9 +42,11 @@ public class History {
 	private class HistoryNode {
 		private HistoryNode back = null;
 		private HistoryNode forward = null;
-		private State currentState = null;
+		private List<Task> currentState;
 		
-		private HistoryNode (HistoryNode back, State state) {
+		private HistoryNode (HistoryNode back, List<Task> state) {
+			assert state != null;
+			
 			if (back != null) {
 				back.forward = this;
 			}
@@ -56,7 +62,7 @@ public class History {
 			return forward;
 		}
 
-		protected State getCurrentState() {
+		protected List<Task> getCurrentState() {
 			return currentState;
 		}
 	}

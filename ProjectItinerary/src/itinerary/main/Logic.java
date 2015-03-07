@@ -1,16 +1,14 @@
 package itinerary.main;
 
+import java.util.List;
+
 //@author A0121437N
 public class Logic {
 	private static final String MESSAGE_WELCOME = "Welcome! %1$s is ready for use";
-	private static final String MESSAGE_DELETE_FAIL = "failed to delete";
 	private static final String MESSAGE_DELETE_SUCCESS = "deleted task %1$s";
-	private static final String MESSAGE_CLEAR_FAIL = "failed to clear all tasks";
 	private static final String MESSAGE_CLEAR_SUCCESS = "cleared all tasks";
 	private static final String MESSAGE_ADD_SUCCESS = "added \"%1$s\"";
-	private static final String MESSAGE_ADD_FAIL = "failed to add task";
 	private static final String MESSAGE_EDIT_SUCCESS = "edited task %1$d";
-	private static final String MESSAGE_EDIT_FAIL = "failed to edit task";
 	private static final String MESSAGE_DISPLAY_ALL = "displaying all tasks";
 	private static final String MESSAGE_REDO_ERROR = "redo error";
 	private static final String MESSAGE_REDO_NOTHING = "nothing to redo";
@@ -29,7 +27,7 @@ public class Logic {
 		this.fileName = fileName;
 		this.parser = new Parser();
 		this.storage = new ProtoFileStorage(fileName);
-		this.history = new History();
+		this.history = new History(storage.getAllTasks());
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
@@ -70,34 +68,38 @@ public class Logic {
 	}
 	
 	private UserInterfaceContent executeAdd(Command command) {
-		State newState = storage.addTask(command);
-		if (newState.isSuccessful()) {
-			history.addNewState(newState);
-			String text = newState.getDoCommand().getTask().getText();
-			String consoleMessage = formatAddSuccess(text);
-			return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+		try {
+			storage.addTask(command.getTask());
+		} catch (StorageException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
-		return new UserInterfaceContent(MESSAGE_ADD_FAIL, storage.getAllTasks());
+		updateHistory();
+		String consoleMessage = formatAddSuccess(command.getTask());
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
 	}
 
 	private UserInterfaceContent executeClear(Command command) {
-		State newState = storage.clearAll();
-		if (newState.isSuccessful()) {
-			history.addNewState(newState);
-			return new UserInterfaceContent(MESSAGE_CLEAR_SUCCESS, storage.getAllTasks());
+		try {
+			storage.clearAll();
+		} catch (StorageException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
-		return new UserInterfaceContent(MESSAGE_CLEAR_FAIL, storage.getAllTasks());
+		updateHistory();
+		return new UserInterfaceContent(MESSAGE_CLEAR_SUCCESS, storage.getAllTasks());
 	}
 
 	private UserInterfaceContent executeDelete(Command command) {
-		State newState = storage.deleteTask(command);
-		if (newState.isSuccessful()) {
-			history.addNewState(newState);
-			int deleteLineNumber = newState.getDoCommand().getTask().getLineNumber();
-			String consoleMessage = formatDeleteSuccess(deleteLineNumber);
-			return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+		try {
+			storage.deleteTask(command.getTask());
+		} catch (StorageException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
-		return new UserInterfaceContent(MESSAGE_DELETE_FAIL, storage.getAllTasks());
+		
+		updateHistory();
+		
+		int deleteLineNumber = command.getTask().getLineNumber();
+		String consoleMessage = formatDeleteSuccess(deleteLineNumber);
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
 	}
 
 	private UserInterfaceContent executeDisplay() {
@@ -105,43 +107,37 @@ public class Logic {
 	}
 	
 	private UserInterfaceContent executeEdit(Command command) {
-		State newState = storage.editTask(command);
-		if (newState.isSuccessful()) {
-			history.addNewState(newState);
-			int editLineNumber = newState.getDoCommand().getTask().getLineNumber();
-			String consoleMessage = formatEditSuccess(editLineNumber);
-			return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+		try {
+			storage.editTask(command.getTask());
+		} catch (StorageException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
-		return new UserInterfaceContent(MESSAGE_EDIT_FAIL, storage.getAllTasks());
+		
+		updateHistory();
+		
+		int editLineNumber = command.getTask().getLineNumber();
+		String consoleMessage = formatEditSuccess(editLineNumber);
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+
+	private void updateHistory() {
+		List<Task> newState = storage.getAllTasks();
+		history.addNewState(newState);
 	}
 
 	private UserInterfaceContent executeRedo() {
-		State newState;
-		if ((newState = history.goForward()) == null) {
+		List<Task> nextState = history.goForward();
+		if (nextState == null) {
 			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
 		}
-		
-		State redoState;
-		Command doCommand = newState.getDoCommand();
-		
-		if (doCommand.getType() == CommandType.ADD) {
-			redoState = storage.addTask(doCommand);
-		} else if (doCommand.getType() == CommandType.CLEAR) {
-			redoState = storage.clearAll();
-		} else if (doCommand.getType() == CommandType.DELETE) {
-			redoState = storage.deleteTask(doCommand);
-		} else if (doCommand.getType() == CommandType.EDIT) {
-			redoState = storage.editTask(doCommand);
-		} else {
-			redoState = new State(null, null, null, false);
+		try {
+			storage.clearAll();
+			storage.refillAll(nextState);
+		} catch (StorageException e) {
+			history.goBack();
+			return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
 		}
-		
-		if (redoState.isSuccessful()) {
-			return new UserInterfaceContent(MESSAGE_REDO_SUCCESS, storage.getAllTasks());
-		}
-		
-		history.goBack();
-		return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
+		return new UserInterfaceContent(MESSAGE_REDO_SUCCESS, storage.getAllTasks());
 	}
 
 	private UserInterfaceContent executeSearch(Command command) {
@@ -150,35 +146,22 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeUndo() {
-		if (history.getCurrentState() == null) {
+		List<Task> previousState = history.goBack();
+		if (previousState == null) {
 			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
 		}
-		State currentState = history.getCurrentState();
-		
-		State undoState;
-		Command undoCommand = currentState.getUndoCommand();
-		
-		if (undoCommand.getType() == CommandType.ADD) {
-			undoState = storage.addTask(undoCommand);
-		} else if (undoCommand.getType() == CommandType.CLEAR) {
-			undoState = storage.refillAll(currentState.getTasks());
-		} else if (undoCommand.getType() == CommandType.DELETE) {
-			undoState = storage.deleteTask(undoCommand);
-		} else if (undoCommand.getType() == CommandType.EDIT) {
-			undoState = storage.editTask(undoCommand);
-		} else {
-			undoState = new State(null, null, null, false);
+		try {
+			storage.clearAll();
+			storage.refillAll(previousState);
+		} catch (StorageException e) {
+			history.goForward();
+			return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 		}
-		
-		if (undoState.isSuccessful()) {
-			history.goBack();
-			return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
-		}
-		return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
+		return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
 	}
 
-	private String formatAddSuccess(String text) {
-		return String.format(MESSAGE_ADD_SUCCESS, text);
+	private String formatAddSuccess(Task task) {
+		return String.format(MESSAGE_ADD_SUCCESS, task.getText());
 	}
 
 	private String formatDeleteSuccess(int deleteLineNumber) {
