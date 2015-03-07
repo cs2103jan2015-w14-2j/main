@@ -277,22 +277,6 @@ public class ProtoFileStorage implements Storage {
         return true;
     }
 
-    private boolean isSameTask(Command command) {
-
-        if (!JsonStringTagger.convertTasktoTaggedJsonString(command.getTask())
-                          .equals(JsonStringTagger.convertTasktoTaggedJsonString(listTask.get(command.getTask()
-                                                                                    .getLineNumber() - 1)))) {
-
-            System.out.println("Task given and Task in " + this.personalID
-                               + " do not match.");
-            System.out.println(JsonStringTagger.convertTasktoTaggedJsonString(command.getTask()));
-            System.out.println(JsonStringTagger.convertTasktoTaggedJsonString(listTask.get(command.getTask()
-                                                                                 .getLineNumber() - 1)));
-            return false;
-        }
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
