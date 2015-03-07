@@ -58,6 +58,7 @@ public abstract class Storage {
      * @param details the details to be added or replaced
      * @return a new Task object with updated details
      */
+    //@author A0121437N
     static Task updateTaskDetails (Task originalTask, Task details) {
     	Task template = originalTask.clone();
     	template.updateDetails(details);
