@@ -25,19 +25,15 @@ public class JsonIOHandler {
      *            Configures if the function will overwrite and delete any
      *            content in currFile when writing the task.
      */
-    public static void writeJSON(File currFile, Task task, boolean willOverwrite) {
-        try {
-            FileOutputStream writer = new FileOutputStream(currFile, !willOverwrite);
+    public static void writeJSON(File currFile, Task task, boolean willOverwrite) throws IOException {
+        FileOutputStream writer = new FileOutputStream(currFile, !willOverwrite);
 
-            if (task != null) {
-                String taskString = JsonStringTagger.convertTasktoTaggedJsonString(task);
-                writer.write(taskString.getBytes());
-                writer.write(System.getProperty("line.separator").getBytes());
-            }
-            writer.close();
-        } catch (IOException e) {
-        	e.printStackTrace();
+        if (task != null) {
+            String taskString = JsonStringTagger.convertTasktoTaggedJsonString(task);
+            writer.write(taskString.getBytes());
+            writer.write(System.getProperty("line.separator").getBytes());
         }
+        writer.close();
     }
 
     /**
@@ -51,7 +47,7 @@ public class JsonIOHandler {
      *            The List object containing all the Task objects that will be
      *            written onto currFile.
      */
-    public static void writeJSONList(File currFile, List<Task> taskList) {
+    public static void writeJSONList(File currFile, List<Task> taskList) throws IOException {
         boolean firstLineOverwrite = true;
         if (taskList == null || taskList.isEmpty()) {
             writeJSON(currFile, null, true);
@@ -97,7 +93,11 @@ public class JsonIOHandler {
             }
             bufferedReader.close();
         } catch (FileNotFoundException e) {
-            writeJSON(currFile, null, true);
+            try {
+				writeJSON(currFile, null, true);
+			} catch (IOException io) {
+				io.printStackTrace();
+			}
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -144,7 +144,11 @@ public class JsonIOHandler {
             }
             bufferedReader.close();
         } catch (FileNotFoundException e) {
-            writeJSON(currFile, null, true);
+            try {
+				writeJSON(currFile, null, true);
+			} catch (IOException io) {
+				io.printStackTrace();
+			}
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -174,7 +178,11 @@ public class JsonIOHandler {
             }
             bufferedReader.close();
         } catch (FileNotFoundException e) {
-            writeJSON(currFile, null, true);
+            try {
+				writeJSON(currFile, null, true);
+			} catch (IOException io) {
+				io.printStackTrace();
+			}
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package itinerary.main;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,10 @@ import java.util.List;
  */
 public class ProtoFileStorage extends Storage {
 
-    private File currFile;
+    private static final String ERROR_EDIT_TASK_ID = "Unable to edit task, invalid Task ID!";
+	private static final String ERROR_DELETE_TASK_ID = "Unable to delete task, invalid Task ID!";
+	private static final String ERROR_IO = "Error writing to file.";
+	private File currFile;
     private List<Task> listTask;
 
     // Constructors
@@ -118,8 +122,12 @@ public class ProtoFileStorage extends Storage {
 
         listTask.add(taskId - 1, toAdd);
         updateTaskId();
-
-        JsonIOHandler.writeJSONList(currFile, listTask);
+        
+        try {
+        	JsonIOHandler.writeJSONList(currFile, listTask);
+        } catch (IOException e) {
+        	throw new StorageException(ERROR_IO);
+        }
     }
 
     /*
@@ -131,7 +139,7 @@ public class ProtoFileStorage extends Storage {
     	int taskIndex = task.getTaskId() - 1;
     	if (isInvalidIndex(taskIndex)) {
     		// TODO Extract error message as constant
-    		throw new StorageException("Unable to edit task, invalid Task ID!");
+    		throw new StorageException(ERROR_EDIT_TASK_ID);
     	}
     	
         Task originalTask = listTask.remove(taskIndex).clone();
@@ -139,7 +147,11 @@ public class ProtoFileStorage extends Storage {
         listTask.add(taskIndex, editedTask);
         updateTaskId();
 
-        JsonIOHandler.writeJSONList(currFile, listTask);
+        try {
+        	JsonIOHandler.writeJSONList(currFile, listTask);
+        } catch (IOException e) {
+        	throw new StorageException(ERROR_IO);
+        }
     }
 
 	private boolean isInvalidIndex(int taskIndex) {
@@ -154,12 +166,17 @@ public class ProtoFileStorage extends Storage {
     	int taskIndex = task.getTaskId() - 1;
     	if (isInvalidIndex(taskIndex)) {
     		// TODO Extract error message as constant
-    		throw new StorageException("Unable to delete task, invalid Task ID!");
+    		throw new StorageException(ERROR_DELETE_TASK_ID);
     	}
     	
     	listTask.remove(taskIndex);
     	updateTaskId();
-    	JsonIOHandler.writeJSONList(currFile, listTask);
+    	
+    	try {
+        	JsonIOHandler.writeJSONList(currFile, listTask);
+        } catch (IOException e) {
+        	throw new StorageException(ERROR_IO);
+        }
     }
 
     /*
@@ -176,7 +193,12 @@ public class ProtoFileStorage extends Storage {
      */
     public void clearAll() throws StorageException {
         listTask.clear();
-        JsonIOHandler.writeJSONList(currFile, listTask);
+        
+        try {
+        	JsonIOHandler.writeJSONList(currFile, listTask);
+        } catch (IOException e) {
+        	throw new StorageException(ERROR_IO);
+        }
     }
 
     /*
@@ -186,6 +208,11 @@ public class ProtoFileStorage extends Storage {
     public void refillAll(List<Task> tasks) throws StorageException {
         listTask = tasks;
         updateTaskId();
-        JsonIOHandler.writeJSONList(currFile, listTask);
+        
+        try {
+        	JsonIOHandler.writeJSONList(currFile, listTask);
+        } catch (IOException e) {
+        	throw new StorageException(ERROR_IO);
+        }
     }
 }
