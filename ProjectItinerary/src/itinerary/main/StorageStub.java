@@ -7,12 +7,10 @@ import java.util.List;
 //@author A0121409R
 public class StorageStub extends Storage {
     private static final String ERROR_INVALID_ID = "Invalid Task ID!";
-	private String fileName;
     private List<Task> tasks;
 
     //@author A0121437N
-    public StorageStub(String fileName) {
-        this.fileName = fileName;
+    public StorageStub() {
         this.tasks = new ArrayList<Task>();
         this.tasks.add(new DeadlineTask(1, "Finish homework", "cat6", true, false,
                 Calendar.getInstance()));
