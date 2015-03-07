@@ -9,6 +9,9 @@ import itinerary.main.CommandType;
 //@author A0114823M
 public class Parser {
 
+	private static final String DUPLICATED_KEYWORD_PRI = "duplicated keyword \"pri\" !";
+	private static final String DUPLICATED_KEYWORD_CA = "duplicated keyword \"ca\" !";
+	private static final String DUPLICATED_KEYWORD_TIME = "duplicated keyword for time (\"by\" or \"ti\") !";
 	private static final String INVALID_INDEX = "Invalid index ";
 	private static final String NO_DESCRIPTION_FOR_EDIT = "Please key in the new eescriptions "
 			+ "and/or \"ca\" for setting category and/or \" pri\" for setting importance level !";
@@ -16,11 +19,20 @@ public class Parser {
 	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
 	private static final String INVALID_DATE_TIME = "Invalid date";
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
-	private static final String[] KEYWORD = {"by", "ti", "ca", "pri", "des"};
+	private static final String[] KEYWORD = {"pri",  "ca", "by", "ti"};
 
 	private static String showMessage = null;
+	private static String time = "";
 
 	public Parser(){
+	}
+
+	public String getMessage(){
+		return showMessage;
+	}
+
+	public String getTime(){
+		return time;
 	}
 
 	//returns a command object and it is called by logic
@@ -80,25 +92,87 @@ public class Parser {
 		}			
 	}
 
-	public String extractContent(String input){
+	public Task checkDuplicatedKeyword(String[] inputWords){
+		int[] keyWordCounter = {0,0,0};	
+
+		for(int i=0; i < inputWords.length; i++){
+			if(inputWords[i].equals(KEYWORD[0])){
+				keyWordCounter[0]++;
+			}
+			if(inputWords[i].equals(KEYWORD[1])){
+				keyWordCounter[1]++;
+			}
+			if(inputWords[i].equals(KEYWORD[2]) || inputWords[i].equals(KEYWORD[3])){
+				keyWordCounter[2]++;
+			}
+		}
+
+		for(int i=0; i < keyWordCounter.length; i++){
+			if(keyWordCounter[0] > 1){
+				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_PRI);
+				return defaultTask();
+			}
+			if(keyWordCounter[1] > 1){
+				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_CA);
+				return defaultTask();
+			}
+			if(keyWordCounter[2] > 1){
+				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_TIME);
+				return defaultTask();
+			}
+		}
+		return defaultTask();
+	}
+
+	//KEYWORD = {"pri",  "ca", "by", "ti"}
+	public Task extractContent(String input){		
 		String[] inputWords = stringToArray(input);
-		for(int i=0; i < inputWords.length; i++){
-			for(int j=0; j < KEYWORD.length; j++){
-				if(inputWords[i].equals(KEYWORD[j])){
-					inputWords[i] = "";
-					for(int k=i+1; k < inputWords.length; k++){
-						inputWords[k] = "";
-					}
-				}
-			}
-		}
+		Task task = checkDuplicatedKeyword(inputWords);
+
 		String content = "";
-		for(int i=0; i < inputWords.length; i++){
-			if(! inputWords[i].equals("")){
-				content = content + inputWords[i] + " ";
+		String category = "";
+		String time = "";
+		int endOfContent = 0;
+		
+		for(int i=0; !inputWords[i].equals(KEYWORD[0]) && !inputWords[i].equals(KEYWORD[1]) && 
+			   !inputWords[i].equals(KEYWORD[2])  && !inputWords[i].equals(KEYWORD[3]) ; i++){
+			    	content = content + inputWords[i];
+			    	endOfContent = i;
+	   }
+		task.setText(content);
+		
+		for(int i = endOfContent + 1; i < inputWords.length; i++){
+
+			if(inputWords[i].equals(KEYWORD[0])){
+				task.setPriority(true);
+			}
+			if(inputWords[i].equals(KEYWORD[1])){
+				for(int j=i+1; !inputWords[j+1].equals(KEYWORD[0]) && !inputWords[j+1].equals(KEYWORD[2])
+						&&!inputWords[j+1].equals(KEYWORD[3]); j++){
+					category = inputWords[j];
+				}
+				task.setCategory(category);
+			}
+			if(inputWords[i].equals(KEYWORD[2]) || inputWords[i].equals(KEYWORD[3])){
+				for(int j=i+1;  !inputWords[j+1].equals(KEYWORD[0]) && !inputWords[j+1].equals(KEYWORD[1]); j++){
+					time = inputWords[j];
+				}
+                ParserDate parserDate = new ParserDate();
+				Task dateTask = parserDate.getTask(time);
+                if(dateTask instanceof ScheduleTask){
+                	task = (ScheduleTask) task;
+                	dateTask = (ScheduleTask) dateTask;
+                	//task.setFromDate(dateTask.getFromDate());
+                //	task.setToDate(dateTask.getToDate());
+                }
+                if(dateTask instanceof DeadlineTask){
+                	task = (DeadlineTask) task;
+                	dateTask = (DeadlineTask) dateTask;
+                //	task.setFromDate(dateTask.getFromDate());
+                }
 			}
 		}
-		return content;
+		return task;
 	}
 
 
@@ -173,22 +247,22 @@ public class Parser {
 
 	public Task editTask(String input){
 		String[] words = stringToArray(input);
-		
+
 		if(words.length == 2){
 			showMessage = String.format(ERROR_MESSAGE, NO_DESCRIPTION_FOR_EDIT);
 			return defaultTask();
 		}
 		else{
-		Task task = targetTask(words);
-		String newDescription = "";
-		newDescription = input.substring(input.indexOf(" ")+1);
-		newDescription = newDescription.substring(newDescription.indexOf(" ")+1);
+			Task task = targetTask(words);
+			String newDescription = "";
+			newDescription = input.substring(input.indexOf(" ")+1);
+			newDescription = newDescription.substring(newDescription.indexOf(" ")+1);
 
-		task.setText(newDescription);
-		task.setCategory("newCategory");
-		task.setPriority(true);
-		task.setComplete(true);
-		return task;
+			task.setText(newDescription);
+			task.setCategory("newCategory");
+			task.setPriority(true);
+			task.setComplete(true);
+			return task;
 		}
 	}
 
