@@ -35,12 +35,13 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
     public void editTask(Task task) throws StorageException {
-    	int taskId = task.getLineNumber();
-    	if (taskId < 1 || taskId > tasks.size()) {
+    	int taskIndex = task.getLineNumber() - 1;
+    	if (taskIndex < 0 || taskIndex >= tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
     	}
-    	tasks.remove(taskId - 1);
-    	tasks.add(taskId-1, task);
+    	Task originalTask = tasks.remove(taskIndex);
+    	Task editedTask = super.updateTaskDetails(originalTask, task);
+    	tasks.add(taskIndex, editedTask);
     }
 
     /*

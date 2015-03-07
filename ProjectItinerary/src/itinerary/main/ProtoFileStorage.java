@@ -145,8 +145,8 @@ public class ProtoFileStorage extends Storage {
     	}
     	
         Task originalTask = listTask.remove(taskIndex).clone();
-        // TODO Edit original task
-        listTask.add(task.getLineNumber(), task);
+        Task editedTask = super.updateTaskDetails(originalTask, task);
+        listTask.add(taskIndex, editedTask);
         updateLineNum();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
