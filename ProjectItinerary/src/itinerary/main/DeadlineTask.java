@@ -65,7 +65,7 @@ public class DeadlineTask extends Task implements Cloneable {
             return false;
         }
 
-        if (toCheck.deadline != this.deadline) {
+        if (!toCheck.deadline.equals(this.deadline)) {
 
             return false;
         }

@@ -68,6 +68,8 @@ public class ProtoFileStorage implements Storage {
 
         this.updateLineNum();
     }
+    
+    //Getters
 
     public String getCurrFileName() {
 
@@ -81,10 +83,11 @@ public class ProtoFileStorage implements Storage {
 
     /**
      * Duplicates the current state of the list of Tasks held in this instance
-     * of FileStorage, not inclusive of the Task objects within it.
+     * of FileStorage. The duplicateTask variable indicates if Task objects in
+     * listTask will be deep copied as well.
      * 
      * @param duplicateTask
-     *            If true, will deep copy task objects as well.
+     *            If true, will deep copy Task objects as well.
      * @return A duplicated list of Tasks held in this instance of FileStorage.
      */
     public List<Task> duplicateCurrentListTask(boolean duplicateTask) {
@@ -151,12 +154,12 @@ public class ProtoFileStorage implements Storage {
 
         Task toAdd = command.getTask();
         int taskId = toAdd.getLineNumber();
-        
+
         if (taskId == -1) {
-        	taskId = listTask.size() + 1;
-        	toAdd.setLineNumber(taskId);
+            taskId = listTask.size() + 1;
+            toAdd.setLineNumber(taskId);
         }
-        
+
         listTask.add(taskId - 1, command.getTask());
         updateLineNum();
 
@@ -214,7 +217,7 @@ public class ProtoFileStorage implements Storage {
 
         if (command.getTask() == null) {
 
-            System.out.println("Task given was null");
+            System.out.println("Task given was null.");
             return false;
         }
 
@@ -247,8 +250,7 @@ public class ProtoFileStorage implements Storage {
 
         JsonIOHandler.writeJSONList(currFile, listTask);
         Command clearCommand = new Command(null, CommandType.CLEAR, null);
-        return new State(clearCommand, clearCommand,
-                         originalState, true);
+        return new State(clearCommand, clearCommand, originalState, true);
     }
 
     /*
@@ -261,7 +263,6 @@ public class ProtoFileStorage implements Storage {
         updateLineNum();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(null, null,
-                         duplicateCurrentListTask(true), true);
+        return new State(null, null, duplicateCurrentListTask(true), true);
     }
 }
