@@ -50,7 +50,7 @@ public class JsonStringTagger {
 
         Gson gson = new Gson();
         String s =
-                   task.getLineNumber() + JsonStringTagger.STRING_DELIMITER
+                   task.getTaskId() + JsonStringTagger.STRING_DELIMITER
                            + task.getClass().getSimpleName()
                            + JsonStringTagger.STRING_DELIMITER
                            + gson.toJson(task);

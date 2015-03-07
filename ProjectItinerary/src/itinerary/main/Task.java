@@ -2,25 +2,25 @@ package itinerary.main;
 
 //@author A0121437N
 public class Task implements Cloneable {
-    private int lineNumber;
+    private int taskId;
     private String text;
     private String category;
     private boolean isPriority;
     private boolean isComplete;
 
     //@author generated
-    public Task(int lineNumber, String text, String category,
+    public Task(int taskId, String text, String category,
                 boolean isPriority, boolean isComplete) {
         super();
-        this.setLineNumber(lineNumber);
+        this.setTaskId(taskId);
         this.setText(text);
         this.setCategory(category);
         this.setPriority(isPriority);
         this.setComplete(isComplete);
     }
 
-    public int getLineNumber() {
-        return lineNumber;
+    public int getTaskId() {
+        return taskId;
     }
 
     public String getText() {
@@ -39,8 +39,8 @@ public class Task implements Cloneable {
         return isComplete;
     }
 
-    public void setLineNumber(int lineNumber) {
-        this.lineNumber = lineNumber;
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
     }
 
     public void setText(String text) {        
@@ -81,7 +81,7 @@ public class Task implements Cloneable {
     //@author A0121409R
     public Task clone() {
         // Note the String objects might not be deep copied.
-        return new Task(this.getLineNumber(), this.getText(),
+        return new Task(this.getTaskId(), this.getText(),
                         this.getCategory(), this.isPriority(),
                         this.isComplete());
     }
@@ -91,7 +91,7 @@ public class Task implements Cloneable {
             return false;
         }
 
-        if (task.getLineNumber() != this.lineNumber) {
+        if (task.getTaskId() != this.taskId) {
             return false;
         }
 

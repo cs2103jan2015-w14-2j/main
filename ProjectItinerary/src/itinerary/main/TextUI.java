@@ -82,7 +82,7 @@ public class TextUI {
 	private static String formatTaskDetails(Task task) {
 		String details = "";
 		details += task.isPriority() ? "*" : "";
-		details += task.getLineNumber() + ".\t";
+		details += task.getTaskId() + ".\t";
 		details += task.getText() + "\t";
 		details += (task.isComplete() ? "Complete" : "Incomplete") + "\t";
 		return details;

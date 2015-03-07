@@ -9,10 +9,10 @@ public class ScheduleTask extends Task implements Cloneable {
 
     //@author generated
 
-    public ScheduleTask(int lineNumber, String text, String category,
+    public ScheduleTask(int taskId, String text, String category,
                         boolean isPriority, boolean isComplete,
                         Calendar fromDate, Calendar toDate) {
-        super(lineNumber, text, category, isPriority, isComplete);
+        super(taskId, text, category, isPriority, isComplete);
         this.fromDate = fromDate;
         this.toDate = toDate;
     }
@@ -53,7 +53,7 @@ public class ScheduleTask extends Task implements Cloneable {
 	//@author A0121409R
     public ScheduleTask clone() {
         // Note the String objects might not be deep copied.
-        return new ScheduleTask(this.getLineNumber(), this.getText(),
+        return new ScheduleTask(this.getTaskId(), this.getText(),
                                 this.getCategory(), this.isPriority(),
                                 this.isComplete(), this.getFromDate(),
                                 this.getToDate());

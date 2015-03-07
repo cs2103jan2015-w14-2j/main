@@ -7,12 +7,10 @@ import java.util.List;
 //@author A0121409R
 public class StorageStub extends Storage {
     private static final String ERROR_INVALID_ID = "Invalid Task ID!";
-	private String fileName;
     private List<Task> tasks;
 
     //@author A0121437N
-    public StorageStub(String fileName) {
-        this.fileName = fileName;
+    public StorageStub() {
         this.tasks = new ArrayList<Task>();
         this.tasks.add(new DeadlineTask(1, "Finish homework", "cat6", true, false,
                 Calendar.getInstance()));
@@ -36,7 +34,7 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
     public void editTask(Task task) throws StorageException {
-    	int taskIndex = task.getLineNumber() - 1;
+    	int taskIndex = task.getTaskId() - 1;
     	if (taskIndex < 0 || taskIndex >= tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
     	}
@@ -50,7 +48,7 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
     public void deleteTask(Task task) throws StorageException {
-    	int taskId = task.getLineNumber();
+    	int taskId = task.getTaskId();
     	if (taskId < 1 || taskId > tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
     	}
