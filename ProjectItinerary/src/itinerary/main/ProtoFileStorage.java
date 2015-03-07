@@ -23,12 +23,8 @@ import java.util.List;
  */
 public class ProtoFileStorage implements Storage {
 
-    // Variables
-    private static int numOfInstances = 0;
-
     private File currFile;
     private List<Task> listTask;
-    private int personalID;
 
     // Constructors
 
@@ -38,46 +34,17 @@ public class ProtoFileStorage implements Storage {
     }
 
     public ProtoFileStorage(String fileName) {
-
-        numOfInstances++;
-
         this.currFile = new File(fileName);
         this.listTask = JsonIOHandler.readJsonFileListTask(currFile);
-        this.personalID = numOfInstances;
-
-        this.updateLineNum();
-    }
-
-    public ProtoFileStorage(ProtoFileStorage fileStorage) {
-
-        numOfInstances++;
-
-        String fullOldFileName = fileStorage.getCurrFileName();
-        String oldFileName =
-                             fullOldFileName.substring(0,
-                                                       fullOldFileName.length() - 4);
-        String oldFileType =
-                             fullOldFileName.substring(fullOldFileName.length() - 4);
-
-        this.currFile = new File(oldFileName + numOfInstances + oldFileType);
-
-        this.listTask = fileStorage.duplicateCurrentListTask(true);
-        JsonIOHandler.writeJSONList(currFile, listTask);
-        this.personalID = numOfInstances;
 
         this.updateLineNum();
     }
     
-    //Getters
+    // Getters
 
     public String getCurrFileName() {
 
         return currFile.toString();
-    }
-
-    public int getCurrNumOfRunningInstances() {
-
-        return numOfInstances;
     }
 
     /**
@@ -149,9 +116,9 @@ public class ProtoFileStorage implements Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public State addTask(Command command) {
+    public void addTask(Task task) throws StorageException {
 
-        Task toAdd = command.getTask();
+        Task toAdd = task.clone();
         int taskId = toAdd.getLineNumber();
 
         if (taskId == -1) {
@@ -159,74 +126,50 @@ public class ProtoFileStorage implements Storage {
             toAdd.setLineNumber(taskId);
         }
 
-        listTask.add(taskId - 1, command.getTask());
+        listTask.add(taskId - 1, toAdd);
         updateLineNum();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(command, new Command(toAdd, CommandType.DELETE, null),
-                         getAllTasks(), true);
     }
 
     /*
      * (non-Javadoc)
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public State editTask(Command command) {
+    public void editTask(Task task) throws StorageException {
 
-        Task originalTask =
-                            listTask.remove(command.getTask().getLineNumber() - 1);
-        listTask.add(command.getTask());
+    	int taskIndex = task.getLineNumber() - 1;
+    	if (isInvalidIndex(taskIndex)) {
+    		// TODO Extract error message as constant
+    		throw new StorageException("Unable to edit task, invalid Task ID!");
+    	}
+    	
+        Task originalTask = listTask.remove(taskIndex).clone();
+        // TODO Edit original task
+        listTask.add(task.getLineNumber(), task);
         updateLineNum();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(command, new Command(originalTask, CommandType.EDIT,
-                                              null), getAllTasks(), true);
     }
+
+	private boolean isInvalidIndex(int taskIndex) {
+		return taskIndex < 0 || taskIndex >= listTask.size();
+	}
 
     /*
      * (non-Javadoc)
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public State deleteTask(Command command) {
-
-        boolean isValid = isValidDeleteOp(command);
-        Task originalTask = null;
-
-        if (isValid) {
-
-            originalTask =
-                           listTask.remove(command.getTask().getLineNumber() - 1);
-
-            updateLineNum();
-
-            JsonIOHandler.writeJSONList(currFile, listTask);
-        }
-
-        return new State(command, new Command(originalTask, CommandType.ADD,
-                                              null), getAllTasks(), isValid);
-    }
-
-    private boolean isValidDeleteOp(Command command) {
-
-        if (command == null) {
-
-            System.out.println("Command given was null.");
-            return false;
-        }
-
-        if (command.getTask() == null) {
-
-            System.out.println("Task given was null.");
-            return false;
-        }
-
-        if (command.getTask().getLineNumber() - 1 >= listTask.size()) {
-
-            System.out.println("Overexceeded Line Number.");
-            return false;
-        }
-
-        return true;
+    public void deleteTask(Task task) throws StorageException {
+    	int taskIndex = task.getLineNumber() - 1;
+    	if (isInvalidIndex(taskIndex)) {
+    		// TODO Extract error message as constant
+    		throw new StorageException("Unable to delete task, invalid Task ID!");
+    	}
+    	
+    	listTask.remove(taskIndex);
+    	updateLineNum();
+    	JsonIOHandler.writeJSONList(currFile, listTask);
     }
 
     /*
@@ -234,34 +177,25 @@ public class ProtoFileStorage implements Storage {
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
     public List<Task> getAllTasks() {
-
-        return this.listTask;
+        return duplicateCurrentListTask(true);
     }
 
     /*
      * (non-Javadoc)
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public State clearAll() {
-
-        List<Task> originalState = duplicateCurrentListTask(true);
+    public void clearAll() throws StorageException {
         listTask.clear();
-
         JsonIOHandler.writeJSONList(currFile, listTask);
-        Command clearCommand = new Command(null, CommandType.CLEAR, null);
-        return new State(clearCommand, clearCommand, originalState, true);
     }
 
     /*
      * (non-Javadoc)
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
-    public State refillAll(List<Task> tasks) {
-
-        listTask.addAll(tasks);
+    public void refillAll(List<Task> tasks) throws StorageException {
+        listTask = tasks;
         updateLineNum();
-
         JsonIOHandler.writeJSONList(currFile, listTask);
-        return new State(null, null, duplicateCurrentListTask(true), true);
     }
 }
