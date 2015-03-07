@@ -10,13 +10,16 @@ import itinerary.main.CommandType;
 public class Parser {
 
 	private static final String INVALID_INDEX = "Invalid index ";
+	private static final String NO_DESCRIPTION_FOR_EDIT = "Please key in the new eescriptions "
+			+ "and/or \"ca\" for setting category and/or \" pri\" for setting importance level !";
+	private static final String NOTHING_AFTER_COMMANDTYPE = "Please key in descriptions!";
 	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
 	private static final String INVALID_DATE_TIME = "Invalid date";
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
 	private static final String[] KEYWORD = {"by", "ti", "ca", "pri", "des"};
-	
+
 	private static String showMessage = null;
-	
+
 	public Parser(){
 	}
 
@@ -31,22 +34,22 @@ public class Parser {
 
 	//The message will be null if the command and input format is valid,
 	// It will return an error message if the input is not valid
-	 public String createMessage(){
-		 return showMessage;
-	 }
-	 
-	 public String[] stringToArray(String input){
-		  String[] inputWords =  input.split(" +");
-		  return inputWords;
-	  }
-			
-		public CommandType createCommandType(String input){
-			String[] inputWords = stringToArray(input);
-			String firstWord = inputWords[0]; 
-			ParserCommand cmd =  new ParserCommand();   
-			return cmd.getType(firstWord);
-		}
- 
+	public String createMessage(){
+		return showMessage;
+	}
+
+	public String[] stringToArray(String input){
+		String[] inputWords =  input.split(" +");
+		return inputWords;
+	}
+
+	public CommandType createCommandType(String input){
+		String[] inputWords = stringToArray(input);
+		String firstWord = inputWords[0]; 
+		ParserCommand cmd =  new ParserCommand();   
+		return cmd.getType(firstWord);
+	}
+
 	public Task createTask(String input){
 		if(createCommandType(input).equals(CommandType.ADD)){
 			return addTask(input);
@@ -97,20 +100,29 @@ public class Parser {
 		}
 		return content;
 	}
-	
-	
-// check if the line number of a task is valid.
-// It will return a task with the valid line number to logic if the line number is valid.
-//Otherwise, it will return a task with line number of -1 to indicate invalidation
+
+
+	// check if the line number of a task is valid.
+	// It will return a task with the valid line number to logic if the line number is valid.
+	//Otherwise, it will return a task with line number of -1 to indicate invalidation
 	public Task targetTask(String[] words){
+		try{
+			if(words.length == 1){
+				throw new Exception(NOTHING_AFTER_COMMANDTYPE);
+			}
+		}catch(Exception e){
+			showMessage = String.format(ERROR_MESSAGE, NOTHING_AFTER_COMMANDTYPE);
+			return new Task (-1, "", "", false, false);
+		}
+
 		String index = words[1];
 		try { 
 			Integer.parseInt(index); 
 		} catch(NumberFormatException e) { 
 			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
-			 return new Task (-1, "", "", false, false);
+			return new Task (-1, "", "", false, false);
 		}
-		
+
 		try{
 			int number = Integer.parseInt(index);
 			if(number <= 0){
@@ -119,21 +131,21 @@ public class Parser {
 		}catch(Exception e){
 			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
 			return new Task (-1, "", "", false, false);
-	    }
+		}
 		return new Task (Integer.parseInt(index), null, null, false, false);
 	}
 
-// This is the default format of a task.
-// This format can be used when the return type of task is not needed to be known.
-// e.g when deleting a task, only the line number is necessary to be known.
+	// This is the default format of a task.
+	// This format can be used when the return type of task is not needed to be known.
+	// e.g when deleting a task, only the line number is necessary to be known.
 	public Task defaultTask(){
 		return new Task(-1,null,null,false,false);
 	}
-	
+
 	public Task setTaskAttributes(String input){
 		return new Task(-1, null, null, false, false);
 	}
-	
+
 	public Task addTask(String input){
 		String description = input.substring(4, input.length());
 		//String content = extractContent(description);
@@ -161,16 +173,23 @@ public class Parser {
 
 	public Task editTask(String input){
 		String[] words = stringToArray(input);
-		String newDescription = "xx";
+		
+		if(words.length == 2){
+			showMessage = NO_DESCRIPTION_FOR_EDIT;
+			return defaultTask();
+		}
+		else{
+		Task task = targetTask(words);
+		String newDescription = "";
 		newDescription = input.substring(input.indexOf(" ")+1);
 		newDescription = newDescription.substring(newDescription.indexOf(" ")+1);
-		
-		Task task = targetTask(words);
+
 		task.setText(newDescription);
 		task.setCategory("newCategory");
 		task.setPriority(true);
 		task.setComplete(true);
 		return task;
+		}
 	}
 
 	public Task undoOperation(String input){
@@ -179,29 +198,5 @@ public class Parser {
 
 	public Task redoOperation(String input){
 		return defaultTask();
-	}
-	
-	public String getText(){
-		return null;
-	}
-
-	public String getCategory(){
-		return null;
-	}
-
-	public Calendar getFromDate() {
-		return null;
-	}
-
-	public Calendar getToDate() {
-		return null;
-	}
-
-	public boolean isPriority() {
-		return false;
-	}
-
-	public boolean isComplete() {
-		return false;
 	}
 }
