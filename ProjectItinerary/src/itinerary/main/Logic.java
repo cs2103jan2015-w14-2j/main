@@ -97,8 +97,8 @@ public class Logic {
 		
 		updateHistory();
 		
-		int deleteLineNumber = command.getTask().getLineNumber();
-		String consoleMessage = formatDeleteSuccess(deleteLineNumber);
+		int deleteTaskId = command.getTask().getTaskId();
+		String consoleMessage = formatDeleteSuccess(deleteTaskId);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
 	}
 
@@ -115,8 +115,8 @@ public class Logic {
 		
 		updateHistory();
 		
-		int editLineNumber = command.getTask().getLineNumber();
-		String consoleMessage = formatEditSuccess(editLineNumber);
+		int editTaskId = command.getTask().getTaskId();
+		String consoleMessage = formatEditSuccess(editTaskId);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
 	}
 
@@ -164,12 +164,12 @@ public class Logic {
 		return String.format(MESSAGE_ADD_SUCCESS, task.getText());
 	}
 
-	private String formatDeleteSuccess(int deleteLineNumber) {
-		return String.format(MESSAGE_DELETE_SUCCESS, deleteLineNumber);		
+	private String formatDeleteSuccess(int deleteTaskId) {
+		return String.format(MESSAGE_DELETE_SUCCESS, deleteTaskId);		
 	}
 
-	private String formatEditSuccess(int editLineNumber) {
-		return String.format(MESSAGE_EDIT_SUCCESS, editLineNumber);
+	private String formatEditSuccess(int editTaskId) {
+		return String.format(MESSAGE_EDIT_SUCCESS, editTaskId);
 	}
 
 	private String formatInvalidCommand(String userInput) {

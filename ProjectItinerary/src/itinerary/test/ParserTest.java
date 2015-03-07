@@ -16,7 +16,7 @@ public class ParserTest {
 		Task expectedTaskOne = new Task(1, "go home changed", "newCategory", true, true);
 		String input = "edit 1 go home changed";
 		 originalTaskOne = parser.editTask(input);
-		 //System.out.println(originalTaskOne.getLineNumber());
+		 //System.out.println(originalTaskOne.getTaskId());
 		// System.out.println(originalTaskOne.getText());
 		// System.out.println(originalTaskOne.getCategory());
 		 assertEquals(null,parser.getMessage());

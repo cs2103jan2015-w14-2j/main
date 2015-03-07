@@ -87,7 +87,7 @@ public class ProtoFileStorageDemo {
         Task deleteDetails = new Task(0, null, null, false, false);
         try {
         	fileStorage.deleteTask(deleteDetails);
-        	System.out.println("Deleted " + deleteDetails.getLineNumber());
+        	System.out.println("Deleted " + deleteDetails.getTaskId());
         } catch (StorageException e) {
         	System.out.println("ERROR! " + e.getMessage());
         }
@@ -97,7 +97,7 @@ public class ProtoFileStorageDemo {
         Task editOORDetails = new Task(100, null, null, false, false);
         try {
         	fileStorage.editTask(editOORDetails);
-        	System.out.println("Edited " + editOORDetails.getLineNumber());
+        	System.out.println("Edited " + editOORDetails.getTaskId());
         } catch (StorageException e) {
         	System.out.println("ERROR! " + e.getMessage());
         }

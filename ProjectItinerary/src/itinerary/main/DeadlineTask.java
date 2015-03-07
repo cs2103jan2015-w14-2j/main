@@ -7,10 +7,10 @@ public class DeadlineTask extends Task implements Cloneable {
     private Calendar deadline;
 
     //@author generated
-    public DeadlineTask(int lineNumber, String text, String category,
+    public DeadlineTask(int taskId, String text, String category,
                         boolean isPriority, boolean isComplete,
                         Calendar deadline) {
-        super(lineNumber, text, category, isPriority, isComplete);
+        super(taskId, text, category, isPriority, isComplete);
         this.deadline = deadline;
     }
 
@@ -38,7 +38,7 @@ public class DeadlineTask extends Task implements Cloneable {
     //@author A0121409R
     public DeadlineTask clone() {
         // Note the String objects might not be deep copied.
-        return new DeadlineTask(this.getLineNumber(), this.getText(),
+        return new DeadlineTask(this.getTaskId(), this.getText(),
                                 this.getCategory(), this.isPriority(),
                                 this.isComplete(), this.getDeadline());
     }

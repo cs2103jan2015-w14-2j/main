@@ -15,7 +15,7 @@ public class JsonIOHandler {
 
     /**
      * Writes/Appends a given Task object into the given File object in a JSON
-     * format. Inserts the lineNumber of each task before the JSON String.
+     * format. Inserts the taskId of each task before the JSON String.
      * 
      * @param currFile
      *            The File object to write to.

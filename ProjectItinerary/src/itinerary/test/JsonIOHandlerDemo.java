@@ -90,7 +90,7 @@ public class JsonIOHandlerDemo {
         
         for (Task item : testList) {
             
-            System.out.println(item.getLineNumber() + " " + item.getText());
+            System.out.println(item.getTaskId() + " " + item.getText());
         }
         
 

@@ -13,10 +13,10 @@ import java.util.List;
  * <ul>
  * <li>1) BUG: Adding in duplicated Tasks or Commands WILL NOT WORK.
  * <li>2) Writes to file before returning State object.
- * <li>3) Assume Task lineNumbers start from 1, not 0.
+ * <li>3) Assume Task taskIds start from 1, not 0.
  * <li>4) When returning the list of Tasks being held in an instance of
  * fileStorage, it will return a duplicated copy and not the direct reference.
- * <li>5) After adding or removing a certain item in listTask, the lineNumbers
+ * <li>5) After adding or removing a certain item in listTask, the taskIds
  * for each of the Task objects in listTask will be auto-updated.
  * <ul>
  * <p>
@@ -36,7 +36,7 @@ public class ProtoFileStorage extends Storage {
         this.currFile = new File(fileName);
         this.listTask = JsonIOHandler.readJsonFileListTask(currFile);
 
-        this.updateLineNum();
+        this.updateTaskId();
     }
     
     // Getters
@@ -84,16 +84,16 @@ public class ProtoFileStorage extends Storage {
     }
 
     /**
-     * Update the lineNumber variables in each Task object after operation.
+     * Update the taskId variables in each Task object after operation.
      */
-    private void updateLineNum() {
+    private void updateTaskId() {
         if (this.listTask != null && this.listTask.size() != 0) {
             List<Task> tempTaskList = this.getAllTasks();
-            int currLineNum = 1;
+            int currentTaskId = 1;
             
             for (Task item : tempTaskList) {
-                item.setLineNumber(currLineNum);
-                currLineNum++;
+                item.setTaskId(currentTaskId);
+                currentTaskId++;
             }
 
             this.listTask = tempTaskList;
@@ -109,15 +109,15 @@ public class ProtoFileStorage extends Storage {
     public void addTask(Task task) throws StorageException {
 
         Task toAdd = task.clone();
-        int taskId = toAdd.getLineNumber();
+        int taskId = toAdd.getTaskId();
 
         if (taskId == -1) {
             taskId = listTask.size() + 1;
-            toAdd.setLineNumber(taskId);
+            toAdd.setTaskId(taskId);
         }
 
         listTask.add(taskId - 1, toAdd);
-        updateLineNum();
+        updateTaskId();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
     }
@@ -128,7 +128,7 @@ public class ProtoFileStorage extends Storage {
      */
     public void editTask(Task task) throws StorageException {
 
-    	int taskIndex = task.getLineNumber() - 1;
+    	int taskIndex = task.getTaskId() - 1;
     	if (isInvalidIndex(taskIndex)) {
     		// TODO Extract error message as constant
     		throw new StorageException("Unable to edit task, invalid Task ID!");
@@ -137,7 +137,7 @@ public class ProtoFileStorage extends Storage {
         Task originalTask = listTask.remove(taskIndex).clone();
         Task editedTask = super.updateTaskDetails(originalTask, task);
         listTask.add(taskIndex, editedTask);
-        updateLineNum();
+        updateTaskId();
 
         JsonIOHandler.writeJSONList(currFile, listTask);
     }
@@ -151,14 +151,14 @@ public class ProtoFileStorage extends Storage {
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
     public void deleteTask(Task task) throws StorageException {
-    	int taskIndex = task.getLineNumber() - 1;
+    	int taskIndex = task.getTaskId() - 1;
     	if (isInvalidIndex(taskIndex)) {
     		// TODO Extract error message as constant
     		throw new StorageException("Unable to delete task, invalid Task ID!");
     	}
     	
     	listTask.remove(taskIndex);
-    	updateLineNum();
+    	updateTaskId();
     	JsonIOHandler.writeJSONList(currFile, listTask);
     }
 
@@ -185,7 +185,7 @@ public class ProtoFileStorage extends Storage {
      */
     public void refillAll(List<Task> tasks) throws StorageException {
         listTask = tasks;
-        updateLineNum();
+        updateTaskId();
         JsonIOHandler.writeJSONList(currFile, listTask);
     }
 }

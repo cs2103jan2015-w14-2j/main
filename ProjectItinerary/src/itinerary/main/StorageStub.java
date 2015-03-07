@@ -36,7 +36,7 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
     public void editTask(Task task) throws StorageException {
-    	int taskIndex = task.getLineNumber() - 1;
+    	int taskIndex = task.getTaskId() - 1;
     	if (taskIndex < 0 || taskIndex >= tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
     	}
@@ -50,7 +50,7 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
     public void deleteTask(Task task) throws StorageException {
-    	int taskId = task.getLineNumber();
+    	int taskId = task.getTaskId();
     	if (taskId < 1 || taskId > tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
     	}
