@@ -175,7 +175,7 @@ public class Parser {
 		String[] words = stringToArray(input);
 		
 		if(words.length == 2){
-			showMessage = NO_DESCRIPTION_FOR_EDIT;
+			showMessage = String.format(ERROR_MESSAGE, NO_DESCRIPTION_FOR_EDIT);
 			return defaultTask();
 		}
 		else{
