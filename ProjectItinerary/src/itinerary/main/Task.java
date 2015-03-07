@@ -74,43 +74,34 @@ public class Task implements Cloneable {
     //@author A0121409R
 
     public Task clone() {
-
         // Note the String objects might not be deep copied.
-
         return new Task(this.getLineNumber(), this.getText(),
                         this.getCategory(), this.isPriority(),
                         this.isComplete());
     }
 
     public boolean equals(Task toCheck) {
-
         if (toCheck == null) {
-
             return false;
         }
 
         if (toCheck.getLineNumber() != this.lineNumber) {
-
             return false;
         }
 
         if (!toCheck.getText().equals(this.text)) {
-
             return false;
         }
 
         if (!toCheck.getCategory().equals(this.category)) {
-
             return false;
         }
 
         if (toCheck.isPriority() != this.isPriority) {
-
             return false;
         }
 
         if (toCheck.isComplete() != this.isComplete) {
-
             return false;
         }
 
