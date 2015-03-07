@@ -30,13 +30,20 @@ public class SearchTest {
 		task = new ScheduleTask(1, "testtest gjhjy", "testcat",
 				 true,
 				true,fromDate, toDate);
-		task2 = new ScheduleTask(2, "test", "testcat",
+		task2 = new ScheduleTask(2, "test i want to eat pies", "testcat",
 				 true,
 				true,fromDate, toDate);
 		gson = new Gson();
 		jsonList = new ArrayList<Task>();
 		jsonList.add(task);
 		jsonList.add(task2);
+		jsonList.add(new ScheduleTask(3, "fest", "testcat",
+				 true,
+				true,fromDate, toDate));
+		jsonList.add(new ScheduleTask(4, "hello everybody", "testcat",
+				 true,
+				true,fromDate, toDate));
+
 	}
 
 	@Test
@@ -44,13 +51,13 @@ public class SearchTest {
 		List<Task> testList = new ArrayList<Task>();
 		Search search = new Search(jsonList);
 		try {
-	        testList = search.query("testcat","category");
+	        testList = search.query("wan pis","text");
         } catch (IOException e) {
 	        e.printStackTrace();
         } catch (ParseException e) {
 	        e.printStackTrace();
         }
-		assertEquals("test query",gson.toJson(task),gson.toJson(testList.get(0)));
+		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 	}
-
+	
 }
