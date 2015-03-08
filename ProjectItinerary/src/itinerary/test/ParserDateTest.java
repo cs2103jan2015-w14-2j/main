@@ -66,7 +66,7 @@ public class ParserDateTest {
 		assertTrue(expectedTaskOne.equals(taskOne));
 		assertTrue(expectedTaskTwo.equals(taskTwo));
 	}
-
+	@Test
 	public void testGetTask() {
 
         String inputTimeOne = "2015/3/5 1850";
