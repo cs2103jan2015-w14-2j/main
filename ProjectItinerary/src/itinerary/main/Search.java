@@ -35,7 +35,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.IOException;
-
+/**
+ * 
+ * README:to use this, first create a search object,specifying if youre searching by date in the constructor
+ * then call search.query
+ * search by date takes in 2 calendar objects and the field to search in.it returns any date that falls in between the two
+ * given calendar dates inclusive.
+ * 
+ *
+ */
 //@author A0121810Y
 public class Search {
 	private static List<String> list;
@@ -93,6 +101,24 @@ public class Search {
 			throw new SearchException(ERROR_IO);
 		}
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
+	}
+	public void query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(toDate));
+		BooleanQuery q = new BooleanQuery();
+		TermRangeQuery rangeQ = TermRangeQuery.newStringRange(field,gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		System.out.println(rangeQ.toString());
+		q.add(rangeQ,BooleanClause.Occur.MUST);
+		
+		try {
+			ScoreDoc[] hits = searchQuery(q, searcher);
+			addToHitList(hitList, searcher, hits);
+	        displayHits(searcher, hits);
+			reader.close();
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+
 	}
 	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
             throws IOException {
@@ -182,22 +208,5 @@ public class Search {
 		doc.add(new StringField("json",obj.toString(),Field.Store.YES));
 		writer.addDocument(doc);
 	}
-	public void query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
-		Gson gson = new Gson();
-		System.out.println(gson.toJson(toDate));
-		BooleanQuery q = new BooleanQuery();
-		TermRangeQuery rangeQ = TermRangeQuery.newStringRange(field,gson.toJson(fromDate),gson.toJson(toDate),true,true);
-		System.out.println(rangeQ.toString());
-		q.add(rangeQ,BooleanClause.Occur.MUST);
-		
-		try {
-			ScoreDoc[] hits = searchQuery(q, searcher);
-			addToHitList(hitList, searcher, hits);
-	        displayHits(searcher, hits);
-			reader.close();
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
-		}
-
-	}
+	
 }
