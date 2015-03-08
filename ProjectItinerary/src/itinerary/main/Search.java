@@ -104,10 +104,8 @@ public class Search {
 	}
 	public void query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
 		Gson gson = new Gson();
-		System.out.println(gson.toJson(toDate));
 		BooleanQuery q = new BooleanQuery();
 		TermRangeQuery rangeQ = TermRangeQuery.newStringRange(field,gson.toJson(fromDate),gson.toJson(toDate),true,true);
-		System.out.println(rangeQ.toString());
 		q.add(rangeQ,BooleanClause.Occur.MUST);
 		
 		try {
