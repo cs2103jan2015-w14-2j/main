@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JScrollPane;
 
 public class BasicGui {
 
@@ -84,9 +85,12 @@ public class BasicGui {
 		panelCommand.add(textFieldCommand);
 		textFieldCommand.setColumns(10);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		frmProjectItinerary.getContentPane().add(scrollPane, BorderLayout.CENTER);
+
 		panelTasks = new JPanel();
-		frmProjectItinerary.getContentPane().add(panelTasks, BorderLayout.CENTER);
 		panelTasks.setLayout(new BoxLayout(panelTasks, BoxLayout.Y_AXIS));
+		scrollPane.setViewportView(panelTasks);
 		
 		textFieldCommand.addActionListener(new ActionListener() {
 			@Override
