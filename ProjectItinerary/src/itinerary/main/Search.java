@@ -2,6 +2,7 @@ package itinerary.main;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -21,17 +22,28 @@ import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.search.TermRangeQuery;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.IOException;
-
+/**
+ * 
+ * README:to use this, first create a search object,specifying if youre searching by date in the constructor
+ * then call search.query
+ * search by date takes in 2 calendar objects and the field to search in.it returns any date that falls in between the two
+ * given calendar dates inclusive.
+ * 
+ *
+ */
 //@author A0121810Y
 public class Search {
 	private static List<String> list;
@@ -40,29 +52,47 @@ public class Search {
 	private static List<String> typeList;
 	ArrayList<String> hitTypeList;
 	private static final String ERROR_IO = "Error attempting to search.";
-
-	public <T extends Task> Search(List<T> taskList){
+	ArrayList<String> hitList;
+	StandardAnalyzer analyzer;
+	IndexSearcher searcher;
+	IndexReader reader;
+	IndexWriter writer;
+	Document doc;
+	boolean isDate;
+	public <T extends Task> Search(List<T> taskList,boolean dateSearch) throws SearchException{
+		isDate = dateSearch;
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
 		typeList = JsonConverter.getTypeList(taskList);
+		analyzer = new StandardAnalyzer();
+		hitList = new ArrayList<String>();
+		
+		//create the index
+		Directory index = new RAMDirectory();
+		IndexWriterConfig config = new IndexWriterConfig(analyzer);
+		createIndex(index, config);
+				
 	}
+	private void createIndex(Directory index, IndexWriterConfig config)
+            throws SearchException {
+	    try {
+	        writer = new IndexWriter(index, config);
+	        addDocs(writer);
+			closeWriter(writer);
+			reader = DirectoryReader.open(index);
+			searcher = new IndexSearcher(reader);
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+    }
 	//this function takes in the query and the field that it is supposed to check. Fields are those found in Task and its subclasses.
 	public <T extends Task> List<T> query(String query,String field) throws SearchException {
 		// The same analyzer should be used for indexing and searching
-		StandardAnalyzer analyzer = new StandardAnalyzer();
-		ArrayList<String> hitList = new ArrayList<String>();
-		// 1. create the index
-		Directory index = new RAMDirectory();
-		IndexWriterConfig config = new IndexWriterConfig(analyzer);
+		
 		try {
-			IndexWriter w = new IndexWriter(index, config);
 			BooleanQuery q = new BooleanQuery();
-			addDocs(w);
-			closeWriter(w);
 			String[] splitQuery = splitQuery(query);
 			createQuery(field, q, splitQuery);
-			IndexReader reader = DirectoryReader.open(index);
-			IndexSearcher searcher = new IndexSearcher(reader);
 			ScoreDoc[] hits = searchQuery(q, searcher);
 			addToHitList(hitList, searcher, hits);
 			displayHits(searcher, hits);
@@ -72,6 +102,24 @@ public class Search {
 		}
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
+	public void query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(toDate));
+		BooleanQuery q = new BooleanQuery();
+		TermRangeQuery rangeQ = TermRangeQuery.newStringRange(field,gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		System.out.println(rangeQ.toString());
+		q.add(rangeQ,BooleanClause.Occur.MUST);
+		
+		try {
+			ScoreDoc[] hits = searchQuery(q, searcher);
+			addToHitList(hitList, searcher, hits);
+	        displayHits(searcher, hits);
+			reader.close();
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+
+	}
 	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
             throws IOException {
 	    int numHits = 10;
@@ -80,13 +128,13 @@ public class Search {
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 	    return hits;
     }
-	private void closeWriter(IndexWriter w) throws IOException {
-	    w.close();
+	private void closeWriter(IndexWriter writer) throws IOException {
+	    writer.close();
     }
-	private void addDocs(IndexWriter w) throws IOException {
+	private void addDocs(IndexWriter writer) throws IOException {
 	    for ( String tasks : list  ){
 			obj = parser.parse(tasks).getAsJsonObject();
-			addDoc(w ,obj);
+			addDoc(writer ,obj);
 		}
     }
 	private String[] splitQuery(String query) {
@@ -140,16 +188,25 @@ public class Search {
 		}
     }
 
-	private static void addDoc(IndexWriter w, JsonObject obj )
+	private void addDoc(IndexWriter writer, JsonObject obj)
 	        throws IOException {
-		Document doc = new Document();
-		for (Entry<String, JsonElement> entry : obj.entrySet()) {
-			   String key = entry.getKey();
-			   JsonElement value = entry.getValue();
-			   doc.add(new TextField(key, value.toString(), Field.Store.YES));
-
+		doc = new Document();
+		if(isDate){
+			for (Entry<String, JsonElement> entry : obj.entrySet()) {
+				String key = entry.getKey();
+				JsonElement value = entry.getValue();
+				doc.add(new StringField(key, value.toString(), Field.Store.YES));
+			}
+		} else {
+			for (Entry<String, JsonElement> entry : obj.entrySet()) {
+				String key = entry.getKey();
+				JsonElement value = entry.getValue();
+				doc.add(new TextField(key, value.toString(), Field.Store.YES));
+			}
 		}
-		doc.add(new TextField("json",obj.toString(),Field.Store.YES));
-		w.addDocument(doc);
+		
+		doc.add(new StringField("json",obj.toString(),Field.Store.YES));
+		writer.addDocument(doc);
 	}
+	
 }
