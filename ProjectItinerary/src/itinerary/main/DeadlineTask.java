@@ -2,6 +2,8 @@ package itinerary.main;
 
 import java.util.Calendar;
 
+import com.google.gson.Gson;
+
 //@author A0121437N
 public class DeadlineTask extends Task implements Cloneable {
     private Calendar deadline;
@@ -21,19 +23,18 @@ public class DeadlineTask extends Task implements Cloneable {
     public void setDeadline(Calendar deadline) {
         this.deadline = deadline;
     }
-    
+
     //@author A0121437N
     @Override
-	public void updateDetails(Task details) {
-		super.updateDetails(details);
-		if (details instanceof DeadlineTask) {
-			DeadlineTask deadlineDetails = (DeadlineTask) details;
-			if (deadlineDetails.getDeadline() != null) {
-				this.setDeadline(deadlineDetails.getDeadline());
-			}
-		}
-	}
-    
+    public void updateDetails(Task details) {
+        super.updateDetails(details);
+        if (details instanceof DeadlineTask) {
+            DeadlineTask deadlineDetails = (DeadlineTask) details;
+            if (deadlineDetails.getDeadline() != null) {
+                this.setDeadline(deadlineDetails.getDeadline());
+            }
+        }
+    }
 
     //@author A0121409R
     public DeadlineTask clone() {
@@ -44,17 +45,22 @@ public class DeadlineTask extends Task implements Cloneable {
     }
 
     @Override
-	public boolean equals(Object deadlineTask) {
-	    //Overrides default Object equals()
+    public boolean equals(Object deadlineTask) {
+        // Overrides default Object equals()
         if (!super.equals(deadlineTask)) {
-        	return false;
+            return false;
         }
-        
+
         if (!(deadlineTask instanceof DeadlineTask)) {
             return false;
         }
 
-        if (!((DeadlineTask) deadlineTask).deadline.equals(this.deadline)) {
+        Gson gson = new Gson();
+        String deadline1 =
+                           gson.toJson(((DeadlineTask) deadlineTask).getDeadline());
+        String deadline2 = gson.toJson(this.deadline);
+
+        if (!deadline1.equals(deadline2)) {
             return false;
         }
 

@@ -2,6 +2,8 @@ package itinerary.main;
 
 import java.util.Calendar;
 
+import com.google.gson.Gson;
+
 //@author A0121437N
 public class ScheduleTask extends Task implements Cloneable {
     private Calendar fromDate;
@@ -35,22 +37,22 @@ public class ScheduleTask extends Task implements Cloneable {
 
     //@author A0121437N
     @Override
-	public void updateDetails(Task details) {
-		super.updateDetails(details);
-		if (details instanceof ScheduleTask) {
-			ScheduleTask scheduleDetails = (ScheduleTask) details;
-			
-			if (scheduleDetails.getFromDate() != null) {
-				this.setFromDate(scheduleDetails.getFromDate());
-			}
-			
-			if (scheduleDetails.getToDate() != null){
-				this.setToDate(scheduleDetails.getToDate());
-			}
-		}
-	}
+    public void updateDetails(Task details) {
+        super.updateDetails(details);
+        if (details instanceof ScheduleTask) {
+            ScheduleTask scheduleDetails = (ScheduleTask) details;
 
-	//@author A0121409R
+            if (scheduleDetails.getFromDate() != null) {
+                this.setFromDate(scheduleDetails.getFromDate());
+            }
+
+            if (scheduleDetails.getToDate() != null) {
+                this.setToDate(scheduleDetails.getToDate());
+            }
+        }
+    }
+
+    //@author A0121409R
     public ScheduleTask clone() {
         // Note the String objects might not be deep copied.
         return new ScheduleTask(this.getTaskId(), this.getText(),
@@ -61,20 +63,30 @@ public class ScheduleTask extends Task implements Cloneable {
 
     @Override
     public boolean equals(Object scheduleTask) {
-        //Overrides Object equals() method
+        // Overrides Object equals() method
         if (!super.equals(scheduleTask)) {
-        	return false;
+            return false;
         }
-        
+
         if (!(scheduleTask instanceof ScheduleTask)) {
             return false;
         }
 
-        if (!((ScheduleTask) scheduleTask).fromDate.equals(this.fromDate)) {
+        Gson gson = new Gson();
+
+        String fromDate1 =
+                           gson.toJson(((ScheduleTask) scheduleTask).getFromDate());
+        String fromDate2 = gson.toJson(this.fromDate);
+
+        if (!fromDate1.equals(fromDate2)) {
             return false;
         }
 
-        if (!((ScheduleTask) scheduleTask).toDate.equals(this.toDate)) {
+        String toDate1 =
+                         gson.toJson(((ScheduleTask) scheduleTask).getFromDate());
+        String toDate2 = gson.toJson(this.toDate);
+
+        if (!toDate1.equals(toDate2)) {
             return false;
         }
 
