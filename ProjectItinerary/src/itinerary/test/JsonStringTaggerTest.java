@@ -51,7 +51,7 @@ public class JsonStringTaggerTest {
     public void testConvertTaggedJsonStringtoTask() {
         assertEquals(task1, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask1));
         assertEquals(task2, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask2));
-        assertTrue(task3.equals(JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask3)));
+        assertEquals(task3, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask3));
     }
 
 }
