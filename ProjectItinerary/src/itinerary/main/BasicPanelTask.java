@@ -37,7 +37,7 @@ public class BasicPanelTask extends JPanel {
 		gbc_lblTaskDescription.gridy = 0;
 		add(lblTaskDescription, gbc_lblTaskDescription);
 		
-		lblTaskId.setText(Integer.toString(this.task.getTaskId()));
+		lblTaskId.setText(Integer.toString(this.task.getTaskId()) + ".");
 		lblTaskDescription.setText(this.task.getText());
 	}
 
