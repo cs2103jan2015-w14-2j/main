@@ -46,15 +46,17 @@ public class SearchTest {
 		jsonList.add(new ScheduleTask(4, "hello everybody", "testcat",
 				 true,
 				true,fromDate, toDate));
+		jsonList.add(new DeadlineTask(5, "hello everybody", "testcat",
+				 true,
+				true,fromDate));
 
 	}
-
 	@Test
 	public void testQuery() {
 		List<Task> testList = new ArrayList<Task>();
-		Search search = new Search(jsonList);
 		
 	    try {
+			Search search = new Search(jsonList,false);
 	        testList = search.query("wan pis","text");
         } catch (SearchException e) {
 	        // TODO Auto-generated catch block
@@ -62,6 +64,22 @@ public class SearchTest {
         }
 		
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
+	}
+	@Test
+	public void testQueryDate(){
+		
+		Calendar toDate1 = Calendar.getInstance(); 
+		toDate1.set(2016,2,10,0,0,0);
+		Calendar fromDate1 = Calendar.getInstance(); 
+		fromDate1.set(2014,2,0,0,0,0);
+		
+		try {
+			Search search = new Search(jsonList,true);
+	        search.query(toDate1,fromDate1,"deadline");
+        } catch (SearchException e) {
+	        e.printStackTrace();
+        }
+        
 	}
 	
 }
