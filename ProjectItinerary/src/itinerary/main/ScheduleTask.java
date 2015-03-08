@@ -59,16 +59,22 @@ public class ScheduleTask extends Task implements Cloneable {
                                 this.getToDate());
     }
 
-    public boolean equals(ScheduleTask scheduleTask) {
+    @Override
+    public boolean equals(Object scheduleTask) {
+        //Overrides Object equals() method
         if (!super.equals(scheduleTask)) {
         	return false;
         }
-
-        if (!scheduleTask.fromDate.equals(this.fromDate)) {
+        
+        if (!(scheduleTask instanceof ScheduleTask)) {
             return false;
         }
 
-        if (!scheduleTask.toDate.equals(this.toDate)) {
+        if (!((ScheduleTask) scheduleTask).fromDate.equals(this.fromDate)) {
+            return false;
+        }
+
+        if (!((ScheduleTask) scheduleTask).toDate.equals(this.toDate)) {
             return false;
         }
 

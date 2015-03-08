@@ -43,12 +43,18 @@ public class DeadlineTask extends Task implements Cloneable {
                                 this.isComplete(), this.getDeadline());
     }
 
-	public boolean equals(DeadlineTask deadlineTask) {
+    @Override
+	public boolean equals(Object deadlineTask) {
+	    //Overrides default Object equals()
         if (!super.equals(deadlineTask)) {
         	return false;
         }
+        
+        if (!(deadlineTask instanceof DeadlineTask)) {
+            return false;
+        }
 
-        if (!deadlineTask.deadline.equals(this.deadline)) {
+        if (!((DeadlineTask) deadlineTask).deadline.equals(this.deadline)) {
             return false;
         }
 
