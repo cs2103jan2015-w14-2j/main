@@ -46,10 +46,6 @@ public class Logic {
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
-		if (command.getMessage() != null) {
-			return invalidCommand(userInput);
-		}
-		
 		if (command.getType() == CommandType.ADD) {
 			return executeAdd(command);
 		} else if (command.getType() == CommandType.CLEAR) {
