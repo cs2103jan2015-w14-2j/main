@@ -155,6 +155,12 @@ public class Parser {
 		int nextType = findNextKeywordType(words);
 		if (nextType != -1) {
 			int index = text.indexOf(" " + KEYWORD[nextType] + " ");
+			if (index < 0) {
+				index = text.indexOf(" " + KEYWORD[nextType]);
+			}
+			if (index < 0) {
+				index = text.indexOf(KEYWORD[nextType] + " ");
+			}
 			text = text.substring(0, index);
 		}
 		return text.trim();
