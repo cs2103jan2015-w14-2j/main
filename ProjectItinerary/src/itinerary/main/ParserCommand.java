@@ -14,12 +14,7 @@ public class ParserCommand {
 	private static final String COMMAND_REDO = "redo";
 	private static final String COMMAND_UNDO = "undo";
     
-    public CommandType getType(String command){
-    	return determineType(command);
-    }
-    
-    public CommandType determineType(String command){
-    	
+    public static CommandType determineType(String command){
 		if(command.equalsIgnoreCase(COMMAND_ADD)){
 			return CommandType.ADD;
 		}
