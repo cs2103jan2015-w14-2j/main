@@ -4,6 +4,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Spliterator;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
 
 import itinerary.main.ParserCommand;
 import itinerary.main.Task;
@@ -25,56 +28,32 @@ public class Parser {
 	private static final String[] KEYWORD = {"pri",  "ca", "by", "ti"};
 
 	//returns a command object and it is called by logic
-	public Command getCommand(String input) {
-		Task task = createTask(input);
-		CommandType commandType = createCommandType(input);
+	public Command getCommand(String input) throws ParserException {
+		String firstWord = extractFirstWord(input);
+		String argument = removeFirstWord(input);
+		CommandType commandType = ParserCommand.determineType(firstWord);
+		Task task = createTask(commandType, argument);
 		Command command = new Command(task, commandType);
-		return command; 
+		return command;
 	}
 
-	public String[] stringToArray(String input){
-		String[] inputWords =  input.split(" +");
-		return inputWords;
+	public Task createTask(CommandType type, String argument) throws ParserException {
+		if(type.equals(CommandType.ADD)){
+			return addTask(argument);
+		}
+		if(type.equals(CommandType.DELETE)){
+			return deleteTask(argument);
+		}
+		if(type.equals(CommandType.EDIT)){
+			return editTask(argument);
+		}
+		if(type.equals(CommandType.SEARCH)){
+			return searchTask(argument);
+		}
+		return null;
 	}
 
-	public CommandType createCommandType(String input){
-		String[] inputWords = stringToArray(input);
-		String firstWord = inputWords[0]; 
-		ParserCommand cmd =  new ParserCommand();   
-		return cmd.getType(firstWord);
-	}
-
-	public Task createTask(String input) {
-		if(createCommandType(input).equals(CommandType.ADD)){
-			return addTask(input);
-		}
-		if(createCommandType(input).equals(CommandType.DELETE)){
-			return deleteTask(input);
-		}
-		if(createCommandType(input).equals(CommandType.EDIT)){
-			return editTask(input);
-		}
-		if(createCommandType(input).equals(CommandType.SEARCH)){
-			return searchTask(input);
-		}
-		if(createCommandType(input).equals(CommandType.DISPLAY)){
-			return displayTasks(input);
-		}
-		if(createCommandType(input).equals(CommandType.CLEAR)){
-			return clearTasks(input);
-		}
-		if(createCommandType(input).equals(CommandType.REDO)){
-			return redoOperation(input);
-		}
-		if(createCommandType(input).equals(CommandType.UNDO)){
-			return undoOperation(input);
-		}
-		else{
-			return defaultTask();
-		}			
-	}
-
-	public boolean hasDuplicatedKeywords(String[] inputWords){
+	public static boolean hasDuplicatedKeywords(String[] inputWords){
 		int[] keyWordCounter = {0,0,0};	
 
 		for(int i=0; i < inputWords.length; i++){
@@ -91,23 +70,24 @@ public class Parser {
 
 		for(int i=0; i < keyWordCounter.length; i++){
 			if(keyWordCounter[0] > 1){
-				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_PRI);
+				//showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_PRI);
 				return true;
 			}
 			if(keyWordCounter[1] > 1){
-				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_CA);
+				//showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_CA);
 				return true;
 			}
 			if(keyWordCounter[2] > 1){
-				showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_TIME);
+				//showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_TIME);
 				return true;
 			}
 		}
 		return false;
 	}
 
+	/*
 	//KEYWORD = {"pri",  "ca", "by", "ti"}
-	public Task extractContent(String input, int startIndex) throws ParseException{	
+	public Task extractContent(String input) throws ParseException{	
 		Task floatingTask = defaultTask();
 		DeadlineTask deadlineTask = new DeadlineTask(-1, "","",false,false,null);
 		ScheduleTask scheduleTask = new ScheduleTask(-1,"","",false,false,null,null);	
@@ -229,95 +209,121 @@ public class Parser {
 		default: return scheduleTask;
 		}
 	}
+	*/
 
+	private static Task extractContent(String arg) throws ParserException {
+		String[] words = stringToArray(arg);
+		if (hasDuplicatedKeywords(words)) {
+			throw new ParserException("Duplicate keywords detected");
+		}
+		String description = extractDescription(arg);
+		String category = extractCategory(arg);
+		return new Task(-1, description, category, false, false);
+	}
+	
+	private static String extractCategory(String arg) {
+		String[] words = stringToArray(arg);
+		if (!containsKeyword(words, KEYWORD[1])) {
+			return null;
+		}
+		String textAfterKeyword = arg.split(KEYWORD[1])[1].trim();
+		words = stringToArray(textAfterKeyword);
+		return removeExtraWords(words, textAfterKeyword);
+	}
 
-	// check if the line number of a task is valid.
-	// It will return a task with the valid line number to logic if the line number is valid.
-	//Otherwise, it will return a task with line number of -1 to indicate invalidation
-	public Task targetTask(String[] words) throws Exception{
-		try{
-			if(words.length == 1){
-				throw new Exception(NOTHING_AFTER_COMMANDTYPE);
+	private static String removeExtraWords(String[] words, String text) {
+		int nextType = findNextKeywordType(words);
+		if (nextType != -1) {
+			int index = text.indexOf(KEYWORD[nextType]);
+			text = text.substring(0, index);
+		}
+		return text.trim();
+	}
+
+	private static boolean containsKeyword(String[] words, String string) {
+		for (String word : words) {
+			if (word.equals(string)) {
+				return true;
 			}
-		}catch(Exception e){
-			showMessage = String.format(ERROR_MESSAGE, NOTHING_AFTER_COMMANDTYPE);
-			throw new Exception(showMessage);
 		}
+		return false;
+	}
 
-		String index = words[1];
-		try { 
-			Integer.parseInt(index); 
-		} catch(NumberFormatException e) { 
-			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
-			throw new Exception(showMessage);
-		}
+	private static String extractDescription(String arg) {
+		String[] words = stringToArray(arg);
+		return removeExtraWords(words, arg);
+	}
 
-		try{
-			int number = Integer.parseInt(index);
-			if(number <= 0){
-				throw new Exception(INVALID_INDEX);
+	private static int findNextKeywordType(String[] words) {
+		for (int i = 0; i < words.length; i++) {
+			int identity = identifyKeyword(words[i]);
+			if (identity != -1) {
+				return identity;
 			}
-		}catch(Exception e){
-			showMessage = String.format(ERROR_MESSAGE, INVALID_INDEX);
-			return new Task (-1, "", "", false, false);
 		}
-		return new Task (Integer.parseInt(index), "", "", false, false);
+		return -1;
+	}
+	
+	private static int identifyKeyword (String word) {
+		for (int i = 0; i < KEYWORD.length; i++) {
+			if (word.equals(KEYWORD[i])) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	// This is the default format of a task.
 	// This format can be used when the return type of task is not needed to be known.
 	// e.g when deleting a task, only the line number is necessary to be known.
-	public Task defaultTask(){
+	public static Task defaultTask(){
 		return new Task(-1,"","",false,false);
 	}
 
-	public Task setTaskAttributes(String input){
-		return new Task(-1, "", "", false, false);
+	public Task addTask(String input) throws ParserException {
+		return extractContent(input);
 	}
 
-	public Task addTask(String input) {
-		return extractContent(input,1);
+	public Task deleteTask(String argument) throws ParserException {
+		String[] arguments = stringToArray(argument);
+		int id = identifyTarget(arguments);
+		return new Task (id, null, null, false, false);
 	}
 
-	public Task deleteTask(String input) {
-		String[] words = stringToArray(input);
-		Task task = targetTask(words);
+	public Task editTask(String input) throws ParserException {
+		int taskId = identifyTarget(stringToArray(input));
+		Task task = extractContent(removeFirstWord(input));
+		task.setTaskId(taskId);
+		if (task.getText().equals("")) {
+			task.setText(null);
+		}
 		return task;
 	}
 
-	public Task displayTasks(String input){
-		return defaultTask();
-	}
-
-	public Task clearTasks(String input){
-		return defaultTask();
+	private int identifyTarget(String[] arguments) throws ParserException {
+		if (arguments.length == 0) {
+			throw new ParserException("Unable to identify target task");
+		}
+		try {
+			return Integer.parseInt(arguments[0]);
+		} catch (NumberFormatException e) {
+			throw new ParserException("Invalid target task id");
+		}
 	}
 
 	public Task searchTask(String input){
-		String description = input.substring(7, input.length());
-		return new Task(1, description, "", false, false);
+		return new Task(1, input, "", false, false);
 	}
 
-	public Task editTask(String input) {
-		String[] words = stringToArray(input);
-
-		if(words.length == 2){
-			showMessage = String.format(ERROR_MESSAGE, NO_DESCRIPTION_FOR_EDIT);
-			//throw new Exception(showMessage);
-		}
-		else{
-			int lineNumber = targetTask(words).getTaskId();
-			Task task = extractContent(input, 2);
-			task.setTaskId(lineNumber);
-			return task;
-		}
+	private static String[] stringToArray(String input){
+		return input.trim().split("\\s+");
+	}
+	
+	private static String extractFirstWord (String input) {
+		return stringToArray(input)[0];
 	}
 
-	public Task undoOperation(String input){
-		return defaultTask();
-	}
-
-	public Task redoOperation(String input){
-		return defaultTask();
+	private static String removeFirstWord (String input) {
+		return input.replaceFirst(extractFirstWord(input), "").trim();
 	}
 }
