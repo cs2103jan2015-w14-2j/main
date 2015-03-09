@@ -1,15 +1,16 @@
 package itinerary.main;
 
-import javax.swing.JPanel;
-import java.awt.SystemColor;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.FlowLayout;
+import java.awt.SystemColor;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class BasicPanelTask extends JPanel {
 
+	private static final String DATE_FORMAT = "EEE, dd MMM yyyy, hh:mm aaa";
 	private Task task;
 	/**
 	 * Create the panel.
@@ -26,8 +27,30 @@ public class BasicPanelTask extends JPanel {
 		JLabel lblTaskDescription = new JLabel("TaskDescription");
 		add(lblTaskDescription);
 		
-		lblTaskId.setText(Integer.toString(this.task.getTaskId()) + ".");
+		String priorityStar = this.task.isPriority() ? "*" : "";
+		lblTaskId.setText(priorityStar + Integer.toString(this.task.getTaskId()) + ".");
 		lblTaskDescription.setText(this.task.getText());
-	}
+		
+		JLabel lblFromDate = new JLabel("");
+		JLabel lblToDate = new JLabel("");
+		if (this.task instanceof DeadlineTask) {
+			DeadlineTask deadlineTask = (DeadlineTask) this.task;
+			Calendar deadline = deadlineTask.getDeadline();
+			lblFromDate.setText("Due: " + formatCalendarDate(deadline));
+		} else if (this.task instanceof ScheduleTask) {
+			ScheduleTask scheduleTask = (ScheduleTask) this.task;
+			Calendar fromDate = scheduleTask.getFromDate();
+			Calendar toDate = scheduleTask.getToDate();
+			lblFromDate.setText("From: " + formatCalendarDate(fromDate));
+			lblToDate.setText("To: " + formatCalendarDate(toDate));
+		}
 
+		add(lblFromDate);
+		add(lblToDate);
+	}
+	
+	private static String formatCalendarDate(Calendar date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		return dateFormat.format(date.getTime());
+	}
 }
