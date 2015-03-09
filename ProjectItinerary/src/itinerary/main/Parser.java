@@ -24,33 +24,12 @@ public class Parser {
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
 	private static final String[] KEYWORD = {"pri",  "ca", "by", "ti"};
 
-	private static String showMessage = null;
-	private static String time = "";
-
-	public Parser(){
-	}
-
-	public String getMessage(){
-		return showMessage;
-	}
-
-	public String getTime(){
-		return time;
-	}
-
 	//returns a command object and it is called by logic
-	public Command  getCommand(String input) throws Exception{
+	public Command getCommand(String input) {
 		Task task = createTask(input);
 		CommandType commandType = createCommandType(input);
-		String message = createMessage();
-		Command command = new Command(task, commandType, message);
+		Command command = new Command(task, commandType);
 		return command; 
-	}
-
-	//The message will be null if the command and input format is valid,
-	// It will return an error message if the input is not valid
-	public String createMessage(){
-		return showMessage;
 	}
 
 	public String[] stringToArray(String input){
@@ -65,7 +44,7 @@ public class Parser {
 		return cmd.getType(firstWord);
 	}
 
-	public Task createTask(String input) throws Exception{
+	public Task createTask(String input) {
 		if(createCommandType(input).equals(CommandType.ADD)){
 			return addTask(input);
 		}
@@ -296,11 +275,11 @@ public class Parser {
 		return new Task(-1, "", "", false, false);
 	}
 
-	public Task addTask(String input) throws ParseException{
+	public Task addTask(String input) {
 		return extractContent(input,1);
 	}
 
-	public Task deleteTask(String input) throws Exception{
+	public Task deleteTask(String input) {
 		String[] words = stringToArray(input);
 		Task task = targetTask(words);
 		return task;
@@ -319,12 +298,12 @@ public class Parser {
 		return new Task(1, description, "", false, false);
 	}
 
-	public Task editTask(String input) throws Exception{
+	public Task editTask(String input) {
 		String[] words = stringToArray(input);
 
 		if(words.length == 2){
 			showMessage = String.format(ERROR_MESSAGE, NO_DESCRIPTION_FOR_EDIT);
-			throw new Exception(showMessage);
+			//throw new Exception(showMessage);
 		}
 		else{
 			int lineNumber = targetTask(words).getTaskId();
