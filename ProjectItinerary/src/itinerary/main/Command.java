@@ -4,14 +4,12 @@ package itinerary.main;
 public class Command {
 	private Task task;
 	private CommandType type;
-	private String message;
 	
 	//@author generated
-	public Command(Task task, CommandType type, String message) {
+	public Command(Task task, CommandType type) {
 		super();
 		this.task = task;
 		this.type = type;
-		this.message = message;
 	}
 
 	public Task getTask() {
@@ -20,9 +18,5 @@ public class Command {
 
 	public CommandType getType() {
 		return type;
-	}
-	
-	public String getMessage(){
-		return message;
 	}
 }
