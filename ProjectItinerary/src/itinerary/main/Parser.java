@@ -16,7 +16,7 @@ public class Parser {
 	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
 	private static final String INVALID_DATE_TIME = "Invalid date";
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
-	private static final String[] KEYWORD = {"pri",  "ca", "by", "from", "to"};
+	private static final String[] KEYWORD = {"pri",  "cat", "by", "from", "to"};
 
 	//returns a command object and it is called by logic
 	public static Command getCommand(String input) throws ParserException {
