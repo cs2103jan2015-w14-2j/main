@@ -1,16 +1,8 @@
 package itinerary.main;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Spliterator;
-
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT;
-
-import itinerary.main.ParserCommand;
-import itinerary.main.Task;
-import itinerary.main.CommandType;
+import java.util.Date;
+import com.joestelmach.natty.*;
 
 //@author A0114823M
 public class Parser {
@@ -25,7 +17,7 @@ public class Parser {
 	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
 	private static final String INVALID_DATE_TIME = "Invalid date";
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
-	private static final String[] KEYWORD = {"pri",  "ca", "by", "ti"};
+	private static final String[] KEYWORD = {"pri",  "ca", "by", "from", "to"};
 
 	//returns a command object and it is called by logic
 	public Command getCommand(String input) throws ParserException {
@@ -218,9 +210,64 @@ public class Parser {
 		}
 		String description = extractDescription(arg);
 		String category = extractCategory(arg);
-		return new Task(-1, description, category, false, false);
+		boolean priority = extractPriority(arg);
+		
+		if (containsKeyword(words, KEYWORD[2])) {
+			if (!(containsKeyword(words, KEYWORD[3]) || containsKeyword(words, KEYWORD[4]))) {
+				// Deadline task
+				Calendar deadline = extractDeadline(arg);
+				return new DeadlineTask(-1, description, category, priority, false, deadline);
+			} else {
+				throw new ParserException("Invalid input format, cannot be both deadline and schedule");
+			}
+		} else if (containsKeyword(words, KEYWORD[3]) && containsKeyword(words, KEYWORD[4])) {
+			// schedule task
+			Calendar fromDate = extractFromDate(arg);
+			Calendar toDate = extractToDate(arg);
+			if (toDate.compareTo(fromDate) < 0) {
+				throw new ParserException("Error! To date must be after from date");
+			}
+			return new ScheduleTask(-1, description, category, priority, false, fromDate, toDate);
+		} else if (containsKeyword(words, KEYWORD[3]) && containsKeyword(words, KEYWORD[4])) {
+			throw new ParserException("Invalid input format, schedule task must have both from and to");
+		}
+		return new Task(-1, description, category, priority, false);
 	}
 	
+	private static Calendar extractToDate(String arg) {
+		String textAfterKeyword = arg.split(KEYWORD[4])[1];
+		String[] words = stringToArray(textAfterKeyword);
+		String toString = removeExtraWords(words, textAfterKeyword);
+		return parseDateFromText(toString);
+	}
+
+	private static Calendar extractFromDate(String arg) {
+		String textAfterKeyword = arg.split(KEYWORD[3])[1];
+		String[] words = stringToArray(textAfterKeyword);
+		String fromString = removeExtraWords(words, textAfterKeyword);
+		return parseDateFromText(fromString);
+	}
+
+	private static Calendar extractDeadline(String arg) {
+		String textAfterKeyword = arg.split(KEYWORD[2])[1];
+		String[] words = stringToArray(textAfterKeyword);
+		String deadlineString = removeExtraWords(words, textAfterKeyword);
+		return parseDateFromText(deadlineString);
+	}
+
+	private static Calendar parseDateFromText(String dateString) {
+		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
+		Date date = dateParser.parse(dateString).get(0).getDates().get(0);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar;
+	}
+
+	private static boolean extractPriority(String arg) {
+		String[] words = stringToArray(arg);
+		return containsKeyword(words, KEYWORD[0]);
+	}
+
 	private static String extractCategory(String arg) {
 		String[] words = stringToArray(arg);
 		if (!containsKeyword(words, KEYWORD[1])) {
