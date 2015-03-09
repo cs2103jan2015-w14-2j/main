@@ -12,6 +12,8 @@ import java.util.List;
 
 //@author A0121409R
 public class JsonIOHandler {
+    
+    static File defaultFile = new File("default");
 
     /**
      * Writes/Appends a given Task object into the given File object in a JSON
@@ -26,6 +28,12 @@ public class JsonIOHandler {
      *            content in currFile when writing the task.
      */
     public static void writeJSON(File currFile, Task task, boolean willOverwrite) throws IOException {
+        
+        if (currFile == null) {
+            writeJSON(defaultFile, task, true);
+            return;
+        }
+        
         FileOutputStream writer = new FileOutputStream(currFile, !willOverwrite);
 
         if (task != null) {
@@ -87,14 +95,17 @@ public class JsonIOHandler {
                         sb.append(stringArray[2]);
                     }
                 } else {
-                    sb.append(line);
+                    sb.append(stringArray[2]);
                 }
                 sb.append("\n");
             }
             bufferedReader.close();
+        } catch (NullPointerException e) {
+            readJSON(defaultFile, true);
         } catch (FileNotFoundException e) {
             try {
 				writeJSON(currFile, null, true);
+				readJSON(currFile, true);
 			} catch (IOException io) {
 				io.printStackTrace();
 			}
@@ -136,19 +147,22 @@ public class JsonIOHandler {
                         sb.append(stringArray[2]);
                     }
                 } else {
-                    sb.append(line);
+                    sb.append(stringArray[2]);
                 }
 
                 jsonList.add(sb.toString());
                 sb.setLength(0);  // To clear buffer
             }
             bufferedReader.close();
+        } catch (NullPointerException e) {
+            readJSON(defaultFile, true);
         } catch (FileNotFoundException e) {
             try {
-				writeJSON(currFile, null, true);
-			} catch (IOException io) {
-				io.printStackTrace();
-			}
+                writeJSON(currFile, null, true);
+                readJSON(currFile, true);
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -164,7 +178,7 @@ public class JsonIOHandler {
      *            The File object to be read from.
      * @return A List<Task> object containing all the items in currFile.
      */
-    public static List<Task> readJsonFileListTask(File currFile) {
+    public static List<Task> readJSONFileListTask(File currFile) {
         String line = "";
         List<Task> taskList = new ArrayList<Task>();
 
@@ -177,15 +191,19 @@ public class JsonIOHandler {
                 taskList.add(JsonStringTagger.convertTaggedJsonStringtoTask(line));
             }
             bufferedReader.close();
+        } catch (NullPointerException e) {
+            readJSON(defaultFile, true);
         } catch (FileNotFoundException e) {
             try {
-				writeJSON(currFile, null, true);
-			} catch (IOException io) {
-				io.printStackTrace();
-			}
+                writeJSON(currFile, null, true);
+                readJSON(currFile, true);
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
         return taskList;
     }
 

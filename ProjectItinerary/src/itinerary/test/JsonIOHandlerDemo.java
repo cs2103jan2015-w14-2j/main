@@ -56,7 +56,7 @@ public class JsonIOHandlerDemo {
         };
         
         JsonIOHandler.writeJSONList(testFile, null);     
-        List<Task> testList = JsonIOHandler.readJsonFileListTask(testFile);
+        List<Task> testList = JsonIOHandler.readJSONFileListTask(testFile);
         System.out.println(testList.size());
         System.out.println();
         
@@ -88,7 +88,7 @@ public class JsonIOHandlerDemo {
         
         // Get a List of Tasks from the file.
         
-        testList = JsonIOHandler.readJsonFileListTask(testFile);
+        testList = JsonIOHandler.readJSONFileListTask(testFile);
         
         for (Task item : testList) {
             

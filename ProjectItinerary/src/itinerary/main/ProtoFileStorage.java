@@ -38,7 +38,7 @@ public class ProtoFileStorage extends Storage {
 
     public ProtoFileStorage(String fileName) {
         this.currFile = new File(fileName);
-        this.listTask = JsonIOHandler.readJsonFileListTask(currFile);
+        this.listTask = JsonIOHandler.readJSONFileListTask(currFile);
 
         this.updateTaskId();
     }
