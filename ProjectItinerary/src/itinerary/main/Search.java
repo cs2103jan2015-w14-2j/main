@@ -12,6 +12,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -102,7 +103,7 @@ public class Search {
 		}
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
-	public void query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
+	public <T extends Task> List<T> query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
 		Gson gson = new Gson();
 		BooleanQuery q = new BooleanQuery();
 		TermRangeQuery rangeQ = TermRangeQuery.newStringRange(field,gson.toJson(fromDate),gson.toJson(toDate),true,true);
@@ -116,7 +117,22 @@ public class Search {
 		} catch (IOException e) {
 			throw new SearchException(ERROR_IO);
 		}
-
+		return JsonConverter.convertJsonList(hitList,hitTypeList);
+	}
+	public <T extends Task> List<T> query(boolean setTrue,String field) throws SearchException{
+		String isTrue = (setTrue ? "true" : "false");
+		BooleanQuery q = new BooleanQuery();
+		TermQuery termQuery = new TermQuery(new Term(field,isTrue));
+		q.add(termQuery,BooleanClause.Occur.MUST);
+		try {
+			ScoreDoc[] hits = searchQuery(q, searcher);
+			addToHitList(hitList, searcher, hits);
+	        displayHits(searcher, hits);
+			reader.close();
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
 	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
             throws IOException {

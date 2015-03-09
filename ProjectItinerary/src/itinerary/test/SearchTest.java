@@ -52,6 +52,20 @@ public class SearchTest {
 
 	}
 	@Test
+	public void testBooleanQuery() {
+		List<Task> testList = new ArrayList<Task>();
+		
+	    try {
+			Search search = new Search(jsonList,true);
+	        testList = search.query(true,"isPriority");
+        } catch (SearchException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+		
+		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(1)));
+	}
+	@Test
 	public void testQuery() {
 		List<Task> testList = new ArrayList<Task>();
 		
