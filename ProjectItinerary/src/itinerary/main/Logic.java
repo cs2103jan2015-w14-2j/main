@@ -193,10 +193,6 @@ public class Logic {
 		return String.format(MESSAGE_WELCOME, fileName);
 	}
 	
-	private UserInterfaceContent invalidCommand(String message) {
-		return new UserInterfaceContent(message, storage.getAllTasks());
-	}
-	
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
