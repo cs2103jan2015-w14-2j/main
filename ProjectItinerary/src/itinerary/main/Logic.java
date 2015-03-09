@@ -23,13 +23,11 @@ public class Logic {
 	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
 	
 	private String fileName;
-	private Parser parser;
 	private Storage storage;
 	private History history;
 	
 	public Logic (String fileName) {
 		this.fileName = fileName;
-		this.parser = new Parser();
 		this.storage = new ProtoFileStorage(fileName);
 		this.history = new History(storage.getAllTasks());
 	}
@@ -37,7 +35,7 @@ public class Logic {
 	public UserInterfaceContent executeUserInput (String userInput) {
 		Command userCommand;
 		try {
-			userCommand = parser.getCommand(userInput);
+			userCommand = Parser.getCommand(userInput);
 		} catch (ParserException e) {
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}

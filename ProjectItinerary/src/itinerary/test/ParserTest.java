@@ -72,7 +72,7 @@ public class ParserTest {
 		Task originalTaskOne = new Task(3, "eat Chinese food", "", false, false);	
 		Task expectedTaskOne = new Task(1, "eat Indian food", "", false, false);
 		String inputOne = "edit 1 eat Indian food";
-		originalTaskOne = parser.editTask(inputOne);
+		originalTaskOne = parser.createTaskToEdit(inputOne);
 		System.out.println(originalTaskOne.getTaskId());
 		System.out.println(originalTaskOne.getText());
 		System.out.println(originalTaskOne.isPriority());
@@ -83,7 +83,7 @@ public class ParserTest {
 		Task originalTaskTwo = new Task(1, "eat bread", "", false, false);	
 		Task expectedTaskTwo = new Task(2, "eat cake", "", true, false);
 		String inputTwo = "edit 2 eat cake pri ";
-		originalTaskTwo = parser.editTask(inputTwo);
+		originalTaskTwo = parser.createTaskToEdit(inputTwo);
 		System.out.println(originalTaskTwo.getTaskId());
 		System.out.println(originalTaskTwo.getText());
 		System.out.println(originalTaskTwo.isPriority());
@@ -97,7 +97,7 @@ public class ParserTest {
 		
 		Task expectedTaskOne = new Task(-1, "visit", "", true, false);
 		String input = "add visit pri";
-		Task createdTaskOne = parser.addTask(input);
+		Task createdTaskOne = parser.createTaskToAdd(input);
 		System.out.println(createdTaskOne.getTaskId());
 		System.out.println(createdTaskOne.getText());
 		System.out.println(createdTaskOne.isPriority());
@@ -105,7 +105,7 @@ public class ParserTest {
 		
 		Task expectedTaskTwo = new Task(-1, "visit grandmom", "plan for recess week", true, false);
 		String inputTwo = "add visit grandmom pri ca plan for recess week";
-		Task taskTwo = parser.addTask(inputTwo);
+		Task taskTwo = parser.createTaskToAdd(inputTwo);
 		System.out.println(taskTwo.getTaskId());
 		System.out.println(taskTwo.getText());
 		System.out.println(taskTwo.getCategory());
@@ -114,7 +114,7 @@ public class ParserTest {
 		
 		Task expectedTaskThree = new Task(-1, "visit sister", "",false, false);
 		String inputThree = "add visit sister";
-		Task createdTaskThree = parser.addTask(inputThree);
+		Task createdTaskThree = parser.createTaskToAdd(inputThree);
 		System.out.println(createdTaskThree.getTaskId());
 		System.out.println(createdTaskThree.getText());
 		System.out.println(createdTaskThree.isPriority());

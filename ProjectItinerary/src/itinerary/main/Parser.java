@@ -19,7 +19,7 @@ public class Parser {
 	private static final String[] KEYWORD = {"pri",  "ca", "by", "from", "to"};
 
 	//returns a command object and it is called by logic
-	public Command getCommand(String input) throws ParserException {
+	public static Command getCommand(String input) throws ParserException {
 		String firstWord = extractFirstWord(input);
 		String argument = removeFirstWord(input);
 		CommandType commandType = ParserCommand.determineType(firstWord);
@@ -28,18 +28,18 @@ public class Parser {
 		return command;
 	}
 
-	public Task createTask(CommandType type, String argument) throws ParserException {
+	public static Task createTask(CommandType type, String argument) throws ParserException {
 		if(type.equals(CommandType.ADD)){
-			return addTask(argument);
+			return createTaskToAdd(argument);
 		}
 		if(type.equals(CommandType.DELETE)){
-			return deleteTask(argument);
+			return createTaskToDelete(argument);
 		}
 		if(type.equals(CommandType.EDIT)){
-			return editTask(argument);
+			return createTaskToEdit(argument);
 		}
 		if(type.equals(CommandType.SEARCH)){
-			return searchTask(argument);
+			return createTaskToSearch(argument);
 		}
 		return null;
 	}
@@ -75,132 +75,6 @@ public class Parser {
 		}
 		return false;
 	}
-
-	/*
-	//KEYWORD = {"pri",  "ca", "by", "ti"}
-	public Task extractContent(String input) throws ParseException{	
-		Task floatingTask = defaultTask();
-		DeadlineTask deadlineTask = new DeadlineTask(-1, "","",false,false,null);
-		ScheduleTask scheduleTask = new ScheduleTask(-1,"","",false,false,null,null);	
-		int taskType = 0;         // 0: FloatingTask, 1: DeadlineTask, 2: ScheduleTask
-
-		String[] inputWords = stringToArray(input);
-		if(hasDuplicatedKeywords(inputWords)){
-			return (Task) defaultTask();
-		}
-		else{
-			String content = "";
-			String category = "";
-			String time = "";
-			int endOfContent = 0;
-
-			for(int i=startIndex;   (i < inputWords.length-1)&&(!inputWords[i+1].equals(KEYWORD[0])) 
-					&& (!inputWords[i+1].equals(KEYWORD[1])) && (!inputWords[i+1].equals(KEYWORD[2]))  
-					&& (!inputWords[i+1].equals(KEYWORD[3])); i++){
-				content = content + inputWords[i] + " ";
-				endOfContent = i;
-
-			}
-			endOfContent++;
-
-			content = content + inputWords[endOfContent];		
-
-			switch(taskType){
-			case 0: floatingTask.setText(content);
-			case 1:  deadlineTask.setText(content);
-			default: scheduleTask.setText(content);
-			}
-
-			int i = endOfContent;
-			i++;
-			while( i < inputWords.length){
-
-				int endOfTime = i;
-				if(inputWords[i].equals(KEYWORD[2]) || inputWords[i].equals(KEYWORD[3])){
-					for(int j=i+1;  (j < inputWords.length-1) && !inputWords[j+1].equals(KEYWORD[0]) 
-							&& !inputWords[j+1].equals(KEYWORD[1]); j++){
-						time = time + inputWords[j] + " ";
-						endOfTime = j;
-					}
-					endOfTime++;
-					time = time + inputWords[endOfTime];
-					DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-					DateFormat tf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-					if(inputWords[i].equals(KEYWORD[2])){		
-						Calendar cal  = Calendar.getInstance();	
-						if(time.indexOf(":") == -1){
-							cal.setTime(df.parse(time));
-						}
-						else{
-							cal.setTime(tf.parse(time));
-						}
-						cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
-						deadlineTask.setDeadline(cal);
-						taskType = 1;
-					}
-					else{
-						System.out.println(time);
-						String startTime = time.substring(0, time.indexOf("to") - 1);
-						String endTime = time.substring(time.indexOf("to") + 3);
-						Calendar startCal  = Calendar.getInstance();
-						if(startTime.indexOf(":") == -1){
-							startCal.setTime(df.parse(startTime));
-						}
-						else{
-							startCal.setTime(tf.parse(startTime));
-						}
-						startCal.set(Calendar.MONTH, startCal.get(Calendar.MONTH) + 1);
-						
-						
-						Calendar endCal  = Calendar.getInstance();
-						if(endTime.indexOf(":") == -1){
-							startCal.setTime(df.parse(endTime));
-						}
-						else{
-							startCal.setTime(tf.parse(endTime));
-						}
-						endCal.set(Calendar.MONTH, endCal.get(Calendar.MONTH) + 1);
-						scheduleTask.setFromDate(startCal);
-						scheduleTask.setToDate(endCal);
-						taskType = 2;
-					}
-					i = endOfTime + 1;
-				}
-
-				else if(inputWords[i].equals(KEYWORD[0])){
-					i++;
-					switch(taskType){
-					case 0:floatingTask.setPriority(true);
-					case 1: deadlineTask.setPriority(true);
-					default: scheduleTask.setPriority(true);
-					}
-				}
-
-				else if(inputWords[i].equals(KEYWORD[1])){
-					int endOfCategory = i;
-					for(int j=i+1; (j < inputWords.length-1) && (!inputWords[j+1].equals(KEYWORD[0])) &&
-							(!inputWords[j+1].equals(KEYWORD[2])) && (!inputWords[j+1].equals(KEYWORD[3])) ; j++){
-						category = category + inputWords[j] + " ";
-						endOfCategory = j;
-					}
-					endOfCategory++;
-					i = endOfCategory + 1;
-					category = category + inputWords[endOfCategory];
-					switch(taskType){
-					case 0:floatingTask.setCategory(category);
-					case 1: deadlineTask.setCategory(category);
-					default: scheduleTask.setCategory(category);
-					}
-				}
-			}
-		}
-		switch(taskType){
-		case 0: return floatingTask;
-		case 1:  return deadlineTask;
-		default: return scheduleTask;
-		}
-	}
-	*/
 
 	private static Task extractContent(String arg) throws ParserException {
 		String[] words = stringToArray(arg);
@@ -319,25 +193,18 @@ public class Parser {
 		return -1;
 	}
 
-	// This is the default format of a task.
-	// This format can be used when the return type of task is not needed to be known.
-	// e.g when deleting a task, only the line number is necessary to be known.
-	public static Task defaultTask(){
-		return new Task(-1,"","",false,false);
-	}
-
-	public Task addTask(String input) throws ParserException {
+	private static Task createTaskToAdd(String input) throws ParserException {
 		return extractContent(input);
 	}
 
-	public Task deleteTask(String argument) throws ParserException {
+	private static Task createTaskToDelete(String argument) throws ParserException {
 		String[] arguments = stringToArray(argument);
-		int id = identifyTarget(arguments);
+		int id = identifyTargetId(arguments);
 		return new Task (id, null, null, false, false);
 	}
 
-	public Task editTask(String input) throws ParserException {
-		int taskId = identifyTarget(stringToArray(input));
+	private static Task createTaskToEdit(String input) throws ParserException {
+		int taskId = identifyTargetId(stringToArray(input));
 		Task task = extractContent(removeFirstWord(input));
 		task.setTaskId(taskId);
 		if (task.getText().equals("")) {
@@ -346,7 +213,7 @@ public class Parser {
 		return task;
 	}
 
-	private int identifyTarget(String[] arguments) throws ParserException {
+	private static int identifyTargetId(String[] arguments) throws ParserException {
 		if (arguments.length == 0) {
 			throw new ParserException("Unable to identify target task");
 		}
@@ -357,7 +224,7 @@ public class Parser {
 		}
 	}
 
-	public Task searchTask(String input){
+	private static Task createTaskToSearch(String input){
 		return new Task(1, input, "", false, false);
 	}
 
