@@ -2,7 +2,6 @@ package itinerary.main;
 
 import java.util.Calendar;
 import java.util.Date;
-import com.joestelmach.natty.*;
 
 //@author A0114823M
 public class Parser {
@@ -228,28 +227,28 @@ public class Parser {
 				throw new ParserException("Error! To date must be after from date");
 			}
 			return new ScheduleTask(-1, description, category, priority, false, fromDate, toDate);
-		} else if (containsKeyword(words, KEYWORD[3]) && containsKeyword(words, KEYWORD[4])) {
+		} else if (containsKeyword(words, KEYWORD[3]) || containsKeyword(words, KEYWORD[4])) {
 			throw new ParserException("Invalid input format, schedule task must have both from and to");
 		}
 		return new Task(-1, description, category, priority, false);
 	}
 	
 	private static Calendar extractToDate(String arg) {
-		String textAfterKeyword = arg.split(KEYWORD[4])[1];
+		String textAfterKeyword = arg.split(" " + KEYWORD[4] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String toString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(toString);
 	}
 
 	private static Calendar extractFromDate(String arg) {
-		String textAfterKeyword = arg.split(KEYWORD[3])[1];
+		String textAfterKeyword = arg.split(" " + KEYWORD[3] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String fromString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(fromString);
 	}
 
 	private static Calendar extractDeadline(String arg) {
-		String textAfterKeyword = arg.split(KEYWORD[2])[1];
+		String textAfterKeyword = arg.split(" " + KEYWORD[2] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String deadlineString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(deadlineString);
@@ -281,7 +280,7 @@ public class Parser {
 	private static String removeExtraWords(String[] words, String text) {
 		int nextType = findNextKeywordType(words);
 		if (nextType != -1) {
-			int index = text.indexOf(KEYWORD[nextType]);
+			int index = text.indexOf(" " + KEYWORD[nextType] + " ");
 			text = text.substring(0, index);
 		}
 		return text.trim();
