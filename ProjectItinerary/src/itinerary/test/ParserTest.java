@@ -18,17 +18,17 @@ public class ParserTest {
 
 		String inputOne = "add go home";
 		Task expectedTaskOne = new Task(-1, "go home", "", false, false);
-		Task taskOne = parser.extractContent(inputOne,1);
+		Task taskOne = parser.extractContent(inputOne);
 		assertTrue(expectedTaskOne.equals(taskOne));
 
 		String inputTwo = "add go to sleep pri";
 		Task expectedTaskTwo = new Task(-1, "go to sleep", "", true, false);
-		Task taskTwo = parser.extractContent(inputTwo,1);
+		Task taskTwo = parser.extractContent(inputTwo);
 		assertTrue(expectedTaskTwo.equals(taskTwo));
 
 		String inputThree = "add go swimming ca sports";
 		Task expectedTaskThree = new Task(-1, "go swimming", "sports", false, false);
-		Task taskThree = parser.extractContent(inputThree,1);
+		Task taskThree = parser.extractContent(inputThree);
 		System.out.println(taskThree.getTaskId());
 		System.out.println(taskThree.getText());
 		System.out.println(taskThree.getCategory());
@@ -38,20 +38,20 @@ public class ParserTest {
 
 		String inputFour = "add go to LA ca summer holiday plan";
 		Task expectedTaskFour = new Task(-1, "go to LA", "summer holiday plan", false, false);
-		Task taskFour = parser.extractContent(inputFour,1);
+		Task taskFour = parser.extractContent(inputFour);
 		assertTrue(expectedTaskFour.equals(taskFour));
 
 		String inputFive = "edit 3 go to LA ca summer holiday plan";
 		Task expectedTaskFive = new Task(-1, "go to LA", "summer holiday plan", false, false);
-		Task taskFive = parser.extractContent(inputFive,2);
+		Task taskFive = parser.extractContent(inputFive);
 		assertTrue(expectedTaskFive.equals(taskFive));
 
 		String inputSix = "add do homework by 26/5/2015 18:50";
-		DeadlineTask taskSix = (DeadlineTask)parser.extractContent(inputSix,1);
+		DeadlineTask taskSix = (DeadlineTask)parser.extractContent(inputSix);
 		System.out.println(taskSix.getDeadline());
 		
 		String inputSeven = "add go to Malaysia ti 20/5/2015 to 21/5/2015 17:30 ";
-		ScheduleTask taskSeven = (ScheduleTask) parser.extractContent(inputSeven,1);
+		ScheduleTask taskSeven = (ScheduleTask) parser.extractContent(inputSeven);
 		System.out.println(taskSeven.getFromDate());
 		System.out.println(taskSeven.getToDate());
 
