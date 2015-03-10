@@ -16,13 +16,23 @@ public class Parser {
 	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
 	private static final String INVALID_DATE_TIME = "Invalid date";
 	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
+	
+	private static final String COMMAND_ADD = "add";
+	private static final String COMMAND_DELETE = "delete";
+	private static final String COMMAND_DISPLAY = "display";
+	private static final String COMMAND_CLEAR = "clear";
+	private static final String COMMAND_SEARCH = "search";
+	private static final String COMMAND_EDIT = "edit";
+	private static final String COMMAND_REDO = "redo";
+	private static final String COMMAND_UNDO = "undo";
+	
 	private static final String[] KEYWORD = {"pri",  "cat", "by", "from", "to"};
 
 	//returns a command object and it is called by logic
 	public static Command getCommand(String input) throws ParserException {
 		String firstWord = extractFirstWord(input);
 		String argument = removeFirstWord(input);
-		CommandType commandType = ParserCommand.determineType(firstWord);
+		CommandType commandType = determineCommandType(firstWord);
 		Task task = createTask(commandType, argument);
 		Command command = new Command(task, commandType);
 		return command;
@@ -244,5 +254,35 @@ public class Parser {
 
 	private static String removeFirstWord (String input) {
 		return input.replaceFirst(extractFirstWord(input), "").trim();
+	}
+	
+	private static CommandType determineCommandType(String command){
+		if(command.equalsIgnoreCase(COMMAND_ADD)){
+			return CommandType.ADD;
+		}
+		else if(command.equalsIgnoreCase(COMMAND_DELETE)){
+			return CommandType.DELETE;
+		}
+		else if(command.equalsIgnoreCase(COMMAND_DISPLAY)){
+			return CommandType.DISPLAY;
+		}
+		else if(command.equalsIgnoreCase(COMMAND_SEARCH)){
+			return CommandType.SEARCH;
+		}
+		else if(command.equalsIgnoreCase(COMMAND_CLEAR)){
+			return CommandType.CLEAR;
+		}
+		else if(command.equalsIgnoreCase(COMMAND_EDIT)){
+			return CommandType.EDIT;
+		}		
+		else if(command.equalsIgnoreCase(COMMAND_UNDO)){
+			return CommandType.UNDO;
+		}		
+		else if(command.equalsIgnoreCase(COMMAND_REDO)){
+			return CommandType.REDO;
+		}		
+		else{
+			return CommandType.UNABLE_TO_DETERMINE;
+		}
 	}
 }
