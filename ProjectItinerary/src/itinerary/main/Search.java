@@ -74,6 +74,7 @@ public class Search {
 		createIndex(index, config);
 				
 	}
+	
 	private void createIndex(Directory index, IndexWriterConfig config)
             throws SearchException {
 	    try {
