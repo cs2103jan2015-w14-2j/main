@@ -2,20 +2,17 @@ package itinerary.main;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import com.joestelmach.natty.DateGroup;
 
 //@author A0114823M
 public class Parser {
 
-	private static final String DUPLICATED_KEYWORD_PRI = "duplicated keyword \"pri\" !";
-	private static final String DUPLICATED_KEYWORD_CA = "duplicated keyword \"ca\" !";
-	private static final String DUPLICATED_KEYWORD_TIME = "duplicated keyword for time (\"by\" or \"ti\") !";
-	private static final String INVALID_INDEX = "Invalid index ";
-	private static final String NO_DESCRIPTION_FOR_EDIT = "Please key in the new eescriptions "
-			+ "and/or \"ca\" for setting category and/or \" pri\" for setting importance level !";
-	private static final String NOTHING_AFTER_COMMANDTYPE = "Please key in descriptions!";
-	private static final String INVALID_INPUT_FORMAT = "Invalid input format ";
-	private static final String INVALID_DATE_TIME = "Invalid date";
-	private static final String ERROR_MESSAGE = "Your command is not executed due to: %1$s.";
+	private static final String ERROR_DATE_FORMAT = "Error! Date format error";
+	private static final String ERROR_SCHEDULE_MISSING_DATE = "Error! Schedule task must have both from and to";
+	private static final String ERROR_BOTH_DEADLINE_SCHEDULE = "Error! Invalid input format, cannot be both deadline and schedule";
+	private static final String ERROR_DUPLICATE_KEYWORDS = "Error! Duplicate keywords detected";
 	
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_DELETE = "delete";
@@ -36,16 +33,17 @@ public class Parser {
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
 	//returns a command object and it is called by logic
-	public static Command getCommand(String input) throws ParserException {
+	public static Command parseCommand(String input) throws ParserException {
 		String firstWord = extractFirstWord(input);
 		String argument = removeFirstWord(input);
+		checkArgumentValidity(argument);
 		CommandType commandType = determineCommandType(firstWord);
 		Task task = createTask(commandType, argument);
 		Command command = new Command(task, commandType);
 		return command;
 	}
 
-	public static Task createTask(CommandType type, String argument) throws ParserException {
+	private static Task createTask(CommandType type, String argument) throws ParserException {
 		if(type.equals(CommandType.ADD)){
 			return createTaskToAdd(argument);
 		}
@@ -61,7 +59,7 @@ public class Parser {
 		return null;
 	}
 
-	public static boolean hasDuplicatedKeywords(String[] inputWords){
+	private static boolean hasDuplicateKeywords(String[] inputWords){
 		for (String keyword : KEYWORDS) {
 			int count = countKeywordOccurrences(inputWords, keyword);
 			if (count > 1) {
@@ -71,61 +69,86 @@ public class Parser {
 		return false;
 	}
 
-	private static Task extractContent(String arg) throws ParserException {
-		String[] words = stringToArray(arg);
-		if (hasDuplicatedKeywords(words)) {
-			throw new ParserException("Duplicate keywords detected");
-		}
-		String description = extractDescription(arg);
-		String category = extractCategory(arg);
-		boolean priority = extractPriority(arg);
+	private static Task extractContent(String argument) throws ParserException {
+		String[] argumentWords = stringToArray(argument);
 		
-		if (containsKeyword(words, KEYWORDS[2])) {
-			if (!(containsKeyword(words, KEYWORDS[3]) || containsKeyword(words, KEYWORDS[4]))) {
-				// Deadline task
-				Calendar deadline = extractDeadline(arg);
-				return new DeadlineTask(-1, description, category, priority, false, deadline);
-			} else {
-				throw new ParserException("Invalid input format, cannot be both deadline and schedule");
-			}
-		} else if (containsKeyword(words, KEYWORDS[3]) && containsKeyword(words, KEYWORDS[4])) {
-			// schedule task
-			Calendar fromDate = extractFromDate(arg);
-			Calendar toDate = extractToDate(arg);
+		String description = extractDescription(argument);
+		String category = extractCategory(argument);
+		boolean priority = extractPriority(argument);
+		
+		if (isDeadline(argumentWords)) {
+			Calendar deadline = extractDeadline(argument);
+			return new DeadlineTask(-1, description, category, priority, false, deadline);
+		} else if (isSchedule(argumentWords)) {
+			Calendar fromDate = extractFromDate(argument);
+			Calendar toDate = extractToDate(argument);
+			
 			if (toDate.compareTo(fromDate) < 0) {
-				throw new ParserException("Error! To date must be after from date");
+				Calendar tempDate = toDate;
+				toDate = fromDate;
+				fromDate = tempDate;
 			}
 			return new ScheduleTask(-1, description, category, priority, false, fromDate, toDate);
-		} else if (containsKeyword(words, KEYWORDS[3]) || containsKeyword(words, KEYWORDS[4])) {
-			throw new ParserException("Invalid input format, schedule task must have both from and to");
+		} else {
+			return new Task(-1, description, category, priority, false);
 		}
-		return new Task(-1, description, category, priority, false);
 	}
 	
-	private static Calendar extractToDate(String arg) {
+	private static void checkArgumentValidity(String argument) throws ParserException {
+		String[] words = stringToArray(argument);
+		if (hasDuplicateKeywords(words)) {
+			throw new ParserException(ERROR_DUPLICATE_KEYWORDS);
+		}
+		
+		boolean hasDeadline = containsKeyword(words, KEYWORD_DEADLINE);
+		boolean hasFrom = containsKeyword(words, KEYWORD_SCHEDULE_FROM);
+		boolean hasTo = containsKeyword(words, KEYWORD_SCHEDULE_TO);
+		
+		if (hasDeadline && (hasFrom || hasTo)) {
+			throw new ParserException(ERROR_BOTH_DEADLINE_SCHEDULE);
+		} else if (hasFrom ^ hasTo) {
+			throw new ParserException(ERROR_SCHEDULE_MISSING_DATE);
+		}
+	}
+
+	private static boolean isDeadline(String[] words){
+		return containsKeyword(words, KEYWORD_DEADLINE);
+	}
+	
+	private static boolean isSchedule(String[] words){
+		return containsKeyword(words, KEYWORD_SCHEDULE_FROM)
+				&& containsKeyword(words, KEYWORD_SCHEDULE_TO);
+	}
+	
+	private static Calendar extractToDate(String arg) throws ParserException {
 		String textAfterKeyword = arg.split(" " + KEYWORDS[4] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String toString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(toString);
 	}
 
-	private static Calendar extractFromDate(String arg) {
+	private static Calendar extractFromDate(String arg) throws ParserException {
 		String textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String fromString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(fromString);
 	}
 
-	private static Calendar extractDeadline(String arg) {
+	private static Calendar extractDeadline(String arg) throws ParserException {
 		String textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String deadlineString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(deadlineString);
 	}
 
-	private static Calendar parseDateFromText(String dateString) {
+	private static Calendar parseDateFromText(String dateString) throws ParserException {
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
-		Date date = dateParser.parse(dateString).get(0).getDates().get(0);
+		List<DateGroup> dateGroups = dateParser.parse(dateString);
+		if (dateGroups.isEmpty()) {
+			throw new ParserException(ERROR_DATE_FORMAT);
+		}
+		List<Date> dates = dateGroups.get(0).getDates();
+		Date date = dates.get(0);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		return calendar;
@@ -155,6 +178,9 @@ public class Parser {
 			}
 			if (index < 0) {
 				index = text.indexOf(KEYWORDS[nextType] + " ");
+			}
+			if (index < 0) {
+				index = text.indexOf(KEYWORDS[nextType]);
 			}
 			text = text.substring(0, index);
 		}

@@ -35,7 +35,7 @@ public class Logic {
 	public UserInterfaceContent executeUserInput (String userInput) {
 		Command userCommand;
 		try {
-			userCommand = Parser.getCommand(userInput);
+			userCommand = Parser.parseCommand(userInput);
 		} catch (ParserException e) {
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}

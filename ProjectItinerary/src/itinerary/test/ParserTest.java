@@ -126,14 +126,14 @@ public class ParserTest {
 	public void testHasDuplicatedKeywords() {
 		String inputOne = "add do homework pri catagory study";
 		String[] inputWordsOne = parser.stringToArray(inputOne);
-		assertEquals(false, parser.hasDuplicatedKeywords(inputWordsOne));
+		assertEquals(false, parser.hasDuplicateKeywords(inputWordsOne));
 
 		String inputTwo = "add do homework pri catagory study pri";
 		String[] inputWordsTwo = parser.stringToArray(inputTwo);
-		assertEquals(true, parser.hasDuplicatedKeywords(inputWordsTwo));
+		assertEquals(true, parser.hasDuplicateKeywords(inputWordsTwo));
 
 		String inputThree = "add do homework pri catagory study by next Wednesday ti 6pm to 9 pm";
 		String[] inputWordsThree = parser.stringToArray(inputThree);
-		assertEquals(true, parser.hasDuplicatedKeywords(inputWordsThree));
+		assertEquals(true, parser.hasDuplicateKeywords(inputWordsThree));
 	}
 }
