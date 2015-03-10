@@ -25,8 +25,15 @@ public class Parser {
 	private static final String COMMAND_EDIT = "edit";
 	private static final String COMMAND_REDO = "redo";
 	private static final String COMMAND_UNDO = "undo";
+
+	private static final String KEYWORD_SCHEDULE_TO = "to";
+	private static final String KEYWORD_SCHEDULE_FROM = "from";
+	private static final String KEYWORD_DEADLINE = "by";
+	private static final String KEYWORD_PRIORITY = "pri";
+	private static final String KEYWORD_CATEGORY = "cat";
 	
-	private static final String[] KEYWORD = {"pri",  "cat", "by", "from", "to"};
+	private static final String[] KEYWORD = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
+		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
 	//returns a command object and it is called by logic
 	public static Command getCommand(String input) throws ParserException {
