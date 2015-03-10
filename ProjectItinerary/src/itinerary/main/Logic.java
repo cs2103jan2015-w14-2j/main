@@ -146,7 +146,6 @@ public class Logic {
 	private UserInterfaceContent executeSearch(Command command) {
 		List<Task> searchList= new ArrayList<Task>();
 	        try {
-	        	// TODO implement date search
 	        	Search search = new Search(storage.getAllTasks(), false);
 	            searchList = search.query(command.getTask().getText(),"text");
             } catch (SearchException e) {

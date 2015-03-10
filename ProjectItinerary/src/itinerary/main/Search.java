@@ -60,8 +60,8 @@ public class Search {
 	IndexWriter writer;
 	Document doc;
 	boolean isDate;
-	public <T extends Task> Search(List<T> taskList,boolean dateSearch) throws SearchException{
-		isDate = dateSearch;
+	public <T extends Task> Search(List<T> taskList,boolean booleanOrDateSearch) throws SearchException{
+		isDate = booleanOrDateSearch;
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
 		typeList = JsonConverter.getTypeList(taskList);
