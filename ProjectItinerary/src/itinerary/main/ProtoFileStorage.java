@@ -173,7 +173,7 @@ public class ProtoFileStorage extends Storage {
     public List<Task> getAllTasks() {
         return duplicateCurrentListTask(true);
     }
-
+    
     /*
      * (non-Javadoc)
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
@@ -208,5 +208,15 @@ public class ProtoFileStorage extends Storage {
         } catch (IOException e) {
             throw new StorageException(ERROR_IO);
         }
+    }
+    public List<String> getAllCategories(){
+    	List<String> list = new ArrayList<String>();
+    	List<Task> taskList = getAllTasks();
+    	for(Task task : taskList){
+    		if(!list.contains(task.getCategory())){
+    			list.add(task.getCategory());
+    		}
+    	}
+    	return list;
     }
 }
