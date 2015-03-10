@@ -32,7 +32,7 @@ public class Parser {
 	private static final String KEYWORD_PRIORITY = "pri";
 	private static final String KEYWORD_CATEGORY = "cat";
 	
-	private static final String[] KEYWORD = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
+	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
 	//returns a command object and it is called by logic
@@ -62,31 +62,9 @@ public class Parser {
 	}
 
 	public static boolean hasDuplicatedKeywords(String[] inputWords){
-		int[] keyWordCounter = {0,0,0};	
-
-		for(int i=0; i < inputWords.length; i++){
-			if(inputWords[i].equals(KEYWORD[0])){
-				keyWordCounter[0]++;
-			}
-			if(inputWords[i].equals(KEYWORD[1])){
-				keyWordCounter[1]++;
-			}
-			if(inputWords[i].equals(KEYWORD[2]) || inputWords[i].equals(KEYWORD[3])){
-				keyWordCounter[2]++;
-			}
-		}
-
-		for(int i=0; i < keyWordCounter.length; i++){
-			if(keyWordCounter[0] > 1){
-				//showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_PRI);
-				return true;
-			}
-			if(keyWordCounter[1] > 1){
-				//showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_CA);
-				return true;
-			}
-			if(keyWordCounter[2] > 1){
-				//showMessage = String.format(ERROR_MESSAGE, DUPLICATED_KEYWORD_TIME);
+		for (String keyword : KEYWORDS) {
+			int count = countKeywordOccurrences(inputWords, keyword);
+			if (count > 1) {
 				return true;
 			}
 		}
@@ -102,15 +80,15 @@ public class Parser {
 		String category = extractCategory(arg);
 		boolean priority = extractPriority(arg);
 		
-		if (containsKeyword(words, KEYWORD[2])) {
-			if (!(containsKeyword(words, KEYWORD[3]) || containsKeyword(words, KEYWORD[4]))) {
+		if (containsKeyword(words, KEYWORDS[2])) {
+			if (!(containsKeyword(words, KEYWORDS[3]) || containsKeyword(words, KEYWORDS[4]))) {
 				// Deadline task
 				Calendar deadline = extractDeadline(arg);
 				return new DeadlineTask(-1, description, category, priority, false, deadline);
 			} else {
 				throw new ParserException("Invalid input format, cannot be both deadline and schedule");
 			}
-		} else if (containsKeyword(words, KEYWORD[3]) && containsKeyword(words, KEYWORD[4])) {
+		} else if (containsKeyword(words, KEYWORDS[3]) && containsKeyword(words, KEYWORDS[4])) {
 			// schedule task
 			Calendar fromDate = extractFromDate(arg);
 			Calendar toDate = extractToDate(arg);
@@ -118,28 +96,28 @@ public class Parser {
 				throw new ParserException("Error! To date must be after from date");
 			}
 			return new ScheduleTask(-1, description, category, priority, false, fromDate, toDate);
-		} else if (containsKeyword(words, KEYWORD[3]) || containsKeyword(words, KEYWORD[4])) {
+		} else if (containsKeyword(words, KEYWORDS[3]) || containsKeyword(words, KEYWORDS[4])) {
 			throw new ParserException("Invalid input format, schedule task must have both from and to");
 		}
 		return new Task(-1, description, category, priority, false);
 	}
 	
 	private static Calendar extractToDate(String arg) {
-		String textAfterKeyword = arg.split(" " + KEYWORD[4] + " ")[1];
+		String textAfterKeyword = arg.split(" " + KEYWORDS[4] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String toString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(toString);
 	}
 
 	private static Calendar extractFromDate(String arg) {
-		String textAfterKeyword = arg.split(" " + KEYWORD[3] + " ")[1];
+		String textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String fromString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(fromString);
 	}
 
 	private static Calendar extractDeadline(String arg) {
-		String textAfterKeyword = arg.split(" " + KEYWORD[2] + " ")[1];
+		String textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
 		String deadlineString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(deadlineString);
@@ -155,15 +133,15 @@ public class Parser {
 
 	private static boolean extractPriority(String arg) {
 		String[] words = stringToArray(arg);
-		return containsKeyword(words, KEYWORD[0]);
+		return containsKeyword(words, KEYWORDS[0]);
 	}
 
 	private static String extractCategory(String arg) {
 		String[] words = stringToArray(arg);
-		if (!containsKeyword(words, KEYWORD[1])) {
+		if (!containsKeyword(words, KEYWORDS[1])) {
 			return null;
 		}
-		String textAfterKeyword = arg.split(KEYWORD[1])[1].trim();
+		String textAfterKeyword = arg.split(KEYWORDS[1])[1].trim();
 		words = stringToArray(textAfterKeyword);
 		return removeExtraWords(words, textAfterKeyword);
 	}
@@ -171,25 +149,30 @@ public class Parser {
 	private static String removeExtraWords(String[] words, String text) {
 		int nextType = findNextKeywordType(words);
 		if (nextType != -1) {
-			int index = text.indexOf(" " + KEYWORD[nextType] + " ");
+			int index = text.indexOf(" " + KEYWORDS[nextType] + " ");
 			if (index < 0) {
-				index = text.indexOf(" " + KEYWORD[nextType]);
+				index = text.indexOf(" " + KEYWORDS[nextType]);
 			}
 			if (index < 0) {
-				index = text.indexOf(KEYWORD[nextType] + " ");
+				index = text.indexOf(KEYWORDS[nextType] + " ");
 			}
 			text = text.substring(0, index);
 		}
 		return text.trim();
 	}
 
-	private static boolean containsKeyword(String[] words, String string) {
+	private static boolean containsKeyword(String[] words, String keyword) {
+		return countKeywordOccurrences(words, keyword) > 0;
+	}
+	
+	private static int countKeywordOccurrences(String[] words, String keyword) {
+		int count = 0;
 		for (String word : words) {
-			if (word.equals(string)) {
-				return true;
+			if (word.equals(keyword)) {
+				count++;
 			}
 		}
-		return false;
+		return count;
 	}
 
 	private static String extractDescription(String arg) {
@@ -208,8 +191,8 @@ public class Parser {
 	}
 	
 	private static int identifyKeyword (String word) {
-		for (int i = 0; i < KEYWORD.length; i++) {
-			if (word.equals(KEYWORD[i])) {
+		for (int i = 0; i < KEYWORDS.length; i++) {
+			if (word.equals(KEYWORDS[i])) {
 				return i;
 			}
 		}
