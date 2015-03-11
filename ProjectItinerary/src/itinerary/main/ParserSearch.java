@@ -4,7 +4,13 @@ import java.util.*;
 
 public class ParserSearch {
 	public HashMap<String,String> fields;
+	SearchTask task;
+	String input;
 	public ParserSearch(String input){
+		SearchTask task = new SearchTask();
+		this.input = input;
+	}
+	public SearchTask parseString(){
 		String key =null;
 		String value = "";
 		String[] stopWords = {"tasks","from","to","priority","completed","category"};
@@ -34,5 +40,7 @@ public class ParserSearch {
 		}
 		fields.put(key,value);
 		System.out.println(fields.toString());
+		
+		return task;
 	}
 }
