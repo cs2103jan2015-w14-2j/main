@@ -9,6 +9,7 @@ public class SearchTask extends Task implements Cloneable {
 	private Calendar fromDate;
     private Calendar toDate;
     private List<String> searchField;
+    private List<String> categoryList;
     //@author generated
     public SearchTask() {
         super(1,"","", false, false);
@@ -30,7 +31,9 @@ public class SearchTask extends Task implements Cloneable {
     public Calendar getFromDate() {
         return fromDate;
     }
-
+    public void setCategories(List<String> categoryList){
+    	this.categoryList = categoryList;
+    }
     public void setFromDate(Calendar fromDate) {
         this.fromDate = fromDate;
     }

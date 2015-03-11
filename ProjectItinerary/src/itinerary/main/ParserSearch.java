@@ -4,14 +4,19 @@ import java.util.*;
 
 public class ParserSearch {
 	public HashMap<String,String> fields;
+	List<String> searchFields;
 	SearchTask task;
 	String input;
-	String[] stopWords = {"tasks","from","to","priority","completed","category"};
+	ArrayList<String> categoryList;
+	String[] stopWords = {"tasks","from","to","priority","completed","incomplete","category"};
 	List<String> stopList= Arrays.asList(stopWords);
-
-	public ParserSearch(String input){
+	String[] pWords = {"low","not"};
+	List<String> pList= Arrays.asList(pWords);
+	public ParserSearch(String input,List<String> categoryList){
 		SearchTask task = new SearchTask();
 		this.input = input;
+		this.categoryList = new ArrayList<String>(categoryList);
+		searchFields = new ArrayList<String>();
 	}
 	public SearchTask parseString(){
 		String key =null;
@@ -27,7 +32,7 @@ public class ParserSearch {
 					value = "";
 				}
 				key = splitInput.get(i);
-				if(key.equals("priority")|| key.equals("completed")){
+				if(key.equals("priority")|| key.equals("completed") || key.equals("incomplete")){
 					if(i+1<splitInput.size()){
 						value += splitInput.get(i+1)+" ";
 					}
@@ -63,12 +68,24 @@ public class ParserSearch {
 		}
 	}
 	private void parseCategory(String string) {
-	    // TODO Auto-generated method stub
-	    
+		String[] categories = string.split(" ");
+		List<String> catList = new ArrayList<String>();
+		for(int i=0;i<categories.length;i++){
+			if(categoryList.contains(categories[i])){
+				catList.add(categories[i]);
+			}
+		}
+		task.setCategories(catList);
+		searchFields.add("category");
     }
 	private void parsePriority(String string) {
-	    // TODO Auto-generated method stub
-	    
+		String[] priorityString = string.split(" ");
+		task.setPriority(true);
+		if(pList.contains(priorityString[0]) || pList.contains(priorityString[1])){
+			task.setPriority(false);
+		}
+		searchFields.add("priority");
+
     }
 	private void parseCompleted(String string) {
 	    // TODO Auto-generated method stub
