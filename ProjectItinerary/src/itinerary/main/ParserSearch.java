@@ -59,7 +59,9 @@ public class ParserSearch {
 				case "from":
 					parseDate(fields.get(k),k);
 				case "completed":
-					parseCompleted(fields.get(k));
+					parseCompleted(fields.get(k),true);
+				case "incomplete":
+					parseCompleted(fields.get(k),false);
 				case "priority":
 					parsePriority(fields.get(k));
 				case "category":
@@ -87,16 +89,22 @@ public class ParserSearch {
 		searchFields.add("priority");
 
     }
-	private void parseCompleted(String string) {
-	    // TODO Auto-generated method stub
+	private void parseCompleted(String string,boolean isCompleted) {
 	    
+		String[] completedString = string.split(" ");
+		task.setComplete(isCompleted);
+		if(pList.contains(completedString[0]) || pList.contains(completedString[1])){
+			task.setPriority(!isCompleted);
+		}
+		searchFields.add("isComplete");
+
     }
 	private void parseDate(String string, String k) {
 	    // TODO Auto-generated method stub
 	    
     }
 	private void parseTask(String string) {
-	    // TODO Auto-generated method stub
-	    
+		task.setText(string);
+		searchFields.add("text");
     }
 }
