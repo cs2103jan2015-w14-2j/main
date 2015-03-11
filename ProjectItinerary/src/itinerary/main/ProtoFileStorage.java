@@ -18,26 +18,40 @@ import java.util.List;
  * fileStorage, it will return a duplicated copy and not the direct reference.
  * <li>4) After adding or removing a certain item in listTask, the taskIds for
  * each of the Task objects in listTask will be auto-updated.
+ * <li>5) If no fileName is given, a default fileName will be used.
  * <ul>
  * <p>
  */
 public class ProtoFileStorage extends Storage {
-
+    
     private static final String ERROR_EDIT_TASK_ID =
                                                      "Unable to edit task, invalid Task ID!";
     private static final String ERROR_DELETE_TASK_ID =
                                                        "Unable to delete task, invalid Task ID!";
     private static final String ERROR_IO = "Error writing to file.";
+    
+    private static final String DEFAULT_FILENAME = "default.txt";
+    
     private File currFile;
     private List<Task> listTask;
 
     // Constructors
 
     public ProtoFileStorage() {
-        this("default.txt");
+        this(DEFAULT_FILENAME);
+    }
+    
+    public ProtoFileStorage(File file) {
+        this(file.toString());
     }
 
     public ProtoFileStorage(String fileName) {
+        
+        if (fileName == "") {
+            
+            fileName = DEFAULT_FILENAME;
+        }
+        
         this.currFile = new File(fileName);
         this.listTask = JsonIOHandler.readJSONFileListTask(currFile);
 
@@ -112,7 +126,9 @@ public class ProtoFileStorage extends Storage {
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
     public void addTask(Task task) throws StorageException {
-
+        
+        assert task != null;
+        
         Task toAdd = task.clone();
         int taskId = toAdd.getTaskId();
 
@@ -132,6 +148,8 @@ public class ProtoFileStorage extends Storage {
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
     public void editTask(Task task) throws StorageException {
+        
+        assert task != null;
 
         int taskIndex = task.getTaskId() - 1;
         if (isInvalidIndex(taskIndex)) {
@@ -155,6 +173,9 @@ public class ProtoFileStorage extends Storage {
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
     public void deleteTask(Task task) throws StorageException {
+        
+        assert task != null;
+        
         int taskIndex = task.getTaskId() - 1;
         if (isInvalidIndex(taskIndex)) {
             throw new StorageException(ERROR_DELETE_TASK_ID);
@@ -189,6 +210,9 @@ public class ProtoFileStorage extends Storage {
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
     public void refillAll(List<Task> tasks) throws StorageException {
+        
+        assert tasks != null;
+        
         listTask = tasks;
         updateTaskId();
 
@@ -209,14 +233,20 @@ public class ProtoFileStorage extends Storage {
             throw new StorageException(ERROR_IO);
         }
     }
-    public List<String> getAllCategories(){
-    	List<String> list = new ArrayList<String>();
-    	List<Task> taskList = getAllTasks();
-    	for(Task task : taskList){
-    		if(!list.contains(task.getCategory())){
-    			list.add(task.getCategory());
-    		}
-    	}
-    	return list;
+    
+    /**
+     * This returns a list of all categories currently held in listTask.
+     * 
+     * @return A List<String> object containing all the categories.
+     */
+    public List<String> getAllCategories() {
+        List<String> list = new ArrayList<String>();
+        List<Task> taskList = getAllTasks();
+        for (Task task : taskList) {
+            if (!list.contains(task.getCategory())) {
+                list.add(task.getCategory());
+            }
+        }
+        return list;
     }
 }
