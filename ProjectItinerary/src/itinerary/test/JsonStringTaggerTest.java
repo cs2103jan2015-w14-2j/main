@@ -1,16 +1,13 @@
 package itinerary.test;
 
 import static org.junit.Assert.*;
-import itinerary.main.JsonStringTagger;
-import itinerary.main.Task;
-import itinerary.main.ScheduleTask;
-import itinerary.main.DeadlineTask;
+import itinerary.main.*;
 import java.util.Calendar;
 
 import org.junit.Test;
 import com.google.gson.*;
 
-//@author A0121409
+//@author A0121409R
 public class JsonStringTaggerTest {
     
     static Gson gson = new Gson();
