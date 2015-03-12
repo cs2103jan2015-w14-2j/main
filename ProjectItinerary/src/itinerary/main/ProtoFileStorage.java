@@ -14,8 +14,8 @@ import java.util.List;
  * <ul>
  * <li>1) Writes to file before returning State object.
  * <li>2) Assume Task taskIds start from 1, not 0.
- * <li>3) When returning the list of Tasks being held in an instance of
- * fileStorage, it will return a duplicated copy and not the direct reference.
+ * <li>3) When returning the list of Tasks, it will return a duplicated copy and
+ * not the direct reference.
  * <li>4) After adding or removing a certain item in listTask, the taskIds for
  * each of the Task objects in listTask will be auto-updated.
  * <li>5) If no fileName is given, a default fileName will be used.
@@ -24,6 +24,8 @@ import java.util.List;
  */
 public class ProtoFileStorage extends Storage {
     
+    private static final String ERROR_ADD_NO_TASK_DESC =
+                                                         "Please ensure the Task to be added actually has a description.";
     private static final String ERROR_EDIT_TASK_ID =
                                                      "Unable to edit task, invalid Task ID!";
     private static final String ERROR_DELETE_TASK_ID =
@@ -130,6 +132,11 @@ public class ProtoFileStorage extends Storage {
         assert task != null;
         
         Task toAdd = task.clone();
+        
+        if (toAdd.hasNoText()) {
+            throw new StorageException(ERROR_ADD_NO_TASK_DESC);
+        }
+        
         int taskId = toAdd.getTaskId();
 
         if (taskId == -1) {
