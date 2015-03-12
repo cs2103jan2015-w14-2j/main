@@ -30,7 +30,7 @@ public class JsonIOHandler {
     public static void writeJSON(File currFile, Task task, boolean willOverwrite) throws IOException {
         
         if (currFile == null) {
-            writeJSON(defaultFile, task, true);
+            writeJSON(defaultFile, task, willOverwrite);
             return;
         }
         
