@@ -40,13 +40,9 @@ public class JsonStringTagger {
      *            The Task object to be converted into a String object.
      * @return The String version of the Task Object.
      */
-    public static String convertTasktoTaggedJsonString(Task task)
-                                                                 throws NullPointerException {
+    public static String convertTasktoTaggedJsonString(Task task) {
 
-        if (task == null) {
-
-            throw new NullPointerException();
-        }
+        assert task != null;
 
         Gson gson = new Gson();
         String s =
