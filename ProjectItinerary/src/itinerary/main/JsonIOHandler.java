@@ -58,7 +58,7 @@ public class JsonIOHandler {
     public static void writeJSONList(File currFile, List<Task> taskList) throws IOException {
         boolean firstLineOverwrite = true;
         if (taskList == null || taskList.isEmpty()) {
-            writeJSON(currFile, null, true);
+            writeJSON(currFile, null, firstLineOverwrite);
         } else {
             for (int i = 0; i < taskList.size(); i++) {
                 writeJSON(currFile, taskList.get(i), firstLineOverwrite);
