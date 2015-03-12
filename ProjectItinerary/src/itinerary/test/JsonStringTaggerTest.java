@@ -36,6 +36,11 @@ public class JsonStringTaggerTest {
     public void testCheckStringArray() {
         assertFalse("Test for handling null String arrays: ", JsonStringTagger.checkStringArray(null));
     }
+    
+    @Test (expected = NullPointerException.class)
+    public void testConvertTasktoTaggedJsonStringNull() throws NullPointerException{
+        JsonStringTagger.convertTasktoTaggedJsonString(null);
+    }
 
     @Test
     public void testConvertTasktoTaggedJsonString() {
