@@ -5,8 +5,11 @@ import itinerary.main.ScheduleTask;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+
+
 
 
 
@@ -43,57 +46,73 @@ public class SearchTest {
 		jsonList.add(new ScheduleTask(3, "fest", "testcat",
 				 true,
 				true,fromDate, toDate));
-		jsonList.add(new ScheduleTask(4, "hello everybody", "testcat",
+		jsonList.add(new ScheduleTask(4, "hello everybody!", "testcat",
 				 true,
 				true,fromDate, toDate));
-		jsonList.add(new DeadlineTask(5, "hello everybody", "testcat",
+		jsonList.add(new DeadlineTask(5, "hello everybody", "testdog",
 				 true,
 				true,fromDate));
 
 	}
 	@Test
-	public void testBooleanQuery() {
-		List<Task> testList = new ArrayList<Task>();
-		
-	    try {
-			Search search = new Search(jsonList,true);
-	        testList = search.query(true,"isPriority");
-        } catch (SearchException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
-		
+	public void testSearch() throws SearchException{
+		SearchTask task = new SearchTask();
+		String[] field = {"text","category"};
+		String[] catArray = {"testcat"};
+		List<String> fields = new ArrayList<String>();
+		fields.addAll(Arrays.asList(field));
+		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
+		task.setSearchField(fields);
+		task.setCategoryList(catList);
+		task.setText("hello");
+		Search search = new Search(jsonList);
+		List<Task> testList = search.query(task);
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(1)));
+
 	}
-	@Test
-	public void testQuery() {
-		List<Task> testList = new ArrayList<Task>();
-		
-	    try {
-			Search search = new Search(jsonList,false);
-	        testList = search.query("wan pis","text");
-        } catch (SearchException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
-		
-		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
-	}
-	@Test
-	public void testQueryDate(){
-		
-		Calendar toDate1 = Calendar.getInstance(); 
-		toDate1.set(2016,2,10,0,0,0);
-		Calendar fromDate1 = Calendar.getInstance(); 
-		fromDate1.set(2014,2,0,0,0,0);
-		
-		try {
-			Search search = new Search(jsonList,true);
-	        search.query(toDate1,fromDate1,"deadline");
-        } catch (SearchException e) {
-	        e.printStackTrace();
-        }
-        
-	}
+//	@Test
+//	public void testBooleanQuery() {
+//		List<Task> testList = new ArrayList<Task>();
+//		
+//	    try {
+//			Search search = new Search(jsonList,true);
+//	        testList = search.query(true,"isPriority");
+//        } catch (SearchException e) {
+//	        // TODO Auto-generated catch block
+//	        e.printStackTrace();
+//        }
+//		
+//		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(1)));
+//	}
+//	@Test
+//	public void testQuery() {
+//		List<Task> testList = new ArrayList<Task>();
+//		
+//	    try {
+//			Search search = new Search(jsonList,false);
+//	        testList = search.query("wan pis","text");
+//        } catch (SearchException e) {
+//	        // TODO Auto-generated catch block
+//	        e.printStackTrace();
+//        }
+//		
+//		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
+//	}
+//	@Test
+//	public void testQueryDate(){
+//		
+//		Calendar toDate1 = Calendar.getInstance(); 
+//		toDate1.set(2016,2,10,0,0,0);
+//		Calendar fromDate1 = Calendar.getInstance(); 
+//		fromDate1.set(2014,2,0,0,0,0);
+//		
+//		try {
+//			Search search = new Search(jsonList,true);
+//	        search.query(toDate1,fromDate1,"deadline");
+//        } catch (SearchException e) {
+//	        e.printStackTrace();
+//        }
+//        
+//	}
 	
 }
