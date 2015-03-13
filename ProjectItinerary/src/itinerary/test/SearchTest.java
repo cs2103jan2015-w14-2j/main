@@ -47,9 +47,9 @@ public class SearchTest {
 				 true,
 				true,fromDate, toDate));
 		jsonList.add(new ScheduleTask(4, "hello everybody!", "testcat",
-				 true,
-				true,fromDate, toDate));
-		jsonList.add(new DeadlineTask(5, "hello everybody", "testdog",
+				 false,
+				false,fromDate, toDate));
+		jsonList.add(new DeadlineTask(5, "hello everybody", "testcat",
 				 true,
 				true,fromDate));
 
@@ -57,7 +57,7 @@ public class SearchTest {
 	@Test
 	public void testSearch() throws SearchException{
 		SearchTask task = new SearchTask();
-		String[] field = {"text","category"};
+		String[] field = {"text","category","isPriority"};
 		String[] catArray = {"testcat"};
 		List<String> fields = new ArrayList<String>();
 		fields.addAll(Arrays.asList(field));
@@ -65,6 +65,7 @@ public class SearchTest {
 		task.setSearchField(fields);
 		task.setCategoryList(catList);
 		task.setText("hello");
+		task.setPriority(true);
 		Search search = new Search(jsonList);
 		List<Task> testList = search.query(task);
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(1)));

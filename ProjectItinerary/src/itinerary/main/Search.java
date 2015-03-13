@@ -118,6 +118,22 @@ public class Search {
         }
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
+	public <T extends Task> List<T> query(String query,String field) throws SearchException {
+		// The same analyzer should be used for indexing and searching
+		
+		try {
+			BooleanQuery q = new BooleanQuery();
+			q = createQuery(field,query);
+			ScoreDoc[] hits = searchQuery(q, searcher);
+			addToHitList(hitList, searcher, hits);
+			displayHits(searcher, hits);
+			reader.close();
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+		return JsonConverter.convertJsonList(hitList,hitTypeList);
+	}
+
 	private void addToHitList(ArrayList<String> hitList,
             IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
 		hitTypeList = new ArrayList<String>();
