@@ -73,7 +73,7 @@ public class Search {
 		
 		
 	}
-	public <T extends Task> List<T> createBooleanQuery(SearchTask task) throws SearchException{
+	public <T extends Task> List<T> query(SearchTask task) throws SearchException{
 		List<String> searchField = task.getSearchField();
 		List<String> searchNotField = task.getSearchNotField();
 		BooleanQuery q = new BooleanQuery();
@@ -93,10 +93,14 @@ public class Search {
 				}
 				if(searchField.get(i).equals("category")){
 					List<String> categoryList = task.getCategoryList();
+					BooleanQuery bQuery = new BooleanQuery();
 					for(int j=0;j< categoryList.size();j++){
-						BooleanQuery bQuery = createQuery("category",categoryList.get(j));
-						q.add(bQuery,BooleanClause.Occur.SHOULD);
+						BooleanQuery cQuery = createQuery("category",categoryList.get(j));
+						bQuery.add(cQuery,BooleanClause.Occur.SHOULD);
+						System.out.println(cQuery.toString());
 					}
+					q.add(bQuery,BooleanClause.Occur.MUST);
+					
 				}
 				if(searchField.get(i).equals("date")){
 					BooleanQuery bQuery = createDateQuery(task.getToDate(),task.getFromDate());
@@ -214,7 +218,11 @@ public class Search {
 		for (Entry<String, JsonElement> entry : obj.entrySet()) {
 			String key = entry.getKey();
 			JsonElement value = entry.getValue();
-			doc.add(new StringField(key, value.toString(), Field.Store.YES));
+			if(key.equals("text") || key.equals("category")){
+				doc.add(new TextField(key, value.toString(), Field.Store.YES));
+			} else {
+				doc.add(new StringField(key, value.toString(), Field.Store.YES));
+			}
 		}
 		
 		doc.add(new StringField("json",obj.toString(),Field.Store.YES));
