@@ -1,10 +1,7 @@
 package itinerary.test;
 
 import static org.junit.Assert.*;
-import itinerary.main.DeadlineTask;
-import itinerary.main.JsonIOHandler;
-import itinerary.main.ScheduleTask;
-import itinerary.main.Task;
+import itinerary.main.*;
 
 import java.io.*;
 import java.util.*;
@@ -20,8 +17,7 @@ public class JsonIOHandlerTest {
     static Gson gson = new Gson();
 
     static Calendar calendar = Calendar.getInstance();
-
-    static File defaultFile = new File("defaultFile");
+    
     static File testFile = new File("testFile");
 
     static Task task1 = new Task(1, "T", "ExampleCategory", true, true);
@@ -62,8 +58,7 @@ public class JsonIOHandlerTest {
 
     @Before
     public void wipe() {
-
-        defaultFile.delete();
+        
         testFile.delete();
     }
 

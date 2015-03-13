@@ -85,6 +85,23 @@ public class Task implements Cloneable {
                         this.getCategory(), this.isPriority(),
                         this.isComplete());
     }
+    
+    public boolean hasNoText() {
+
+        if (this.text == null || this.text.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasNoCategory() {
+
+        if (this.category == null || this.category.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    
 
     @Override
     public boolean equals(Object task) {

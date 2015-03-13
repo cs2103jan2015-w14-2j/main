@@ -1,16 +1,16 @@
 package itinerary.test;
 
 import static org.junit.Assert.*;
-import itinerary.main.JsonStringTagger;
-import itinerary.main.Task;
-import itinerary.main.ScheduleTask;
-import itinerary.main.DeadlineTask;
+import itinerary.main.*;
+
 import java.util.Calendar;
 
+import org.junit.Rule;
 import org.junit.Test;
+
 import com.google.gson.*;
 
-//@author A0121409
+//@author A0121409R
 public class JsonStringTaggerTest {
     
     static Gson gson = new Gson();
@@ -35,9 +35,17 @@ public class JsonStringTaggerTest {
     static String task2Name = task2.getClass().getSimpleName();
     static String task3Name = task3.getClass().getSimpleName();
     
+    @Rule public ExpectedFailure rule = new ExpectedFailure();
+    
     @Test
     public void testCheckStringArray() {
         assertFalse("Test for handling null String arrays: ", JsonStringTagger.checkStringArray(null));
+    }
+    
+    @AssertionFailure
+    @Test
+    public void testConvertTasktoTaggedJsonStringNull() throws NullPointerException{
+        JsonStringTagger.convertTasktoTaggedJsonString(null);
     }
 
     @Test
