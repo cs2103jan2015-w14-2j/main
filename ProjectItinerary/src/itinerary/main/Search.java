@@ -47,6 +47,7 @@ import java.io.IOException;
  */
 //@author A0121810Y
 public class Search {
+	private static String[] possibleSearchFields = {"isComplete","isPriority","text","to","from","category"};
 	private static List<String> list;
 	private static JsonParser parser;
 	private static JsonObject obj;
@@ -59,130 +60,60 @@ public class Search {
 	IndexReader reader;
 	IndexWriter writer;
 	Document doc;
-	boolean isDate;
-	public <T extends Task> Search(List<T> taskList,boolean booleanOrDateSearch) throws SearchException{
-		isDate = booleanOrDateSearch;
+	 
+	public <T extends Task> Search(List<T> taskList) throws SearchException {
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
 		typeList = JsonConverter.getTypeList(taskList);
 		analyzer = new StandardAnalyzer();
 		hitList = new ArrayList<String>();
-		
-		//create the index
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		createIndex(index, config);
-				
-	}
-	
-	private void createIndex(Directory index, IndexWriterConfig config)
-            throws SearchException {
-	    try {
-	        writer = new IndexWriter(index, config);
-	        addDocs(writer);
-			closeWriter(writer);
-			reader = DirectoryReader.open(index);
-			searcher = new IndexSearcher(reader);
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
-		}
-    }
-	//this function takes in the query and the field that it is supposed to check. Fields are those found in Task and its subclasses.
-	public <T extends Task> List<T> query(String query,String field) throws SearchException {
-		// The same analyzer should be used for indexing and searching
 		
-		try {
-			BooleanQuery q = new BooleanQuery();
-			String[] splitQuery = splitQuery(query);
-			createQuery(field, q, splitQuery);
-			ScoreDoc[] hits = searchQuery(q, searcher);
-			addToHitList(hitList, searcher, hits);
-			displayHits(searcher, hits);
-			reader.close();
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
-		}
-		return JsonConverter.convertJsonList(hitList,hitTypeList);
-	}
-	public <T extends Task> List<T> query(Calendar toDate,Calendar fromDate,String field) throws SearchException{
-		Gson gson = new Gson();
-		BooleanQuery q = new BooleanQuery();
-		TermRangeQuery rangeQ = TermRangeQuery.newStringRange(field,gson.toJson(fromDate),gson.toJson(toDate),true,true);
-		q.add(rangeQ,BooleanClause.Occur.MUST);
 		
-		try {
-			ScoreDoc[] hits = searchQuery(q, searcher);
-			addToHitList(hitList, searcher, hits);
-	        displayHits(searcher, hits);
-			reader.close();
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
-		}
-		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
-	public <T extends Task> List<T> query(boolean setTrue,String field) throws SearchException{
-		String isTrue = (setTrue ? "true" : "false");
+	public <T extends Task> List<T> createBooleanQuery(SearchTask task) throws SearchException{
+		List<String> searchField = task.getSearchField();
+		List<String> searchNotField = task.getSearchNotField();
 		BooleanQuery q = new BooleanQuery();
-		TermQuery termQuery = new TermQuery(new Term(field,isTrue));
-		q.add(termQuery,BooleanClause.Occur.MUST);
-		try {
-			ScoreDoc[] hits = searchQuery(q, searcher);
-			addToHitList(hitList, searcher, hits);
-	        displayHits(searcher, hits);
-			reader.close();
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
+		if(searchField != null){
+			for(int i =0;i<searchField.size();i++){
+				if(searchField.get(i).equals("isComplete")){
+					TermQuery cpQuery = createCompleteOrPriorityQuery( task.isComplete(),"isComplete");
+					q.add(cpQuery,BooleanClause.Occur.MUST);
+				}
+				if(searchField.get(i).equals("isPriority")){
+					TermQuery cpQuery = createCompleteOrPriorityQuery( task.isPriority(),"isPriority");
+					q.add(cpQuery,BooleanClause.Occur.MUST);
+				}
+				if(searchField.get(i).equals("text")){
+					BooleanQuery bQuery = createQuery("text",task.getText());
+					q.add(bQuery,BooleanClause.Occur.MUST);
+				}
+				if(searchField.get(i).equals("category")){
+					List<String> categoryList = task.getCategoryList();
+					for(int j=0;j< categoryList.size();j++){
+						BooleanQuery bQuery = createQuery("category",categoryList.get(j));
+						q.add(bQuery,BooleanClause.Occur.SHOULD);
+					}
+				}
+				if(searchField.get(i).equals("date")){
+					BooleanQuery bQuery = createDateQuery(task.getToDate(),task.getFromDate());
+					q.add(bQuery,BooleanClause.Occur.MUST);
+				}
+			}
 		}
+		searchQuery(q,searcher);
+		ScoreDoc[] hits = searchQuery(q, searcher);
+		try {
+	        addToHitList(hitList, searcher, hits);
+	        displayHits(searcher, hits);
+        } catch (IOException e) {
+	        throw new SearchException(ERROR_IO);
+        }
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
-	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
-            throws IOException {
-	    int numHits = 10;
-		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
-		searcher.search(q, collector);
-		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-	    return hits;
-    }
-	private void closeWriter(IndexWriter writer) throws IOException {
-	    writer.close();
-    }
-	private void addDocs(IndexWriter writer) throws IOException {
-	    for ( String tasks : list  ){
-			obj = parser.parse(tasks).getAsJsonObject();
-			addDoc(writer ,obj);
-		}
-    }
-	private String[] splitQuery(String query) {
-	    String[] splitQuery = query.split(" ");
-		for(int i=0;i<splitQuery.length;i++){
-			splitQuery[i] = splitQuery[i]+"*";
-		}
-	    return splitQuery;
-    }
-	private void createQuery(String field, BooleanQuery q, String[] splitQuery) {
-	    Query wildQ = getWildCardQuery(field, splitQuery);
-		Query fuzzyQ = getFuzzyQuery(field,splitQuery);
-		q.add(fuzzyQ,BooleanClause.Occur.SHOULD);
-		q.add(wildQ,BooleanClause.Occur.SHOULD);
-    }
-	private Query getWildCardQuery(String field, String[] splitQuery) {
-	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
-	    for (int i = 0; i < splitQuery.length; i++) {
-	        WildcardQuery wildQuery = new WildcardQuery(new Term(field, splitQuery[i]));
-	        queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(wildQuery);
-	    }
-	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
-	    return q;
-    }
-	private Query getFuzzyQuery(String field, String[] splitQuery) {
-	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
-	    for (int i = 0; i < splitQuery.length; i++) {
-	        FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field, splitQuery[i]));
-	        queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(fuzzyQuery);
-	    }
-	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
-	    return q;
-    }
 	private void addToHitList(ArrayList<String> hitList,
             IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
 		hitTypeList = new ArrayList<String>();
@@ -203,25 +134,95 @@ public class Search {
 		}
     }
 
+	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher) throws SearchException {
+	    int numHits = 10;
+		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
+		try {
+	        searcher.search(q, collector);
+        } catch (IOException e) {
+	        throw new SearchException(ERROR_IO);
+        }
+		ScoreDoc[] hits = collector.topDocs().scoreDocs;
+	    return hits;
+    }
+
+	private BooleanQuery createQuery(String field, String Query) {
+		String[] splitQuery = Query.split(" ");
+		BooleanQuery bQuery = new BooleanQuery();
+	    Query wildQ = getWildCardQuery(field, splitQuery);
+		Query fuzzyQ = getFuzzyQuery(field,splitQuery);
+		bQuery.add(fuzzyQ,BooleanClause.Occur.SHOULD);
+		bQuery.add(wildQ,BooleanClause.Occur.SHOULD);
+		return bQuery;
+    }
+	private Query getWildCardQuery(String field, String[] splitQuery) {
+	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
+	    for (int i = 0; i < splitQuery.length; i++) {
+	        WildcardQuery wildQuery = new WildcardQuery(new Term(field, splitQuery[i]));
+	        queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(wildQuery);
+	    }
+	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
+	    return q;
+    }
+	private Query getFuzzyQuery(String field, String[] splitQuery) {
+	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
+	    for (int i = 0; i < splitQuery.length; i++) {
+	        FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field, splitQuery[i]));
+	        queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(fuzzyQuery);
+	    }
+	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
+	    return q;
+    }
+
+	public TermQuery createCompleteOrPriorityQuery(boolean setTrue,String field) throws SearchException{
+		String isTrue = (setTrue ? "true" : "false");
+		TermQuery termQuery = new TermQuery(new Term(field,isTrue));
+		return termQuery;
+	}
+
+	public BooleanQuery createDateQuery(Calendar toDate,Calendar fromDate) throws SearchException{
+		Gson gson = new Gson();
+		BooleanQuery bQuery = new BooleanQuery();
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		TermRangeQuery rangeScheduleQ = TermRangeQuery.newStringRange("toDate",gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.SHOULD);
+		bQuery.add(rangeScheduleQ,BooleanClause.Occur.SHOULD);
+		return bQuery;
+	}	
+	private void createIndex(Directory index, IndexWriterConfig config)
+            throws SearchException {
+	    try {
+	        writer = new IndexWriter(index, config);
+	        addDocs(writer);
+			closeWriter(writer);
+			reader = DirectoryReader.open(index);
+			searcher = new IndexSearcher(reader);
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+    }
+	private void addDocs(IndexWriter writer) throws IOException {
+	    for ( String tasks : list  ){
+			obj = parser.parse(tasks).getAsJsonObject();
+			addDoc(writer ,obj);
+		}
+    }
 	private void addDoc(IndexWriter writer, JsonObject obj)
 	        throws IOException {
 		doc = new Document();
-		if(isDate){
-			for (Entry<String, JsonElement> entry : obj.entrySet()) {
-				String key = entry.getKey();
-				JsonElement value = entry.getValue();
-				doc.add(new StringField(key, value.toString(), Field.Store.YES));
-			}
-		} else {
-			for (Entry<String, JsonElement> entry : obj.entrySet()) {
-				String key = entry.getKey();
-				JsonElement value = entry.getValue();
-				doc.add(new TextField(key, value.toString(), Field.Store.YES));
-			}
+		
+		for (Entry<String, JsonElement> entry : obj.entrySet()) {
+			String key = entry.getKey();
+			JsonElement value = entry.getValue();
+			doc.add(new StringField(key, value.toString(), Field.Store.YES));
 		}
 		
 		doc.add(new StringField("json",obj.toString(),Field.Store.YES));
 		writer.addDocument(doc);
 	}
+	private void closeWriter(IndexWriter writer) throws IOException {
+	    writer.close();
+    }
+
 	
 }
