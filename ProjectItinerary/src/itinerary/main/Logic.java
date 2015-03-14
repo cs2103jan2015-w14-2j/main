@@ -146,7 +146,7 @@ public class Logic {
 	private UserInterfaceContent executeSearch(Command command) {
 		List<Task> searchList= new ArrayList<Task>();
 	        try {
-	        	Search search = new Search(storage.getAllTasks(), false);
+	        	Search search = new Search(storage.getAllTasks());
 	            searchList = search.query(command.getTask().getText(),"text");
             } catch (SearchException e) {
     			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
