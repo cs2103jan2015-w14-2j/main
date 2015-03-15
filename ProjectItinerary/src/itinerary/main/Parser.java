@@ -16,8 +16,8 @@ public class Parser {
 	private static final String ERROR_NO_DESCRIPTION_CATEGORY = "Error! Please enter description for category";
 	private static final String ERROR_NO_TASK_ID = "Error! Unable to identify target task";
 	private static final String ERROR_INVALID_TASK_ID = "Error! Invalid target task id";
-	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contents to for edit";
-	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description after the task to be added";
+	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contenets for edit";
+	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description for the task to be added";
 	
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_DELETE = "delete";
@@ -170,8 +170,8 @@ public class Parser {
 			return null;
 		}
 
-		String[] textsAroundKeyword = arg.split(KEYWORDS[1]);		
-		if(textsAroundKeyword.length == 1){
+		String[] textsAroundKeyword = arg.split(KEYWORDS[1]);	
+		if(textsAroundKeyword.length <= 1){
 			throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
 		}
 			String textAfterKeyword = textsAroundKeyword[1].trim();		
@@ -263,11 +263,13 @@ public class Parser {
 
 	private static Task createTaskToEdit(String input) throws ParserException {
 		int taskId = identifyTargetId(stringToArray(input));
+		String textAfterIndex= removeFirstWord(input);
 		
-		if(removeFirstWord(input).length() == 0){
+		if(textAfterIndex.length() == 0){
 			throw new ParserException(ERROR_NO_CONTENT_FOR_EDIT);
 		}
-		Task task = extractContent(removeFirstWord(input));
+		
+		Task task = extractContent(textAfterIndex);
 		task.setTaskId(taskId);
 		if (task.getText().equals("")) {
 			task.setText(null);
