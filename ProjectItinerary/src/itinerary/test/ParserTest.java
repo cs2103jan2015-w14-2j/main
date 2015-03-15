@@ -99,6 +99,17 @@ public class ParserTest {
 		assertNotNull(scheduleTask.getDeadline());
 	}
 	
+   // @Test
+	public void testParseAddReplcaeKeyword () throws ParserException {
+		Command command = Parser.parseCommand("add buy +cat, go home pri cat entertainment +from animal");
+		assertEquals(command.getType(), CommandType.ADD);
+		Task task = command.getTask();
+		assertEquals(task.getText(), "buy cat, go home");
+		assertEquals(task.getCategory(), "entertainment from animal");
+		assertTrue(task.isPriority());
+	}
+	
+	@Test
 	public void testParseEditDeadline () throws ParserException {
 		Command command = Parser.parseCommand("edit 1 this pri cat food by tomorrow");
 		assertEquals(command.getType(), CommandType.EDIT);
@@ -110,5 +121,13 @@ public class ParserTest {
 		assertEquals(scheduleTask.getCategory(), "food");
 		assertTrue(scheduleTask.isPriority());
 		assertNotNull(scheduleTask.getDeadline());
+	}
+	
+	@Test
+	public void testReplaceKeywordInContent () throws ParserException {
+		String expectedString = "Take a look at this cat, I bought it from a pet shop by the road";
+		String inputString = "Take a look at this +cat, I bought it +from a pet shop +by the road";
+		String resultString = Parser. replaceKeywordInContent(inputString);
+		assertEquals(expectedString, resultString);
 	}
 }

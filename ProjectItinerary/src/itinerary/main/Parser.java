@@ -74,6 +74,32 @@ public class Parser {
 		return false;
 	}
 
+	public static String replaceKeywordInContent(String argument){
+		String resultString = "";
+		String[] words = stringToArray(argument);
+		for(int i=0; i < words.length; i++){
+			String stringAfterFirstChar = words[i].substring(1);
+			String letterString = removeNonLetterChar(stringAfterFirstChar);
+			if(words[i].charAt(0) == '+'&& identifyKeyword(letterString) > -1){
+				words[i] = stringAfterFirstChar;
+			}
+			resultString = resultString + words[i] + " ";
+		}
+		resultString = resultString.substring(0, resultString.length()-1);
+		return resultString;
+	}
+	
+	private static String removeNonLetterChar(String word){
+		for(int i = word.length()-1; i >= 0; i--){
+			if(!Character.isLetter(word.charAt(i))){
+				word = word.substring(0,i);
+			}else{
+				return word;
+			}
+		}
+		return word;
+	}
+	
 	private static Task extractContent(String argument) throws ParserException {
 		String[] argumentWords = stringToArray(argument);
 
@@ -185,6 +211,7 @@ public class Parser {
 			throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
 		}
 			String textAfterKeyword = textsAroundKeyword[1].trim();		
+			textAfterKeyword = replaceKeywordInContent(textAfterKeyword).trim();
 			words = stringToArray(textAfterKeyword);
 			return removeExtraWords(words, textAfterKeyword);
 	}
@@ -223,7 +250,8 @@ public class Parser {
 
 	private static String extractDescription(String arg) {
 		String[] words = stringToArray(arg);
-		return removeExtraWords(words, arg);
+		String description = removeExtraWords(words, arg);
+		return  replaceKeywordInContent(description).trim();
 	}
 
 	private static int findNextKeywordType(String[] words) {
