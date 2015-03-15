@@ -98,4 +98,17 @@ public class ParserTest {
 		assertTrue(scheduleTask.isPriority());
 		assertNotNull(scheduleTask.getDeadline());
 	}
+	
+	public void testParseEditDeadline () throws ParserException {
+		Command command = Parser.parseCommand("edit 1 this pri cat food by tomorrow");
+		assertEquals(command.getType(), CommandType.EDIT);
+		Task task = command.getTask();
+		assertTrue(task instanceof DeadlineTask);
+		DeadlineTask scheduleTask = (DeadlineTask) task;
+		assertEquals(scheduleTask.getTaskId(), 1);
+		assertEquals(scheduleTask.getText(), "this");
+		assertEquals(scheduleTask.getCategory(), "food");
+		assertTrue(scheduleTask.isPriority());
+		assertNotNull(scheduleTask.getDeadline());
+	}
 }

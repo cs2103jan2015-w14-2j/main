@@ -133,14 +133,24 @@ public class Parser {
 	}
 
 	private static Calendar extractFromDate(String arg) throws ParserException {
-		String textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
+		String textAfterKeyword;
+		if(extractFirstWord(arg).equals(KEYWORDS[3])){
+			textAfterKeyword =  arg.split(KEYWORDS[3] + " ")[1];
+		}else{	
+		    textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
+		}
 		String[] words = stringToArray(textAfterKeyword);
 		String fromString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(fromString);
 	}
 
 	private static Calendar extractDeadline(String arg) throws ParserException {
-		String textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
+		String textAfterKeyword;
+		if(extractFirstWord(arg).equals(KEYWORDS[2])){
+			textAfterKeyword =  arg.split(KEYWORDS[2] + " ")[1];
+		}else{	
+		    textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
+		}
 		String[] words = stringToArray(textAfterKeyword);
 		String deadlineString = removeExtraWords(words, textAfterKeyword);
 		return parseDateFromText(deadlineString);
