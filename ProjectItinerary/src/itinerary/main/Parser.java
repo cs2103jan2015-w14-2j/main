@@ -13,11 +13,11 @@ public class Parser {
 	private static final String ERROR_SCHEDULE_MISSING_DATE = "Error! Schedule task must have both from and to";
 	private static final String ERROR_BOTH_DEADLINE_SCHEDULE = "Error! Invalid input format, cannot be both deadline and schedule";
 	private static final String ERROR_DUPLICATE_KEYWORDS = "Error! Duplicate keywords detected";
-	private static final String ERROR_NO_DESCRIPTION_CATEGORY = "Please enter description for after \"cat\"";
-	private static final String ERROR_NO_TASK_ID = "Unable to identify target task";
-	private static final String ERROR_INVALID_TASK_ID = "Invalid target task id";
-	private static final String ERROR_NO_CONTENT_FOR_EDIT = "please enter contents to for edit";
-	
+	private static final String ERROR_NO_DESCRIPTION_CATEGORY = "Error! Please enter description for category";
+	private static final String ERROR_NO_TASK_ID = "Error! Unable to identify target task";
+	private static final String ERROR_INVALID_TASK_ID = "Error! Invalid target task id";
+	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contents to for edit";
+	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description after the task to be added";
 	
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_DELETE = "delete";
@@ -235,7 +235,23 @@ public class Parser {
 		return -1;
 	}
 
+	private static boolean hasDescriptionForAdd(String input){
+		if(input.equals("") || input == null){
+			return false;
+		}
+		String firstWord = extractFirstWord(input);
+		for(String keyword: KEYWORDS){
+			if(firstWord.equals(keyword)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private static Task createTaskToAdd(String input) throws ParserException {
+		if(!hasDescriptionForAdd(input)){
+			throw new ParserException(ERROR_NO_DESCRIPTION_FOR_ADD);
+		}
 		return extractContent(input);
 	}
 

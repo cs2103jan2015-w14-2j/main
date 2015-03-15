@@ -52,6 +52,16 @@ public class ParserTest {
 		Parser.parseCommand("edit 1");
 	}
 	
+	@Test (expected = ParserException.class)
+	public void testParseNoContentAddWithKeyword () throws ParserException {
+		Parser.parseCommand("add by Sunday");
+	}
+	
+	@Test (expected = ParserException.class)
+	public void testParseNoContentAddWithoutKeyword () throws ParserException {
+		Parser.parseCommand("add");
+	}
+	
 	@Test
 	public void testParseAddNormal () throws ParserException {
 		Command command = Parser.parseCommand("add this pri cat dog");
