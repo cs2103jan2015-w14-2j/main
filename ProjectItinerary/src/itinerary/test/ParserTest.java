@@ -43,8 +43,13 @@ public class ParserTest {
 	}
 	
 	@Test (expected = ParserException.class)
-	public void testParseInvalidTaskID() throws ParserException {
+	public void testParseInvalidTaskID () throws ParserException {
 		Parser.parseCommand("delete 2.5");
+	}
+	
+	@Test (expected = ParserException.class)
+	public void testParseNoContentEdit () throws ParserException {
+		Parser.parseCommand("edit 1");
 	}
 	
 	@Test
