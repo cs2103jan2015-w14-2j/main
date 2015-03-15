@@ -32,6 +32,21 @@ public class ParserTest {
 		Parser.parseCommand("add this from now");
 	}
 	
+	@Test (expected = ParserException.class)
+	public void testParseCatDescriptionMissing () throws ParserException {
+		Parser.parseCommand("add this cat");
+	}
+	
+	@Test (expected = ParserException.class)
+	public void testParseNoTaskID () throws ParserException {
+		Parser.parseCommand("delete");
+	}
+	
+	@Test (expected = ParserException.class)
+	public void testParseInvalidTaskID() throws ParserException {
+		Parser.parseCommand("delete 2.5");
+	}
+	
 	@Test
 	public void testParseAddNormal () throws ParserException {
 		Command command = Parser.parseCommand("add this pri cat dog");

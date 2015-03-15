@@ -13,6 +13,9 @@ public class Parser {
 	private static final String ERROR_SCHEDULE_MISSING_DATE = "Error! Schedule task must have both from and to";
 	private static final String ERROR_BOTH_DEADLINE_SCHEDULE = "Error! Invalid input format, cannot be both deadline and schedule";
 	private static final String ERROR_DUPLICATE_KEYWORDS = "Error! Duplicate keywords detected";
+	private static final String ERROR_NO_DESCRIPTION_CATEGORY = "Please enter description for after \"cat\"";
+	private static final String ERROR_NO_TASK_ID = "Unable to identify target task";
+	private static final String ERROR_INVALID_TASK_ID = "Invalid target task id";
 	
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_DELETE = "delete";
@@ -28,7 +31,7 @@ public class Parser {
 	private static final String KEYWORD_DEADLINE = "by";
 	private static final String KEYWORD_PRIORITY = "pri";
 	private static final String KEYWORD_CATEGORY = "cat";
-	
+
 	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
@@ -71,18 +74,18 @@ public class Parser {
 
 	private static Task extractContent(String argument) throws ParserException {
 		String[] argumentWords = stringToArray(argument);
-		
+
 		String description = extractDescription(argument);
 		String category = extractCategory(argument);
 		boolean priority = extractPriority(argument);
-		
+
 		if (isDeadline(argumentWords)) {
 			Calendar deadline = extractDeadline(argument);
 			return new DeadlineTask(-1, description, category, priority, false, deadline);
 		} else if (isSchedule(argumentWords)) {
 			Calendar fromDate = extractFromDate(argument);
 			Calendar toDate = extractToDate(argument);
-			
+
 			if (toDate.compareTo(fromDate) < 0) {
 				Calendar tempDate = toDate;
 				toDate = fromDate;
@@ -93,17 +96,17 @@ public class Parser {
 			return new Task(-1, description, category, priority, false);
 		}
 	}
-	
+
 	private static void checkArgumentValidity(String argument) throws ParserException {
 		String[] words = stringToArray(argument);
 		if (hasDuplicateKeywords(words)) {
 			throw new ParserException(ERROR_DUPLICATE_KEYWORDS);
 		}
-		
+
 		boolean hasDeadline = containsKeyword(words, KEYWORD_DEADLINE);
 		boolean hasFrom = containsKeyword(words, KEYWORD_SCHEDULE_FROM);
 		boolean hasTo = containsKeyword(words, KEYWORD_SCHEDULE_TO);
-		
+
 		if (hasDeadline && (hasFrom || hasTo)) {
 			throw new ParserException(ERROR_BOTH_DEADLINE_SCHEDULE);
 		} else if (hasFrom ^ hasTo) {
@@ -114,12 +117,12 @@ public class Parser {
 	private static boolean isDeadline(String[] words){
 		return containsKeyword(words, KEYWORD_DEADLINE);
 	}
-	
+
 	private static boolean isSchedule(String[] words){
 		return containsKeyword(words, KEYWORD_SCHEDULE_FROM)
 				&& containsKeyword(words, KEYWORD_SCHEDULE_TO);
 	}
-	
+
 	private static Calendar extractToDate(String arg) throws ParserException {
 		String textAfterKeyword = arg.split(" " + KEYWORDS[4] + " ")[1];
 		String[] words = stringToArray(textAfterKeyword);
@@ -159,14 +162,21 @@ public class Parser {
 		return containsKeyword(words, KEYWORDS[0]);
 	}
 
-	private static String extractCategory(String arg) {
+	private static String extractCategory(String arg) throws ParserException {
 		String[] words = stringToArray(arg);
 		if (!containsKeyword(words, KEYWORDS[1])) {
 			return null;
 		}
-		String textAfterKeyword = arg.split(KEYWORDS[1])[1].trim();
-		words = stringToArray(textAfterKeyword);
-		return removeExtraWords(words, textAfterKeyword);
+
+		String[] textsAroundKeyword = arg.split(KEYWORDS[1]);		
+		if(textsAroundKeyword.length == 1){
+			throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
+		}
+		else{
+			String textAfterKeyword = textsAroundKeyword[1].trim();		
+			words = stringToArray(textAfterKeyword);
+			return removeExtraWords(words, textAfterKeyword);
+		}
 	}
 
 	private static String removeExtraWords(String[] words, String text) {
@@ -190,7 +200,7 @@ public class Parser {
 	private static boolean containsKeyword(String[] words, String keyword) {
 		return countKeywordOccurrences(words, keyword) > 0;
 	}
-	
+
 	private static int countKeywordOccurrences(String[] words, String keyword) {
 		int count = 0;
 		for (String word : words) {
@@ -215,7 +225,7 @@ public class Parser {
 		}
 		return -1;
 	}
-	
+
 	private static int identifyKeyword (String word) {
 		for (int i = 0; i < KEYWORDS.length; i++) {
 			if (word.equals(KEYWORDS[i])) {
@@ -247,12 +257,12 @@ public class Parser {
 
 	private static int identifyTargetId(String[] arguments) throws ParserException {
 		if (arguments.length == 0) {
-			throw new ParserException("Unable to identify target task");
+			throw new ParserException(ERROR_NO_TASK_ID);
 		}
 		try {
 			return Integer.parseInt(arguments[0]);
 		} catch (NumberFormatException e) {
-			throw new ParserException("Invalid target task id");
+			throw new ParserException(ERROR_INVALID_TASK_ID);
 		}
 	}
 
@@ -263,7 +273,7 @@ public class Parser {
 	private static String[] stringToArray(String input){
 		return input.trim().split("\\s+");
 	}
-	
+
 	private static String extractFirstWord (String input) {
 		return stringToArray(input)[0];
 	}
@@ -271,7 +281,7 @@ public class Parser {
 	private static String removeFirstWord (String input) {
 		return input.replaceFirst(extractFirstWord(input), "").trim();
 	}
-	
+
 	private static CommandType determineCommandType(String command){
 		if(command.equalsIgnoreCase(COMMAND_ADD)){
 			return CommandType.ADD;
