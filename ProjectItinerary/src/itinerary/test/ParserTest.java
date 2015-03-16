@@ -47,12 +47,17 @@ public class ParserTest {
 		Parser.parseCommand("delete 2.5");
 	}
 	
-	@Test (expected = ParserException.class)
+	//@Test (expected = ParserException.class)
 	public void testParseNoContentEdit () throws ParserException {
 		Parser.parseCommand("edit 1");
 	}
 	
 	@Test (expected = ParserException.class)
+	public void testParseNoCatDescriptionEdit () throws ParserException {
+		Parser.parseCommand("edit 1 cat");
+	}
+	
+	//@Test (expected = ParserException.class)
 	public void testParseNoContentAddWithKeyword () throws ParserException {
 		Parser.parseCommand("add by Sunday");
 	}
@@ -99,7 +104,7 @@ public class ParserTest {
 		assertNotNull(scheduleTask.getDeadline());
 	}
 	
-   // @Test
+    @Test
 	public void testParseAddReplcaeKeyword () throws ParserException {
 		Command command = Parser.parseCommand("add buy +cat, go home pri cat entertainment +from animal");
 		assertEquals(command.getType(), CommandType.ADD);

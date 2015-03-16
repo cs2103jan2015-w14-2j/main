@@ -75,6 +75,9 @@ public class Parser {
 	}
 
 	public static String replaceKeywordInContent(String argument){
+		if (argument.length() == 0){
+			return argument;
+		}
 		String resultString = "";
 		String[] words = stringToArray(argument);
 		for(int i=0; i < words.length; i++){
@@ -206,14 +209,14 @@ public class Parser {
 			return null;
 		}
 
-		String[] textsAroundKeyword = arg.split(KEYWORDS[1]);	
+		String[] textsAroundKeyword = arg.split(" " + KEYWORDS[1] + " ");	
 		if(textsAroundKeyword.length <= 1){
 			throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
 		}
 			String textAfterKeyword = textsAroundKeyword[1].trim();		
-			textAfterKeyword = replaceKeywordInContent(textAfterKeyword).trim();
 			words = stringToArray(textAfterKeyword);
-			return removeExtraWords(words, textAfterKeyword);
+			String textNeeded = removeExtraWords(words, textAfterKeyword);
+			return replaceKeywordInContent(textNeeded).trim();
 	}
 
 	private static String removeExtraWords(String[] words, String text) {

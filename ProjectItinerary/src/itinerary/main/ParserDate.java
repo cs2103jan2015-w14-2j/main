@@ -7,35 +7,38 @@ import java.util.List;
 
 //@author A0114823M
 public class ParserDate {
-	
-	public ParserDate(){	
-	}
-	
-	public Task getTask(String input){
-			com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser();
-			List<DateGroup> groups = parser.parse(input);
-			
-			List<Date> dates = groups.get(0).getDates();		
-			
-			return determineTaskType(dates);
-		}
-	
-	public Task determineTaskType (List<Date> dates){
-		if(dates.size() == 1){
-			Calendar endDate = convertToCalendar(dates.get(0));
-			return new DeadlineTask(-1, "", "", false,false, endDate);
-		}
-		else{
-		    Calendar startDate = convertToCalendar(dates.get(0));
-		    Calendar endDate = convertToCalendar(dates.get(1));
-			return new ScheduleTask(-1, "", "", false, false, startDate, endDate);
-		}
-	}
-	
-	public Calendar convertToCalendar (Date date){
-			  Calendar calendar = Calendar.getInstance();
-			  calendar.setTime(date);
-			  calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
-			  return calendar;
-	}	
+ 
+ private static final String ERROR_DATE_FORMAT = "Error! Date format error";
+ 
+ public ParserDate(){ 
+ }
+ 
+ public Calendar parseDateFromText(String dateString) throws ParserException {
+  dateString = changeDateFormat(dateString);
+  return parseDateByNatty(dateString);
+ }
+ 
+ public String changeDateFormat(String dateString){ 
+  return dateString.replaceAll("\\.", "/");
+ }
+ 
+ public Calendar parseDateByNatty(String dateString) throws ParserException{
+  com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
+  List<DateGroup> dateGroups = dateParser.parse(dateString);
+  if (dateGroups.isEmpty()) {
+   throw new ParserException(ERROR_DATE_FORMAT);
+  }
+  List<Date> dates = dateGroups.get(0).getDates();
+  Date date = dates.get(0);
+  Calendar calendar = Calendar.getInstance();
+  calendar.setTime(date);
+  return calendar;
+ }
+ 
+ public Calendar convertToCalendar (Date date){
+     Calendar calendar = Calendar.getInstance();
+     calendar.setTime(date);
+     calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+     return calendar;
+ } 
 }
