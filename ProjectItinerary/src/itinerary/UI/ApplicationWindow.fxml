@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="itinerary.UI.UiController">
+   <children>
+      <VBox>
+         <children>
+            <ScrollPane fx:id="scrollPane" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0" />
+               </content>
+            </ScrollPane>
+            <TextField fx:id="commandTextField" onAction="#commandEntered" promptText="Command" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
