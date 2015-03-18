@@ -1,10 +1,11 @@
 package itinerary.main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 //@author A0121437N
 public class Logic {
@@ -23,6 +24,15 @@ public class Logic {
 	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
 	
 	private static final Logger logger = Logger.getLogger(Logic.class.getName());
+	static {
+		try {
+			logger.addHandler(new FileHandler(Constants.LOG_FILE));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private String fileName;
 	private Storage storage;
