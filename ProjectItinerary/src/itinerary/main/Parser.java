@@ -48,7 +48,7 @@ public class Parser {
 
 	static{
 		try {
-			logger.addHandler(new FileHandler("d:/LogParser.txt"));
+			logger.addHandler(new FileHandler(Constants.LOG_FILE));
 		} catch (SecurityException | IOException e) {
 			e.printStackTrace();
 		}
