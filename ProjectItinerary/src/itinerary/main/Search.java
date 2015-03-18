@@ -1,4 +1,9 @@
 package itinerary.main;
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.SUNDAY;
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -25,10 +30,17 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.search.TermRangeQuery;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -54,13 +66,15 @@ public class Search {
 	private static List<String> typeList;
 	ArrayList<String> hitTypeList;
 	private static final String ERROR_IO = "Error attempting to search.";
+	private static final Logger logger =
+		       Logger.getLogger("searchLogger");
 	ArrayList<String> hitList;
 	StandardAnalyzer analyzer;
 	IndexSearcher searcher;
 	IndexReader reader;
 	IndexWriter writer;
 	Document doc;
-	 
+	
 	public <T extends Task> Search(List<T> taskList) throws SearchException {
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
@@ -102,8 +116,8 @@ public class Search {
 					q.add(bQuery,BooleanClause.Occur.MUST);
 					
 				}
-				if(searchField.get(i).equals("date")){
-					BooleanQuery bQuery = createDateQuery(task.getToDate(),task.getFromDate());
+				if(searchField.get(i).equals("deadline")){
+					BooleanQuery bQuery = createDeadlineQuery(task.getDeadline());
 					q.add(bQuery,BooleanClause.Occur.MUST);
 				}
 			}
@@ -114,6 +128,7 @@ public class Search {
 	        addToHitList(hitList, searcher, hits);
 	        displayHits(searcher, hits);
         } catch (IOException e) {
+        	logger.log(Level.SEVERE, "Error searching through index", e);
 	        throw new SearchException(ERROR_IO);
         }
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
@@ -129,6 +144,7 @@ public class Search {
 			displayHits(searcher, hits);
 			reader.close();
 		} catch (IOException e) {
+        	logger.log(Level.SEVERE, "Error searching through index ()", e);
 			throw new SearchException(ERROR_IO);
 		}
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
@@ -160,6 +176,7 @@ public class Search {
 		try {
 	        searcher.search(q, collector);
         } catch (IOException e) {
+        	logger.log(Level.SEVERE, "Error searching through index ()", e);
 	        throw new SearchException(ERROR_IO);
         }
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
@@ -199,16 +216,42 @@ public class Search {
 		TermQuery termQuery = new TermQuery(new Term(field,isTrue));
 		return termQuery;
 	}
-
+	public BooleanQuery createDeadlineQuery(Calendar deadline) throws SearchException{
+		Gson gson = new Gson();
+		Calendar fromDate = getEpoch();
+		BooleanQuery bQuery = new BooleanQuery();
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(deadline),true,true);
+		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.MUST);
+		return bQuery;
+	}	
 	public BooleanQuery createDateQuery(Calendar toDate,Calendar fromDate) throws SearchException{
 		Gson gson = new Gson();
 		BooleanQuery bQuery = new BooleanQuery();
+		Calendar epochDate = getEpoch();
 		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(toDate),true,true);
 		TermRangeQuery rangeScheduleQ = TermRangeQuery.newStringRange("toDate",gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		TermRangeQuery rangeFromScheduleQ = TermRangeQuery.newStringRange("fromDate", gson.toJson(epochDate), gson.toJson(fromDate), false, true);
 		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeScheduleQ,BooleanClause.Occur.SHOULD);
+		bQuery.add(rangeFromScheduleQ,BooleanClause.Occur.MUST_NOT);
 		return bQuery;
 	}	
+	public BooleanQuery createWeekQuery(Calendar day) throws SearchException{
+		Gson gson = new Gson();
+		Date dayDate = day.getTime();
+		List<Date> weekRange = getDatesForThisWeek(dayDate);
+		Calendar fromDate = dateToCalendar(weekRange.get(0));
+		Calendar toDate = dateToCalendar(weekRange.get(1));
+		BooleanQuery bQuery = new BooleanQuery();
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.MUST);
+		return bQuery;
+	}	
+	private Calendar dateToCalendar(Date date){ 
+		  Calendar cal = Calendar.getInstance();
+		  cal.setTime(date);
+		  return cal;
+	}
 	private void createIndex(Directory index, IndexWriterConfig config)
             throws SearchException {
 	    try {
@@ -247,6 +290,36 @@ public class Search {
 	private void closeWriter(IndexWriter writer) throws IOException {
 	    writer.close();
     }
+	private Calendar getEpoch() throws SearchException{
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+		String dateInString = "01-01-1970 00:00:00";
+		Date date;
+        Calendar fromDate = Calendar.getInstance();
+        try {
+	        date = sdf.parse(dateInString);
+			fromDate.setTime(date);
+        } catch (ParseException e) {
+        	logger.log(Level.SEVERE, "Error parsing Epoch date", e);
+        	throw new SearchException(ERROR_IO);
+        }
+        assert(fromDate.getTime().toString().equals(date.toString()));
+		return fromDate;
+	}
+	private List<Date> getDatesForThisWeek(Date date) {
+		List<Date> dates = new ArrayList<Date>();
 
-	
+		LocalDate today = date.toInstant().atZone(ZoneId.systemDefault())
+		        .toLocalDate();
+		LocalDate monday = today.with(previousOrSame(MONDAY));
+		LocalDate sunday = today.with(nextOrSame(SUNDAY));
+		dates.add(Date.from(monday.atStartOfDay(ZoneId.systemDefault())
+		        .toInstant()));
+		dates.add(Date.from(sunday.atStartOfDay(ZoneId.systemDefault())
+		        .toInstant()));
+		System.out.println("Today: " + today);
+		System.out.println("Monday of the Week: " + monday);
+		System.out.println("Sunday of the Week: " + sunday);
+		return dates;
+
+	}
 }
