@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -28,6 +29,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+
+// Things To Do
+// TODO Implement Auto-Complete in basic search text field
+// TODO New advanced search window when clicked advanced search
 
 //@author A0121437N
 public class UiController implements Initializable {
@@ -42,6 +47,12 @@ public class UiController implements Initializable {
 	
 	@FXML
 	private ListView<TaskHBox> listView;
+	
+	@FXML
+	private Hyperlink advSearch;
+	
+	@FXML
+	private TextField basicSearchTextField;
 	
 	private Logic logic = new Logic("test");	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
@@ -61,6 +72,14 @@ public class UiController implements Initializable {
 		appendConsoleMessage(result.getConsoleMessage());
 		updateList(result.getTasks());
 		commandTextField.setText("");
+	}
+	
+	public void openAdvancedSearch (ActionEvent event) {
+		System.out.println("OPEN ADVANCED SEARCH");
+	}
+	
+	public void performBasicSearch (ActionEvent event) {
+		System.out.println("PERFORM BASIC SEARCH FOR \"" + basicSearchTextField.getText() + "\"");
 	}
 
 	private void appendConsoleMessage(String consoleMessage) {
@@ -122,6 +141,8 @@ public class UiController implements Initializable {
 			
 			HBox.setHgrow(spacerPane, Priority.ALWAYS);
 			getChildren().addAll(textContainer, spacerPane, taskCatLabel, starImageView);
+			
+			// Set padding around HBox for visual appeal
 			setPadding(new Insets(8.0));
 		}
 
