@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 //@author A0121437N
 public class History {
 	private HistoryNode currentPoint;
+	
 	private static final Logger logger = Logger.getLogger(History.class.getName());
+	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
+	private static final String MESSAGE_REDO_NOTHING = "nothing to redo";
 	
 	public History(List<Task> initialState) {
 		assert initialState != null;
@@ -24,24 +26,24 @@ public class History {
 		logger.log(Level.INFO, "Adding new state to History");
 	}
 	
-	public List<Task> goBack () {
+	public List<Task> undo () throws HistoryException {
 		if (currentPoint.getBack() != null) {
 			currentPoint = currentPoint.getBack();
 			logger.log(Level.INFO, "Going back one state in History");
 			return currentPoint.getCurrentState();
 		}
 		logger.log(Level.INFO, "No back state in History");
-		return null;
+		throw new HistoryException (MESSAGE_UNDO_NOTHING);
 	}
 	
-	public List<Task> goForward () {
+	public List<Task> redo () throws HistoryException {
 		if (currentPoint.getForward() != null) {
 			currentPoint = currentPoint.getForward();
 			logger.log(Level.INFO, "Going forward one state in History");
 			return currentPoint.getCurrentState();
 		}
 		logger.log(Level.INFO, "No forward state in History");
-		return null;
+		throw new HistoryException(MESSAGE_REDO_NOTHING);
 	}
 	
 	public List<Task> getCurrentState () {

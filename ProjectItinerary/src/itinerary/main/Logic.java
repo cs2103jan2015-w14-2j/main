@@ -2,6 +2,7 @@ package itinerary.main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 //@author A0121437N
@@ -13,14 +14,14 @@ public class Logic {
 	private static final String MESSAGE_EDIT_SUCCESS = "edited task %1$d";
 	private static final String MESSAGE_DISPLAY_ALL = "displaying all tasks";
 	private static final String MESSAGE_REDO_ERROR = "redo error";
-	private static final String MESSAGE_REDO_NOTHING = "nothing to redo";
 	private static final String MESSAGE_REDO_SUCCESS = "redo successful";
 	private static final String MESSAGE_UNDO_ERROR = "undo error";
-	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
 	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
 	private static final String MESSAGE_SEARCH_ERROR = "search error";
 	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
+	
+	private static final Logger logger = Logger.getLogger(Logic.class.getName());
 	
 	private String fileName;
 	private Storage storage;
@@ -129,15 +130,21 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeRedo() {
-		List<Task> nextState = history.goForward();
-		if (nextState == null) {
-			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
+		List<Task> nextState;
+		try {
+			nextState = history.redo();
+		} catch (HistoryException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		try {
 			storage.clearAll();
 			storage.refillAll(nextState);
-		} catch (StorageException e) {
-			history.goBack();
+		} catch (StorageException storageException) {
+			try {
+				history.undo();
+			} catch (HistoryException historyException) {
+				// TODO Add message to logger
+			}
 			return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
 		}
 		return new UserInterfaceContent(MESSAGE_REDO_SUCCESS, storage.getAllTasks());
@@ -156,15 +163,21 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeUndo() {
-		List<Task> previousState = history.goBack();
-		if (previousState == null) {
-			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
+		List<Task> previousState;
+		try {
+			previousState = history.undo();
+		} catch (HistoryException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		try {
 			storage.clearAll();
 			storage.refillAll(previousState);
-		} catch (StorageException e) {
-			history.goForward();
+		} catch (StorageException storageException) {
+			try {
+				history.redo();
+			} catch (HistoryException historyException) {
+				// TODO Add message to logger
+			}
 			return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 		}
 		return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
