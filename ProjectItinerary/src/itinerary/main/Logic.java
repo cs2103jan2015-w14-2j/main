@@ -2,6 +2,7 @@ package itinerary.main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -34,6 +35,7 @@ public class Logic {
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
+		logger.log(Level.INFO, "executing user input: " + userInput);
 		Command userCommand;
 		try {
 			userCommand = Parser.parseCommand(userInput);
@@ -75,6 +77,7 @@ public class Logic {
 		try {
 			storage.addTask(command.getTask());
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful add", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		updateHistory();
@@ -86,6 +89,7 @@ public class Logic {
 		try {
 			storage.clearAll();
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful clear", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		updateHistory();
@@ -96,6 +100,7 @@ public class Logic {
 		try {
 			storage.deleteTask(command.getTask());
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful delete", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		
@@ -114,6 +119,7 @@ public class Logic {
 		try {
 			storage.editTask(command.getTask());
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful edit", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		
@@ -143,7 +149,7 @@ public class Logic {
 			try {
 				history.undo();
 			} catch (HistoryException historyException) {
-				// TODO Add message to logger
+				logger.log(Level.WARNING, "Error in trying to return to original state", historyException);
 			}
 			return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
 		}
@@ -156,6 +162,7 @@ public class Logic {
 	        	Search search = new Search(storage.getAllTasks(), false);
 	            searchList = search.query(command.getTask().getText(),"text");
             } catch (SearchException e) {
+				logger.log(Level.WARNING, "Unsuccessful search", e);
     			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
             }
        
@@ -176,7 +183,7 @@ public class Logic {
 			try {
 				history.redo();
 			} catch (HistoryException historyException) {
-				// TODO Add message to logger
+				logger.log(Level.WARNING, "Error in trying to return to original state", historyException);
 			}
 			return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 		}
