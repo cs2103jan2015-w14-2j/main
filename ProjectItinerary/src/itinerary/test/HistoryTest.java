@@ -53,6 +53,21 @@ public class HistoryTest {
 		history.redo();
 	}
 	
+	@Test (expected = HistoryException.class)
+	public void testRedoNothingAfterAdd () throws HistoryException {
+		history.addNewState(TEST_LIST_2);
+		history.redo();
+	}
+	
+	@Test (expected = HistoryException.class)
+	public void testUndoNothingAfterAdd () throws HistoryException {
+		history.addNewState(TEST_LIST_2);
+		// no exception thrown
+		history.undo();
+		// exception thrown
+		history.undo();
+	}
+	
 	@Test
 	public void testAddSecondState () throws HistoryException {
 		history.addNewState(TEST_LIST_2);
