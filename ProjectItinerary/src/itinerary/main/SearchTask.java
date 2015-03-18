@@ -8,7 +8,10 @@ import com.google.gson.Gson;
 public class SearchTask extends Task implements Cloneable {
 	private Calendar fromDate;
     private Calendar toDate;
+    private Calendar deadline;
     private List<String> searchField;
+    private List<String> categoryList;
+    private List<String> searchNotField;
     //@author generated
     public SearchTask() {
         super(1,"","", false, false);
@@ -30,7 +33,6 @@ public class SearchTask extends Task implements Cloneable {
     public Calendar getFromDate() {
         return fromDate;
     }
-
     public void setFromDate(Calendar fromDate) {
         this.fromDate = fromDate;
     }
@@ -88,5 +90,23 @@ public class SearchTask extends Task implements Cloneable {
         }
 
         return true;
+    }
+	public List<String> getCategoryList() {
+	    return categoryList;
+    }
+	public void setCategoryList(List<String> categoryList) {
+	    this.categoryList = categoryList;
+    }
+	public List<String> getSearchNotField() {
+	    return searchNotField;
+    }
+	public void setSearchNotField(List<String> searchNotField) {
+	    this.searchNotField = searchNotField;
+    }
+	public Calendar getDeadline() {
+	    return deadline;
+    }
+	public void setDeadline(Calendar deadline) {
+	    this.deadline = deadline;
     }
 }
