@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+//@author A0121437N
 public class UserInterface extends Application {
 
 	public static void main (String[] args) {
@@ -17,6 +18,7 @@ public class UserInterface extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("ApplicationWindow.fxml"));
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
+		stage.setTitle("ITnerary");
 		stage.show();
 	}
 	
