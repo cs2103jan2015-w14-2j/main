@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 public class SearchTask extends Task implements Cloneable {
 	private Calendar fromDate;
     private Calendar toDate;
+    private Calendar deadline;
     private List<String> searchField;
     private List<String> categoryList;
     private List<String> searchNotField;
@@ -101,5 +102,11 @@ public class SearchTask extends Task implements Cloneable {
     }
 	public void setSearchNotField(List<String> searchNotField) {
 	    this.searchNotField = searchNotField;
+    }
+	public Calendar getDeadline() {
+	    return deadline;
+    }
+	public void setDeadline(Calendar deadline) {
+	    this.deadline = deadline;
     }
 }
