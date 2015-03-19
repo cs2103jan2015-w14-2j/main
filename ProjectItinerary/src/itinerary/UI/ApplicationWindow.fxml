@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="itinerary.UI.UiController">
+   <bottom>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <TextArea fx:id="consoleTextArea" editable="false" maxHeight="100.0" promptText="Console">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </TextArea>
+            <TextField fx:id="commandTextField" onAction="#commandEntered" promptText="Command">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin></TextField>
+         </children>
+      </VBox>
+   </bottom>
+   <center>
+      <ListView fx:id="listView" BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <Pane HBox.hgrow="ALWAYS" />
+            <Hyperlink fx:id="advSearch" onAction="#openAdvancedSearch" text="Advanced Search">
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </Hyperlink>
+            <TextField fx:id="basicSearchTextField" onAction="#performBasicSearch" promptText="Basic Search">
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin></TextField>
+         </children>
+         <padding>
+            <Insets bottom="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </top>
+</BorderPane>
