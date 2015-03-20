@@ -25,7 +25,7 @@ public class Parser {
 	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
 	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
 	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
-	
+
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_DELETE = "delete";
 	private static final String COMMAND_DISPLAY = "display";
@@ -43,8 +43,9 @@ public class Parser {
 
 	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
-	
+
 	private static Logger logger = Logger.getLogger("Parser");
+	private static String errorMessage;
 
 	static{
 		try {
@@ -53,7 +54,7 @@ public class Parser {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//returns a command object and it is called by logic
 	public static Command parseCommand(String input) throws ParserException {
 		assert input != null;
@@ -64,6 +65,10 @@ public class Parser {
 		Task task = createTask(commandType, argument);
 		Command command = new Command(task, commandType);
 		return command;
+	}
+	
+	public static String getErrorMessage (){
+		return errorMessage;
 	}
 
 	private static Task createTask(CommandType type, String argument) throws ParserException {
@@ -101,7 +106,7 @@ public class Parser {
 		for(int i=0; i < words.length; i++){
 			String stringAfterFirstChar = words[i].substring(1);
 			String letterString = removeNonLetterChar(stringAfterFirstChar);
-			if(words[i].charAt(0) == '+'&& identifyKeyword(letterString) > -1){
+			if(words[i].charAt(0) == '+' && identifyKeyword(letterString) > -1){
 				words[i] = stringAfterFirstChar;
 			}
 			resultString = resultString + words[i] + " ";
@@ -109,7 +114,7 @@ public class Parser {
 		resultString = resultString.substring(0, resultString.length()-1);
 		return resultString;
 	}
-	
+
 	private static String removeNonLetterChar(String word){
 		for(int i = word.length()-1; i >= 0; i--){
 			if(!Character.isLetter(word.charAt(i))){
@@ -120,7 +125,7 @@ public class Parser {
 		}
 		return word;
 	}
-	
+
 	private static Task extractContent(String argument) throws ParserException {
 		String[] argumentWords = stringToArray(argument);
 
@@ -189,7 +194,7 @@ public class Parser {
 		if(extractFirstWord(arg).equals(KEYWORDS[3])){
 			textAfterKeyword =  arg.split(KEYWORDS[3] + " ")[1];
 		}else{	
-		    textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
+			textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
 		}
 		String[] words = stringToArray(textAfterKeyword);
 		String fromString = removeExtraWords(words, textAfterKeyword);
@@ -201,7 +206,7 @@ public class Parser {
 		if(extractFirstWord(arg).equals(KEYWORDS[2])){
 			textAfterKeyword =  arg.split(KEYWORDS[2] + " ")[1];
 		}else{	
-		    textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
+			textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
 		}
 		String[] words = stringToArray(textAfterKeyword);
 		String deadlineString = removeExtraWords(words, textAfterKeyword);
@@ -228,18 +233,33 @@ public class Parser {
 
 	private static String extractCategory(String arg) throws ParserException {
 		String[] words = stringToArray(arg);
+		String[] textsAroundKeyword = {};
+		String textAfterKeyword = "";
 		if (!containsKeyword(words, KEYWORDS[1])) {
 			return null;
 		}
 
-		String[] textsAroundKeyword = arg.split(" " + KEYWORDS[1] + " ");	
-		if(textsAroundKeyword.length <= 1){
-			throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
+		if( !words[0].equals(KEYWORDS[1])){
+			textsAroundKeyword = arg.split(" " + KEYWORDS[1] + " ");	
+			if(textsAroundKeyword.length <= 1 ){
+				throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
+			}
+			textAfterKeyword = textsAroundKeyword[1].trim();		
 		}
-			String textAfterKeyword = textsAroundKeyword[1].trim();		
-			words = stringToArray(textAfterKeyword);
-			String textNeeded = removeExtraWords(words, textAfterKeyword);
-			return replaceKeywordInContent(textNeeded).trim();
+
+		if(words[0].equals(KEYWORDS[1])){
+			if(words.length == 1){
+				throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
+			}
+			else{
+				textsAroundKeyword = arg.split(KEYWORDS[1] + " ");	
+				textAfterKeyword = textsAroundKeyword[1].trim();		
+			}
+		}
+
+		words = stringToArray(textAfterKeyword);
+		String textNeeded = removeExtraWords(words, textAfterKeyword);
+		return replaceKeywordInContent(textNeeded).trim();
 	}
 
 	private static String removeExtraWords(String[] words, String text) {
@@ -311,7 +331,7 @@ public class Parser {
 		}
 		return true;
 	}
-	
+
 	private static Task createTaskToAdd(String input) throws ParserException {
 		assert input != null;
 		if(!hasDescriptionForAdd(input)){
@@ -331,11 +351,11 @@ public class Parser {
 		assert input != null;
 		int taskId = identifyTargetId(stringToArray(input));
 		String textAfterIndex= removeFirstWord(input);
-		
+
 		if(textAfterIndex.length() == 0){
 			throw new ParserException(ERROR_NO_CONTENT_FOR_EDIT);
 		}
-		
+
 		Task task = extractContent(textAfterIndex);
 		task.setTaskId(taskId);
 		if (task.getText().equals("")) {
