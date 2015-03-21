@@ -7,7 +7,7 @@ import java.util.List;
 
 //@author A0121409R
 /**
- * Class for handling IO File operations. <br>
+ * Class for handling the data and saving it onto file. <br>
  * <br>
  * Assumptions:
  * <p>
@@ -22,7 +22,7 @@ import java.util.List;
  * <ul>
  * <p>
  */
-public class ProtoFileStorage extends Storage {
+public class FileStorage extends Storage {
     
     private static final String ERROR_ADD_NO_TASK_DESC =
                                                          "Please ensure the Task to be added actually has a description.";
@@ -39,15 +39,15 @@ public class ProtoFileStorage extends Storage {
 
     // Constructors
 
-    public ProtoFileStorage() {
+    public FileStorage() {
         this(DEFAULT_FILENAME);
     }
     
-    public ProtoFileStorage(File file) {
+    public FileStorage(File file) {
         this(file.toString());
     }
 
-    public ProtoFileStorage(String fileName) {
+    public FileStorage(String fileName) {
         
         if (fileName == "") {
             

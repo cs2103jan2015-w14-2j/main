@@ -40,7 +40,7 @@ public class Logic {
 	
 	public Logic (String fileName) {
 		this.fileName = fileName;
-		this.storage = new ProtoFileStorage(fileName);
+		this.storage = new FileStorage(fileName);
 		this.history = new History(storage.getAllTasks());
 	}
 
