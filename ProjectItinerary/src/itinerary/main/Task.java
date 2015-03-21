@@ -74,7 +74,7 @@ public class Task implements Cloneable {
     	}
     	
     	if (details.isPriority() == true) {
-    		if(this.isPriority()){
+    		if(!this.isPriority()){
     			this.setPriority(false);
     		}
     		else{

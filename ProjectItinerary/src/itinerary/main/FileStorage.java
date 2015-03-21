@@ -12,7 +12,7 @@ import java.util.List;
  * Assumptions:
  * <p>
  * <ul>
- * <li>1) Writes to file before returning State object.
+ * <li>1) Writes to file after commands that alter the state of the data.
  * <li>2) Assume Task taskIds start from 1, not 0.
  * <li>3) When returning the list of Tasks, it will return a duplicated copy and
  * not the direct reference.
@@ -34,7 +34,10 @@ public class FileStorage extends Storage {
     
     private static final String DEFAULT_FILENAME = "default.txt";
     
+    private static final String TEMP_FILENAME = "temp.txt";
+    
     private File currFile;
+    private File tempFile;
     private List<Task> listTask;
 
     // Constructors
@@ -56,6 +59,8 @@ public class FileStorage extends Storage {
         
         this.currFile = new File(fileName);
         this.listTask = JsonIOHandler.readJSONFileListTask(currFile);
+        
+        this.tempFile = new File(TEMP_FILENAME);
 
         this.updateTaskId();
     }
@@ -64,6 +69,22 @@ public class FileStorage extends Storage {
 
     public String getCurrFileName() {
         return currFile.toString();
+    }
+    
+    /**
+     * This returns a list of all categories currently held in listTask.
+     * 
+     * @return A List<String> object containing all the categories.
+     */
+    public List<String> getAllCategories() {
+        List<String> list = new ArrayList<String>();
+        List<Task> taskList = getAllTasks();
+        for (Task task : taskList) {
+            if (!list.contains(task.getCategory())) {
+                list.add(task.getCategory());
+            }
+        }
+        return list;
     }
 
     /**
@@ -91,7 +112,7 @@ public class FileStorage extends Storage {
     }
 
     /**
-     * Returns a printable ready String of the current contents held in currFile
+     * Returns a printable ready String of the current contents held in tempFile
      * in JSON format.
      * 
      * @param toAddTags
@@ -101,7 +122,7 @@ public class FileStorage extends Storage {
      *         JSON format.
      */
     public String currentListTaskString(boolean toAddTags) {
-        return JsonIOHandler.readJSON(currFile, toAddTags);
+        return JsonIOHandler.readJSON(tempFile, toAddTags);
     }
 
     /**
@@ -235,25 +256,29 @@ public class FileStorage extends Storage {
      */
     public void writeToFile() throws StorageException {
         try {
-            JsonIOHandler.writeJSONList(currFile, listTask);
+            JsonIOHandler.writeJSONList(tempFile, listTask);
         } catch (IOException e) {
             throw new StorageException(ERROR_IO);
         }
     }
-    
-    /**
-     * This returns a list of all categories currently held in listTask.
-     * 
-     * @return A List<String> object containing all the categories.
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#close(itinerary.main.Command)
      */
-    public List<String> getAllCategories() {
-        List<String> list = new ArrayList<String>();
-        List<Task> taskList = getAllTasks();
-        for (Task task : taskList) {
-            if (!list.contains(task.getCategory())) {
-                list.add(task.getCategory());
+    public void close() {
+        if (tempFile.exists()) {
+            if (!currFile.delete()) {
+                System.out.println("Old file not deleted.");
             }
+            
+            if (!tempFile.renameTo(currFile)) {
+                System.out.println("System cannot rename the file.");
+            }
+            
+            File tempFile = new File(TEMP_FILENAME);
+            tempFile.delete();
         }
-        return list;
     }
+
 }

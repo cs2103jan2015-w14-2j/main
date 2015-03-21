@@ -224,4 +224,8 @@ public class Logic {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
 	}
+	
+	public void exitOp() {
+	    storage.close();
+	}
 }

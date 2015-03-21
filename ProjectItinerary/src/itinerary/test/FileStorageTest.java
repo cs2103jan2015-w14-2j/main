@@ -18,7 +18,7 @@ public class FileStorageTest {
 
     static Calendar calendar = Calendar.getInstance();
     
-    static File testFile = new File("testFile");
+    static File testFile = new File("testFile.txt");
     static FileStorage fileStorage = null;
 
     static Task task1 = new Task(1, "T", "ExampleCategory", true, true);
@@ -220,6 +220,11 @@ public class FileStorageTest {
         
         assertEquals(2, fileStorage.getAllCategories().size());
         
+    }
+    
+    @After
+    public void close() {
+        fileStorage.close();
     }
 
 }
