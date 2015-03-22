@@ -118,6 +118,6 @@ public class BasicGui {
 	private void updateFields (UserInterfaceContent content) {
 		textFieldCommand.setText("");
 		lblConsoleMessage.setText(content.getConsoleMessage());
-		populateTasks(content.getTasks());
+		populateTasks(content.getDisplayableTasks());
 	}
 }

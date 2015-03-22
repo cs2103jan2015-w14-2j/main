@@ -45,7 +45,7 @@ public class Logic {
 	public UserInterfaceContent initialLaunch () {
 		UserInterfaceContent displayContent = executeDisplay();
 		String welcomeMessage = formatWelcomeMessage();
-		return new UserInterfaceContent(welcomeMessage, displayContent.getTasks());
+		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
@@ -149,13 +149,14 @@ public class Logic {
 	
 	public UserInterfaceContent executeBasicSearch (String query) {
 		List<Task> searchList= new ArrayList<Task>();
+		List<Task> allTasks = storage.getAllTasks();
 		try {
-        	Search search = new Search(storage.getAllTasks(), false);
+        	Search search = new Search(allTasks, false);
             searchList = search.query(query ,"text");
         } catch (SearchException e) {
-			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
         }
-		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList);
+		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList, allTasks);
 	}
 
 	private UserInterfaceContent executeUndo() {

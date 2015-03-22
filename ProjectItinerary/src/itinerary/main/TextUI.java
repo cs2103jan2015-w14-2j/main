@@ -50,7 +50,7 @@ public class TextUI {
 
 	private static void printSequence(UserInterfaceContent content) {
 		printHeader();
-		printTasks(content.getTasks());
+		printTasks(content.getDisplayableTasks());
 		printConsoleMessage(content.getConsoleMessage());
 	}
 

@@ -12,19 +12,16 @@
          <children>
             <TextArea fx:id="consoleTextArea" editable="false" maxHeight="100.0" promptText="Console">
                <VBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </VBox.margin>
             </TextArea>
             <TextField fx:id="commandTextField" onAction="#commandEntered" promptText="Command">
                <VBox.margin>
-                  <Insets bottom="5.0" />
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </VBox.margin></TextField>
          </children>
       </VBox>
    </bottom>
-   <center>
-      <ListView fx:id="listView" BorderPane.alignment="CENTER" />
-   </center>
    <top>
       <HBox BorderPane.alignment="CENTER">
          <children>
@@ -34,14 +31,17 @@
                   <Insets right="5.0" />
                </HBox.margin>
             </Hyperlink>
-            <TextField fx:id="basicSearchTextField" onAction="#performBasicSearch" promptText="Basic Search">
-               <HBox.margin>
-                  <Insets right="5.0" />
-               </HBox.margin></TextField>
+            <TextField fx:id="basicSearchTextField" onAction="#executeBasicSearch" promptText="Basic Search" />
          </children>
          <padding>
-            <Insets bottom="5.0" top="5.0" />
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
       </HBox>
    </top>
+   <center>
+      <ListView fx:id="listView" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </BorderPane.margin></ListView>
+   </center>
 </BorderPane>
