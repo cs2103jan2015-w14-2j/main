@@ -144,14 +144,17 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeSearch(Command command) {
+		return executeBasicSearch(command.getTask().getText());
+	}
+	
+	public UserInterfaceContent executeBasicSearch (String query) {
 		List<Task> searchList= new ArrayList<Task>();
-	        try {
-	        	Search search = new Search(storage.getAllTasks(), false);
-	            searchList = search.query(command.getTask().getText(),"text");
-            } catch (SearchException e) {
-    			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
-            }
-       
+		try {
+        	Search search = new Search(storage.getAllTasks(), false);
+            searchList = search.query(query ,"text");
+        } catch (SearchException e) {
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
+        }
 		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList);
 	}
 
