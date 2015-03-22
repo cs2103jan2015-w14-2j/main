@@ -15,11 +15,26 @@ public class ParserDate {
  
  public Calendar parseDateFromText(String dateString) throws ParserException {
   dateString = changeDateFormat(dateString);
+  dateString = switchDateMonth(dateString);
   return parseDateByNatty(dateString);
  }
  
  public String changeDateFormat(String dateString){ 
   return dateString.replaceAll("\\.", "/");
+ }
+ 
+ public String switchDateMonth(String dateString){
+	 String switchedString = "";
+	 String[] textsAroundSlash = dateString.split("/");
+	 String temp = textsAroundSlash[0];
+	 textsAroundSlash[0] = textsAroundSlash[1];
+	 textsAroundSlash[1] = temp;
+	 
+	 for(String text: textsAroundSlash){
+		 switchedString = switchedString + text + "/";
+	 }
+	 switchedString = switchedString.substring(0, switchedString.length()-1);
+	 return switchedString;
  }
  
  public Calendar parseDateByNatty(String dateString) throws ParserException{

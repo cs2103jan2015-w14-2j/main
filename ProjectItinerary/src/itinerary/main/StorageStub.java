@@ -78,5 +78,9 @@ public class StorageStub extends Storage {
     public void refillAll(List<Task> tasks) throws StorageException {
     	this.tasks = tasks;
     }
+    
+    public void close() {
+        //Do nothing
+    }
 
 }

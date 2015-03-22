@@ -35,6 +35,8 @@ public class TextUI {
 			userInput = requestUserInput(scanner);
 			content = logic.executeUserInput(userInput);
 		} while (!userInput.equals(EXIT_COMMAND));
+		
+		logic.exitOp();
 	}
 
 	private static String requestUserInput(Scanner scanner) {
