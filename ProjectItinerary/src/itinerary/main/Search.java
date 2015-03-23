@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,6 +76,16 @@ public class Search {
 	IndexWriter writer;
 	Document doc;
 	
+	static {
+		try {
+			logger.addHandler(new FileHandler(Constants.LOG_FILE));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public <T extends Task> Search(List<T> taskList) throws SearchException {
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
@@ -87,7 +98,9 @@ public class Search {
 		
 		
 	}
+	
 	public <T extends Task> List<T> query(SearchTask task) throws SearchException{
+		assert task!= null;
 		List<String> searchField = task.getSearchField();
 		List<String> searchNotField = task.getSearchNotField();
 		BooleanQuery q = new BooleanQuery();
@@ -135,8 +148,9 @@ public class Search {
 	}
 	public <T extends Task> List<T> query(String query,String field) throws SearchException {
 		// The same analyzer should be used for indexing and searching
-		
+		logger.log(Level.INFO, "Searching for: " + query);
 		try {
+			
 			BooleanQuery q = new BooleanQuery();
 			q = createQuery(field,query);
 			ScoreDoc[] hits = searchQuery(q, searcher);
