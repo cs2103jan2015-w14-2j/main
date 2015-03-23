@@ -210,12 +210,13 @@ public class Search {
 		Query fuzzyQ = getFuzzyQuery(field,splitQuery);
 		bQuery.add(fuzzyQ,BooleanClause.Occur.SHOULD);
 		bQuery.add(wildQ,BooleanClause.Occur.SHOULD);
+		System.out.println(bQuery.toString());
 		return bQuery;
     }
 	private Query getWildCardQuery(String field, String[] splitQuery) {
 	    SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
 	    for (int i = 0; i < splitQuery.length; i++) {
-	        WildcardQuery wildQuery = new WildcardQuery(new Term(field, splitQuery[i]));
+	        WildcardQuery wildQuery = new WildcardQuery(new Term(field, splitQuery[i]+"*"));
 	        queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(wildQuery);
 	    }
 	    SpanNearQuery q = new SpanNearQuery(queryParts,5,true);
