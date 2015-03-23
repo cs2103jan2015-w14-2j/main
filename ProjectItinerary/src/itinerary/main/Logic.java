@@ -1,5 +1,15 @@
 package itinerary.main;
 
+import itinerary.history.History;
+import itinerary.history.HistoryException;
+import itinerary.parser.Parser;
+import itinerary.parser.ParserException;
+import itinerary.search.Search;
+import itinerary.search.SearchException;
+import itinerary.storage.FileStorage;
+import itinerary.storage.Storage;
+import itinerary.storage.StorageException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +50,7 @@ public class Logic {
 	
 	public Logic (String fileName) {
 		this.fileName = fileName;
-		this.storage = new ProtoFileStorage(fileName);
+		this.storage = new FileStorage(fileName);
 		this.history = new History(storage.getAllTasks());
 	}
 
@@ -58,7 +68,7 @@ public class Logic {
 	public UserInterfaceContent initialLaunch () {
 		UserInterfaceContent displayContent = executeDisplay();
 		String welcomeMessage = formatWelcomeMessage();
-		return new UserInterfaceContent(welcomeMessage, displayContent.getTasks());
+		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
@@ -167,16 +177,20 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeSearch(Command command) {
+		return executeBasicSearch(command.getTask().getText());
+	}
+	
+	public UserInterfaceContent executeBasicSearch (String query) {
 		List<Task> searchList= new ArrayList<Task>();
-	        try {
-	        	Search search = new Search(storage.getAllTasks());
-	            searchList = search.query(command.getTask().getText(),"text");
-            } catch (SearchException e) {
-				logger.log(Level.WARNING, "Unsuccessful search", e);
-    			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
-            }
-       
-		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList);
+		List<Task> allTasks = storage.getAllTasks();
+		try {
+        	Search search = new Search(allTasks);
+            searchList = search.query(query ,"text");
+        } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
+        }
+		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList, allTasks);
 	}
 
 	private UserInterfaceContent executeUndo() {
@@ -223,5 +237,9 @@ public class Logic {
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+	
+	public void exitOp() {
+	    storage.close();
 	}
 }
