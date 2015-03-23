@@ -14,7 +14,7 @@ public class SearchStage extends Stage {
 	private static final String WINDOW_FILE_NAME = "SearchWindow.fxml";
 	
 	private static SearchStage search = null;
-	private static SearchResultCallback callback;
+	private SearchResultCallback callback;
 	
 	private SearchStage (SearchResultCallback callback) throws IOException {
 		super();

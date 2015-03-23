@@ -1,17 +1,13 @@
 package itinerary.ui;
 
-import itinerary.main.DeadlineTask;
 import itinerary.main.Logic;
-import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
 import itinerary.ui.SearchStage.SearchResultCallback;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -20,18 +16,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 
 // Things To Do
 // TODO New advanced search window when clicked advanced search
