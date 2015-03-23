@@ -5,6 +5,7 @@ import static java.time.temporal.TemporalAdjusters.nextOrSame;
 import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -30,6 +31,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.search.TermRangeQuery;
 
+import itinerary.main.Constants;
 import itinerary.main.JsonConverter;
 import itinerary.main.Task;
 
@@ -93,7 +95,8 @@ public class Search {
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
 		typeList = JsonConverter.getTypeList(taskList);
-		analyzer = new StandardAnalyzer();
+		CharArraySet stopWords = new CharArraySet(5,false);
+		analyzer = new StandardAnalyzer(stopWords);
 		hitList = new ArrayList<String>();
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
