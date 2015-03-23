@@ -30,6 +30,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.search.TermRangeQuery;
 
+import itinerary.main.Constants;
 import itinerary.main.JsonConverter;
 import itinerary.main.Task;
 
