@@ -21,23 +21,25 @@ import javafx.stage.Window;
 
 public class SuggestionBox {
 	private static final int SUGGESTIONS_HEIGHT = 24;
-	private int maxSuggestionsShown = 6;
 	
-	private TextField textField;
-	private Popup suggestionPopup = new Popup();
-	private ListView<String> suggestionListView = new ListView<String>();
-	private SuggestionActions action;
+	private int maxSuggestionsShown = 6;
+	private double width = -1.0;
 	
 	private List<String> suggestionSource = new ArrayList<String>();
 	private ObservableList<String> suggestions = FXCollections.observableArrayList();
 	
-	private double width = -1.0;
+	private TextField textField;
+	private Popup suggestionPopup = new Popup();
+	private ListView<String> suggestionListView = new ListView<String>(suggestions);
+	private SuggestionActions action;
 	
 	public SuggestionBox (TextField textField, SuggestionActions action) {
 		this.textField = textField;
 		this.action = action;
 		this.textField.textProperty().addListener(textChangeListener);
 		this.textField.focusedProperty().addListener(focusChangeListener);
+		
+		suggestionPopup.getContent().add(suggestionListView);
 	}
 	
 	private ChangeListener<String> textChangeListener = new ChangeListener<String>() {
