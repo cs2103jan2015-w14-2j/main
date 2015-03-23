@@ -39,6 +39,9 @@ public class SuggestionBox {
 		this.textField.textProperty().addListener(textChangeListener);
 		this.textField.focusedProperty().addListener(focusChangeListener);
 		
+		suggestionListView.setOnKeyReleased(handler);
+		suggestionListView.setOnMousePressed(handler);
+		
 		suggestionPopup.getContent().add(suggestionListView);
 	}
 	
