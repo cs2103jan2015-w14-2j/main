@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Popup;
 import javafx.stage.Window;
 
+//@author A0121437N
 public class SuggestionBox {
 	private static final int SUGGESTIONS_HEIGHT = 24;
 	
@@ -31,16 +32,16 @@ public class SuggestionBox {
 	private TextField textField;
 	private Popup suggestionPopup = new Popup();
 	private ListView<String> suggestionListView = new ListView<String>(suggestions);
-	private SuggestionActions action;
+	private SuggestionImplementation implementation;
 	
-	public SuggestionBox (TextField textField, SuggestionActions action) {
+	public SuggestionBox (TextField textField, SuggestionImplementation implementation) {
 		this.textField = textField;
-		this.action = action;
+		this.implementation = implementation;
 		this.textField.textProperty().addListener(textChangeListener);
 		this.textField.focusedProperty().addListener(focusChangeListener);
 		
-		suggestionListView.setOnKeyReleased(handler);
-		suggestionListView.setOnMousePressed(handler);
+		suggestionListView.setOnKeyReleased(keyReleaseHandler);
+		suggestionListView.setOnMousePressed(mousePressHandler);
 		
 		suggestionPopup.getContent().add(suggestionListView);
 	}
@@ -64,7 +65,7 @@ public class SuggestionBox {
 		@Override
 		public void changed(ObservableValue<? extends Boolean> observable,
 				Boolean oldValue, Boolean newValue) {
-			if (newValue && action.focusShowCondition()) {
+			if (newValue && implementation.focusShowCondition()) {
 				filterSuggestions(textField.getText());
 				showPopup();
 			} else {
@@ -73,28 +74,29 @@ public class SuggestionBox {
 		}
 	};
 	
-	private EventHandler<Event> handler = new EventHandler<Event>() {
+	private EventHandler<KeyEvent> keyReleaseHandler = new EventHandler<KeyEvent>() {
 		@Override
-		public void handle(Event event) {
-			if (event.getEventType() == KeyEvent.KEY_RELEASED) {
-				if (event.getSource() == suggestionListView) {
-					KeyEvent keyEvent = (KeyEvent) event;
-					boolean isFromListView = keyEvent.getSource() == suggestionListView;
-					boolean isEnterPressed = keyEvent.getCode() == KeyCode.ENTER;
-					String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
-					if (isFromListView && isEnterPressed) {
-						if (suggestion != null) {
-							selectSuggestion(suggestion);
-						} else {
-							hidePopup();
-							action.onEnterAction();
-						}
-						
-					}
+		public void handle(KeyEvent event) {
+			boolean isFromListView = event.getSource() == suggestionListView;
+			boolean isEnterPressed = event.getCode() == KeyCode.ENTER;
+			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
+			if (isFromListView && isEnterPressed) {
+				if (suggestion != null) {
+					selectSuggestion(suggestion);
+				} else {
+					hidePopup();
+					implementation.onEnterAction();
 				}
-			} else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
-				hidePopup();
 			}
+		}
+	};
+	
+	private EventHandler<MouseEvent> mousePressHandler = new EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent event) {
+			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
+			selectSuggestion(suggestion);
+			hidePopup();
 		}
 	};
 	

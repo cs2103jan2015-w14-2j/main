@@ -12,21 +12,15 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -34,18 +28,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Popup;
-import javafx.stage.Window;
 
 // Things To Do
-// TODO Implement Auto-Complete in basic search text field
 // TODO New advanced search window when clicked advanced search
 
 //@author A0121437N
@@ -70,12 +58,10 @@ public class UiController implements Initializable, SearchResultCallback {
 	private TextField basicSearchTextField;
 	private SuggestionBox suggestionBox;
 	
-	private List<String> taskDescriptions = new ArrayList<String>();
-	
 	private Logic logic = new Logic("test");	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
 	
-	private SuggestionActions autoComplete = new SuggestionActions() {
+	private SuggestionImplementation autoComplete = new SuggestionImplementation() {
 		@Override
 		public boolean textChangedHideCondition(String oldValue, String newValue) {
 			return newValue.length() == 0;
