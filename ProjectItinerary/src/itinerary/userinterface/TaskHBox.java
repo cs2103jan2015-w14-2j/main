@@ -33,7 +33,7 @@ public class TaskHBox extends HBox {
 	
 	Pane spacerPane = new Pane();
 	Label taskCatLabel = new Label();
-	Image starImage = new Image("itinerary/UI/star.png");
+	Image starImage = new Image("itinerary/userinterface/star.png");
 	ImageView starImageView = new ImageView();
 	
 	Task task;
