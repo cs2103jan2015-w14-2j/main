@@ -1,11 +1,11 @@
-package itinerary.UI;
+package itinerary.ui;
 
-import itinerary.UI.SearchStage.SearchResultCallback;
 import itinerary.main.DeadlineTask;
 import itinerary.main.Logic;
 import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
+import itinerary.ui.SearchStage.SearchResultCallback;
 
 import java.io.IOException;
 import java.net.URL;

@@ -1,4 +1,4 @@
-package itinerary.UI;
+package itinerary.ui;
 
 //@author A0121437N
 public interface SuggestionImplementation {

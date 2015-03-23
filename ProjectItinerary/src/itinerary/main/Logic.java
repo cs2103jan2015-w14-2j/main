@@ -1,5 +1,15 @@
 package itinerary.main;
 
+import itinerary.history.History;
+import itinerary.history.HistoryException;
+import itinerary.parser.Parser;
+import itinerary.parser.ParserException;
+import itinerary.search.Search;
+import itinerary.search.SearchException;
+import itinerary.storage.FileStorage;
+import itinerary.storage.Storage;
+import itinerary.storage.StorageException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

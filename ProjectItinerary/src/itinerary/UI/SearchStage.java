@@ -1,4 +1,4 @@
-package itinerary.UI;
+package itinerary.ui;
 
 import java.io.IOException;
 

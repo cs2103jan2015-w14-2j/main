@@ -1,4 +1,4 @@
-package itinerary.UI;
+package itinerary.ui;
 
 import java.util.ArrayList;
 import java.util.Collections;
