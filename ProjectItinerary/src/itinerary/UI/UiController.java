@@ -49,10 +49,8 @@ import javafx.stage.Window;
 // TODO New advanced search window when clicked advanced search
 
 //@author A0121437N
-public class UiController implements Initializable, SearchResultCallback, EventHandler<Event>, ChangeListener<String> {
+public class UiController implements Initializable, SearchResultCallback {
 	
-	private static final int SUGGESTIONS_HEIGHT = 24;
-	private static final int SUGGESTIONS_MAX = 6;
 	private static final String ERROR_OPEN_SEARCH = "Error! Unable to open Advanced Search window";
 	private static final String DATE_FORMAT = "EEE, dd MMM yyyy";
 	private static final String TIME_FORMAT = "hh:mm aaa";
@@ -70,42 +68,37 @@ public class UiController implements Initializable, SearchResultCallback, EventH
 	
 	@FXML
 	private TextField basicSearchTextField;
-	// For auto complete
-	private Popup suggestionPopup;
-	private ListView<String> suggestionListView;
+	private SuggestionBox suggestionBox;
 	
 	private List<String> taskDescriptions = new ArrayList<String>();
-	private ObservableList<String> suggestions = FXCollections.observableArrayList();
 	
 	private Logic logic = new Logic("test");	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
+	
+	private SuggestionActions autoComplete = new SuggestionActions() {
+		@Override
+		public boolean textChangedHideCondition(String oldValue, String newValue) {
+			return newValue.length() == 0;
+		}
+		
+		@Override
+		public void onEnterAction() {
+			executeBasicSearch(null);
+		}
+		
+		@Override
+		public boolean focusShowCondition() {
+			return basicSearchTextField.getText().length() > 0;
+		}
+	};
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		consoleTextArea.setFocusTraversable(false);
 		UserInterfaceContent launch = logic.initialLaunch();
+		
+		suggestionBox = new SuggestionBox(basicSearchTextField, autoComplete);
 		updateContent(launch);
-		
-		basicSearchTextField.setOnKeyPressed(this);
-		basicSearchTextField.textProperty().addListener(this);
-		basicSearchTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable,
-					Boolean oldValue, Boolean newValue) {
-				if (newValue && basicSearchTextField.getText().length() > 0) {
-					showPopup();
-				} else {
-					hidePopup();
-				}
-			}
-		});
-		
-		suggestionListView = new ListView<String>(suggestions);
-		suggestionListView.setOnMouseReleased(this);
-		suggestionListView.setOnKeyReleased(this);
-		
-		suggestionPopup = new Popup();
-		suggestionPopup.getContent().add(suggestionListView);
 	}
 	
 	public void commandEntered (ActionEvent event) {
@@ -123,14 +116,11 @@ public class UiController implements Initializable, SearchResultCallback, EventH
 	}
 	
 	private void updateDescriptions(List<Task> tasks) {
-		while (!taskDescriptions.isEmpty()) {
-			taskDescriptions.remove(0);
-		}
+		List<String> suggestions = new ArrayList<String>();
 		for (Task task : tasks) {
-			taskDescriptions.add(task.getText());
+			suggestions.add(task.getText());
 		}
-		// Sort alphabetically
-		Collections.sort(taskDescriptions);
+		suggestionBox.updateSource(suggestions);
 	}
 
 	public void openAdvancedSearch (ActionEvent event) {
@@ -266,90 +256,6 @@ public class UiController implements Initializable, SearchResultCallback, EventH
 			boolean sameYear = firstDay.get(Calendar.YEAR) == secondDay.get(Calendar.YEAR);
 			boolean sameDate = firstDay.get(Calendar.DAY_OF_YEAR) == secondDay.get(Calendar.DAY_OF_YEAR);
 			return sameYear && sameDate;
-		}
-	}
-
-	// For the auto-complete search box
-	@Override
-	public void handle(Event event) {
-		if (event.getEventType() == KeyEvent.KEY_RELEASED) { // listview
-			if (event.getSource() == suggestionListView) {
-				KeyEvent keyEvent = (KeyEvent) event;
-				boolean isFromListView = keyEvent.getSource() == suggestionListView;
-				boolean isEnterPressed = keyEvent.getCode() == KeyCode.ENTER;
-				String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
-				if (isFromListView && isEnterPressed) {
-					if (suggestion != null) {
-						selectSuggestion(suggestion);
-					} else {
-						hidePopup();
-						executeBasicSearch(null);
-					}
-					
-				}
-			}
-		} else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) { //listview
-			hidePopup();
-		}
-	}
-
-	private void selectSuggestion(String suggestion) {
-		if (suggestion != null) {
-			basicSearchTextField.setText(suggestion);
-			basicSearchTextField.requestFocus();
-			basicSearchTextField.end();
-			hidePopup();
-		}
-	}
-
-	@Override
-	public void changed(ObservableValue<? extends String> observable,
-			String oldValue, String newValue) {
-		if (newValue.length() == 0) {
-			hidePopup();
-		} else {
-			if (!suggestionPopup.isShowing()) {
-				showPopup();
-			}
-			updateSuggestions(newValue);
-		}
-	}
-
-	private void showPopup () {
-		suggestionListView.setPrefWidth(basicSearchTextField.getWidth());
-		Scene scene = basicSearchTextField.getScene();
-		Window window = scene.getWindow();
-		double anchorX = window.getX() + basicSearchTextField.localToScene(0, 0).getX() + scene.getX();
-		double anchorY = window.getY() + basicSearchTextField.localToScene(0, 0).getY() + scene.getY()
-				+ basicSearchTextField.getHeight();
-		suggestionPopup.show(window, anchorX, anchorY);
-		
-		suggestionListView.getSelectionModel().clearSelection();
-		suggestionListView.getFocusModel().focus(-1);
-	}
-	
-	private void hidePopup () {
-		suggestionPopup.hide();
-	}
-	
-	private void updateSuggestions (String start) {
-		while (!suggestions.isEmpty()) {
-			suggestions.remove(0);
-		}
-		for (String description : taskDescriptions) {
-			if (description.toLowerCase().contains(start.toLowerCase())) {
-				suggestions.add(description);
-			}
-		}
-		int count = suggestions.size();
-		if (count == 0 && suggestionPopup.isShowing()) {
-			hidePopup();
-		} else if (suggestionPopup.isShowing()) {
-			if (count > SUGGESTIONS_MAX) {
-				suggestionListView.setPrefHeight(SUGGESTIONS_MAX * SUGGESTIONS_HEIGHT);
-			} else {
-				suggestionListView.setPrefHeight(count * SUGGESTIONS_HEIGHT);
-			}
 		}
 	}
 }
