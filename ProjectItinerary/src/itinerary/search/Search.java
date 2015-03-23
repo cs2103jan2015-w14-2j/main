@@ -158,7 +158,7 @@ public class Search {
 		try {
 			
 			BooleanQuery q = new BooleanQuery();
-			q = createQuery(field,query);
+			q = createQuery(field,query.toLowerCase());
 			ScoreDoc[] hits = searchQuery(q, searcher);
 			addToHitList(hitList, searcher, hits);
 			displayHits(searcher, hits);
