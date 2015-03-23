@@ -1,4 +1,4 @@
-package itinerary.ui;
+package itinerary.userinterface;
 
 import itinerary.main.DeadlineTask;
 import itinerary.main.ScheduleTask;

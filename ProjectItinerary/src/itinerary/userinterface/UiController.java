@@ -1,9 +1,9 @@
-package itinerary.ui;
+package itinerary.userinterface;
 
 import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
-import itinerary.ui.SearchStage.SearchResultCallback;
+import itinerary.userinterface.SearchStage.SearchResultCallback;
 
 import java.io.IOException;
 import java.net.URL;

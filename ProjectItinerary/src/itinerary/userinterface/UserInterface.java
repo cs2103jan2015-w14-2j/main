@@ -1,4 +1,4 @@
-package itinerary.ui;
+package itinerary.userinterface;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

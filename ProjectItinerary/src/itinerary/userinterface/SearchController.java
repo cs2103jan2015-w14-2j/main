@@ -1,4 +1,4 @@
-package itinerary.ui;
+package itinerary.userinterface;
 
 import java.net.URL;
 import java.util.ResourceBundle;
