@@ -12,14 +12,14 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 //@author A0121409R
-public class ProtoFileStorageTest {
+public class FileStorageTest {
     
     static Gson gson = new Gson();
 
     static Calendar calendar = Calendar.getInstance();
     
-    static File testFile = new File("testFile");
-    static ProtoFileStorage fileStorage = null;
+    static File testFile = new File("testFile.txt");
+    static FileStorage fileStorage = null;
 
     static Task task1 = new Task(1, "T", "ExampleCategory", true, true);
     static Task task2 = new ScheduleTask(2, "S", "ExampleCategory", true, true,
@@ -53,7 +53,7 @@ public class ProtoFileStorageTest {
     public void setUp() {
         
         testFile.delete();
-        fileStorage = new ProtoFileStorage(testFile);
+        fileStorage = new FileStorage(testFile);
     }
     
     @AssertionFailure
@@ -220,6 +220,11 @@ public class ProtoFileStorageTest {
         
         assertEquals(2, fileStorage.getAllCategories().size());
         
+    }
+    
+    @After
+    public void close() {
+        fileStorage.close();
     }
 
 }

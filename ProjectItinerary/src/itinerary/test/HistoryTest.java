@@ -1,9 +1,9 @@
 package itinerary.test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import itinerary.main.History;
+import itinerary.main.HistoryException;
 import itinerary.main.Task;
 
 import java.util.ArrayList;
@@ -43,36 +43,46 @@ public class HistoryTest {
 		history = new History(TEST_LIST_1);
 	}
 	
-	@Test
-	public void testUndoNothing () {
-		assertNull(history.goBack());
+	@Test (expected = HistoryException.class)
+	public void testUndoNothing () throws HistoryException {
+		history.undo();
+	}
+	
+	@Test (expected = HistoryException.class)
+	public void testRedoNothing () throws HistoryException {
+		history.redo();
+	}
+	
+	@Test (expected = HistoryException.class)
+	public void testRedoNothingAfterAdd () throws HistoryException {
+		history.addNewState(TEST_LIST_2);
+		history.redo();
+	}
+	
+	@Test (expected = HistoryException.class)
+	public void testUndoNothingAfterAdd () throws HistoryException {
+		history.addNewState(TEST_LIST_2);
+		// no exception thrown
+		history.undo();
+		// exception thrown
+		history.undo();
 	}
 	
 	@Test
-	public void testRedoNothing () {
-		assertNull(history.goForward());
-	}
-	
-	@Test
-	public void testAddSecondState () {
+	public void testAddSecondState () throws HistoryException {
 		history.addNewState(TEST_LIST_2);
 		assertEquals(TEST_LIST_2, history.getCurrentState());
-		assertNull(history.goForward());
-		assertNotNull(history.goBack());
-		assertNull(history.goBack());
+		assertNotNull(history.undo());
 	}
 	
 	@Test
-	public void testAddThirdState () {
+	public void testAddThirdState () throws HistoryException {
 		history.addNewState(TEST_LIST_2);
 		history.addNewState(TEST_LIST_3);
 		assertEquals(TEST_LIST_3, history.getCurrentState());
-		assertNull(history.goForward());
-		assertNotNull(history.goBack());
-		assertNotNull(history.goBack());
-		assertNull(history.goBack());
-		assertNotNull(history.goForward());
-		assertNotNull(history.goForward());
-		assertNull(history.goForward());
+		assertNotNull(history.undo());
+		assertNotNull(history.undo());
+		assertNotNull(history.redo());
+		assertNotNull(history.redo());
 	}
 }

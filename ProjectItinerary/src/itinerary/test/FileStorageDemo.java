@@ -9,9 +9,9 @@ import itinerary.main.*;
 
 /**
  * Demonstrates the likely behavior of FileStorage. Can also be considered as an
- * "unofficial" test of ProtoFileStorage.
+ * "unofficial" test of FileStorage.
  */
-public class ProtoFileStorageDemo {
+public class FileStorageDemo {
 
     // Starting state:
 
@@ -25,7 +25,7 @@ public class ProtoFileStorageDemo {
 
     public static void main(String args[]) throws StorageException{
 
-        ProtoFileStorage fileStorage = new ProtoFileStorage("mytestfile.txt");
+        FileStorage fileStorage = new FileStorage("mytestfile.txt");
 
         // Clear any old content (for this test only)
         fileStorage.clearAll();
@@ -103,7 +103,7 @@ public class ProtoFileStorageDemo {
         }
     }
 
-	private static void addAllTasksToStorage(ProtoFileStorage fileStorage)
+	private static void addAllTasksToStorage(FileStorage fileStorage)
 			throws StorageException {
 		fileStorage.addTask(task1);
         fileStorage.addTask(task2);

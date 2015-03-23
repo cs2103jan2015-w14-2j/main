@@ -1,8 +1,11 @@
 package itinerary.main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //@author A0121437N
 public class Logic {
@@ -13,14 +16,23 @@ public class Logic {
 	private static final String MESSAGE_EDIT_SUCCESS = "edited task %1$d";
 	private static final String MESSAGE_DISPLAY_ALL = "displaying all tasks";
 	private static final String MESSAGE_REDO_ERROR = "redo error";
-	private static final String MESSAGE_REDO_NOTHING = "nothing to redo";
 	private static final String MESSAGE_REDO_SUCCESS = "redo successful";
 	private static final String MESSAGE_UNDO_ERROR = "undo error";
-	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
 	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
 	private static final String MESSAGE_SEARCH_ERROR = "search error";
 	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
+	
+	private static final Logger logger = Logger.getLogger(Logic.class.getName());
+	static {
+		try {
+			logger.addHandler(new FileHandler(Constants.LOG_FILE));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private String fileName;
 	private Storage storage;
@@ -28,11 +40,12 @@ public class Logic {
 	
 	public Logic (String fileName) {
 		this.fileName = fileName;
-		this.storage = new ProtoFileStorage(fileName);
+		this.storage = new FileStorage(fileName);
 		this.history = new History(storage.getAllTasks());
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
+		logger.log(Level.INFO, "executing user input: " + userInput);
 		Command userCommand;
 		try {
 			userCommand = Parser.parseCommand(userInput);
@@ -74,6 +87,7 @@ public class Logic {
 		try {
 			storage.addTask(command.getTask());
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful add", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		updateHistory();
@@ -85,6 +99,7 @@ public class Logic {
 		try {
 			storage.clearAll();
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful clear", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		updateHistory();
@@ -95,6 +110,7 @@ public class Logic {
 		try {
 			storage.deleteTask(command.getTask());
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful delete", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		
@@ -113,6 +129,7 @@ public class Logic {
 		try {
 			storage.editTask(command.getTask());
 		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful edit", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		
@@ -129,15 +146,21 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeRedo() {
-		List<Task> nextState = history.goForward();
-		if (nextState == null) {
-			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
+		List<Task> nextState;
+		try {
+			nextState = history.redo();
+		} catch (HistoryException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		try {
 			storage.clearAll();
 			storage.refillAll(nextState);
-		} catch (StorageException e) {
-			history.goBack();
+		} catch (StorageException storageException) {
+			try {
+				history.undo();
+			} catch (HistoryException historyException) {
+				logger.log(Level.WARNING, "Error in trying to return to original state", historyException);
+			}
 			return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
 		}
 		return new UserInterfaceContent(MESSAGE_REDO_SUCCESS, storage.getAllTasks());
@@ -151,24 +174,31 @@ public class Logic {
 		List<Task> searchList= new ArrayList<Task>();
 		List<Task> allTasks = storage.getAllTasks();
 		try {
-        	Search search = new Search(allTasks, false);
+        	Search search = new Search(allTasks);
             searchList = search.query(query ,"text");
         } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
 			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
         }
 		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList, allTasks);
 	}
 
 	private UserInterfaceContent executeUndo() {
-		List<Task> previousState = history.goBack();
-		if (previousState == null) {
-			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
+		List<Task> previousState;
+		try {
+			previousState = history.undo();
+		} catch (HistoryException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		try {
 			storage.clearAll();
 			storage.refillAll(previousState);
-		} catch (StorageException e) {
-			history.goForward();
+		} catch (StorageException storageException) {
+			try {
+				history.redo();
+			} catch (HistoryException historyException) {
+				logger.log(Level.WARNING, "Error in trying to return to original state", historyException);
+			}
 			return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 		}
 		return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
@@ -197,5 +227,9 @@ public class Logic {
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+	
+	public void exitOp() {
+	    storage.close();
 	}
 }

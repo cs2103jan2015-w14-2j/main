@@ -1,8 +1,12 @@
 package itinerary.main;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.joestelmach.natty.DateGroup;
 
@@ -14,11 +18,17 @@ public class Parser {
 	private static final String ERROR_BOTH_DEADLINE_SCHEDULE = "Error! Invalid input format, cannot be both deadline and schedule";
 	private static final String ERROR_DUPLICATE_KEYWORDS = "Error! Duplicate keywords detected";
 	private static final String ERROR_NO_DESCRIPTION_CATEGORY = "Error! Please enter description for category";
+	private static final String ERROR_NO_DESCRIPTION_BY =  "Error! Please enter date after \"by\"";
+	private static final String ERROR_NO_DESCRIPTION_FROM =  "Error! Please enter date after \"from\"";
+	private static final String ERROR_NO_DESCRIPTION_TO =  "Error! Please enter date after \"to\"";
 	private static final String ERROR_NO_TASK_ID = "Error! Unable to identify target task";
 	private static final String ERROR_INVALID_TASK_ID = "Error! Invalid target task id";
 	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contenets for edit";
 	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description for the task to be added";
-	
+	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
+	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
+	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
+
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_DELETE = "delete";
 	private static final String COMMAND_DISPLAY = "display";
@@ -37,8 +47,20 @@ public class Parser {
 	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
+	private static Logger logger = Logger.getLogger("Parser");
+	private static String errorMessage;
+
+	static{
+		try {
+			logger.addHandler(new FileHandler(Constants.LOG_FILE));
+		} catch (SecurityException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	//returns a command object and it is called by logic
 	public static Command parseCommand(String input) throws ParserException {
+		assert input != null;
 		String firstWord = extractFirstWord(input);
 		String argument = removeFirstWord(input);
 		checkArgumentValidity(argument);
@@ -46,6 +68,10 @@ public class Parser {
 		Task task = createTask(commandType, argument);
 		Command command = new Command(task, commandType);
 		return command;
+	}
+	
+	public static String getErrorMessage (){
+		return errorMessage;
 	}
 
 	private static Task createTask(CommandType type, String argument) throws ParserException {
@@ -78,20 +104,22 @@ public class Parser {
 		if (argument.length() == 0){
 			return argument;
 		}
+		
 		String resultString = "";
 		String[] words = stringToArray(argument);
 		for(int i=0; i < words.length; i++){
 			String stringAfterFirstChar = words[i].substring(1);
 			String letterString = removeNonLetterChar(stringAfterFirstChar);
-			if(words[i].charAt(0) == '+'&& identifyKeyword(letterString) > -1){
+			if(words[i].charAt(0) == '+' && identifyKeyword(letterString) > -1){
 				words[i] = stringAfterFirstChar;
 			}
 			resultString = resultString + words[i] + " ";
 		}
+		
 		resultString = resultString.substring(0, resultString.length()-1);
 		return resultString;
 	}
-	
+
 	private static String removeNonLetterChar(String word){
 		for(int i = word.length()-1; i >= 0; i--){
 			if(!Character.isLetter(word.charAt(i))){
@@ -102,7 +130,7 @@ public class Parser {
 		}
 		return word;
 	}
-	
+
 	private static Task extractContent(String argument) throws ParserException {
 		String[] argumentWords = stringToArray(argument);
 
@@ -130,7 +158,10 @@ public class Parser {
 
 	private static void checkArgumentValidity(String argument) throws ParserException {
 		String[] words = stringToArray(argument);
+		logger.log(Level.INFO, LOGGER_CHECK_ARGUMENT_VALIDITY);
+		
 		if (hasDuplicateKeywords(words)) {
+			logger.log(Level.WARNING, ERROR_DUPLICATE_KEYWORDS);
 			throw new ParserException(ERROR_DUPLICATE_KEYWORDS);
 		}
 
@@ -139,10 +170,14 @@ public class Parser {
 		boolean hasTo = containsKeyword(words, KEYWORD_SCHEDULE_TO);
 
 		if (hasDeadline && (hasFrom || hasTo)) {
+			logger.log(Level.WARNING, ERROR_BOTH_DEADLINE_SCHEDULE);
 			throw new ParserException(ERROR_BOTH_DEADLINE_SCHEDULE);
 		} else if (hasFrom ^ hasTo) {
+			logger.log(Level.WARNING, ERROR_SCHEDULE_MISSING_DATE);
 			throw new ParserException(ERROR_SCHEDULE_MISSING_DATE);
 		}
+		
+		logger.log(Level.INFO, LOGGER_CHECKED_ARGUMENT_VALIDITY);
 	}
 
 	private static boolean isDeadline(String[] words){
@@ -155,33 +190,17 @@ public class Parser {
 	}
 
 	private static Calendar extractToDate(String arg) throws ParserException {
-		String textAfterKeyword = arg.split(" " + KEYWORDS[4] + " ")[1];
-		String[] words = stringToArray(textAfterKeyword);
-		String toString = removeExtraWords(words, textAfterKeyword);
-		return parseDateFromText(toString);
+		String toDateString =  extractAfterKeyword(arg, KEYWORDS[4], ERROR_NO_DESCRIPTION_TO);
+		return parseDateFromText(toDateString);
 	}
 
 	private static Calendar extractFromDate(String arg) throws ParserException {
-		String textAfterKeyword;
-		if(extractFirstWord(arg).equals(KEYWORDS[3])){
-			textAfterKeyword =  arg.split(KEYWORDS[3] + " ")[1];
-		}else{	
-		    textAfterKeyword = arg.split(" " + KEYWORDS[3] + " ")[1];
-		}
-		String[] words = stringToArray(textAfterKeyword);
-		String fromString = removeExtraWords(words, textAfterKeyword);
-		return parseDateFromText(fromString);
+		String fromDateString =  extractAfterKeyword(arg, KEYWORDS[3], ERROR_NO_DESCRIPTION_FROM);
+		return parseDateFromText(fromDateString);
 	}
-
-	private static Calendar extractDeadline(String arg) throws ParserException {
-		String textAfterKeyword;
-		if(extractFirstWord(arg).equals(KEYWORDS[2])){
-			textAfterKeyword =  arg.split(KEYWORDS[2] + " ")[1];
-		}else{	
-		    textAfterKeyword = arg.split(" " + KEYWORDS[2] + " ")[1];
-		}
-		String[] words = stringToArray(textAfterKeyword);
-		String deadlineString = removeExtraWords(words, textAfterKeyword);
+	
+	private static Calendar extractDeadline(String arg) throws ParserException{
+		String deadlineString =  extractAfterKeyword(arg, KEYWORDS[2], ERROR_NO_DESCRIPTION_BY);
 		return parseDateFromText(deadlineString);
 	}
 
@@ -202,25 +221,52 @@ public class Parser {
 		String[] words = stringToArray(arg);
 		return containsKeyword(words, KEYWORDS[0]);
 	}
-
-	private static String extractCategory(String arg) throws ParserException {
+	
+	private static String extractAfterKeyword(String arg, String keyword, String error) throws ParserException{
 		String[] words = stringToArray(arg);
-		if (!containsKeyword(words, KEYWORDS[1])) {
+		String[] textsAroundKeyword = {};
+		String textAfterKeyword = "";
+		int keywordIndex = 0;
+		
+		if (!containsKeyword(words, keyword)) {
 			return null;
 		}
 
-		String[] textsAroundKeyword = arg.split(" " + KEYWORDS[1] + " ");	
-		if(textsAroundKeyword.length <= 1){
-			throw new ParserException(ERROR_NO_DESCRIPTION_CATEGORY);
+		for(int i=0; i < words.length; i++){
+			if(words[i].equals(keyword)){
+				keywordIndex = i;
+			}
 		}
-			String textAfterKeyword = textsAroundKeyword[1].trim();		
-			words = stringToArray(textAfterKeyword);
-			String textNeeded = removeExtraWords(words, textAfterKeyword);
-			return replaceKeywordInContent(textNeeded).trim();
-	}
 
+		if(keywordIndex == words.length-1){
+			throw new ParserException(error);
+		}
+
+		String nextWord = words[keywordIndex + 1];
+		if(identifyKeyword(nextWord) != -1){
+			throw new ParserException(error);
+		}
+
+		if( !words[0].equals(keyword)){
+			textsAroundKeyword = arg.split(" " + keyword + " ");	
+			textAfterKeyword = textsAroundKeyword[1].trim();
+		}
+		if(words[0].equals(keyword)){
+			textsAroundKeyword = arg.split(keyword + " ");	
+			textAfterKeyword = textsAroundKeyword[1].trim();		
+		}
+		words = stringToArray(textAfterKeyword);
+		String textNeeded = removeExtraWords(words, textAfterKeyword);
+		return replaceKeywordInContent(textNeeded).trim();
+	}
+	
+	private static String extractCategory(String arg) throws ParserException {
+		return extractAfterKeyword(arg, KEYWORDS[1], ERROR_NO_DESCRIPTION_CATEGORY);
+	}
+	
 	private static String removeExtraWords(String[] words, String text) {
 		int nextType = findNextKeywordType(words);
+		
 		if (nextType != -1) {
 			int index = text.indexOf(" " + KEYWORDS[nextType] + " ");
 			if (index < 0) {
@@ -234,6 +280,7 @@ public class Parser {
 			}
 			text = text.substring(0, index);
 		}
+		
 		return text.trim();
 	}
 
@@ -288,8 +335,9 @@ public class Parser {
 		}
 		return true;
 	}
-	
+
 	private static Task createTaskToAdd(String input) throws ParserException {
+		assert input != null;
 		if(!hasDescriptionForAdd(input)){
 			throw new ParserException(ERROR_NO_DESCRIPTION_FOR_ADD);
 		}
@@ -297,19 +345,21 @@ public class Parser {
 	}
 
 	private static Task createTaskToDelete(String argument) throws ParserException {
+		assert argument != null;
 		String[] arguments = stringToArray(argument);
 		int id = identifyTargetId(arguments);
 		return new Task (id, null, null, false, false);
 	}
 
 	private static Task createTaskToEdit(String input) throws ParserException {
+		assert input != null;
 		int taskId = identifyTargetId(stringToArray(input));
 		String textAfterIndex= removeFirstWord(input);
-		
+
 		if(textAfterIndex.length() == 0){
 			throw new ParserException(ERROR_NO_CONTENT_FOR_EDIT);
 		}
-		
+
 		Task task = extractContent(textAfterIndex);
 		task.setTaskId(taskId);
 		if (task.getText().equals("")) {
@@ -319,12 +369,15 @@ public class Parser {
 	}
 
 	private static int identifyTargetId(String[] arguments) throws ParserException {
+		logger.log(Level.INFO, LOGGER_CHECK_TASK_ID);
 		if (arguments.length == 0) {
+			logger.log(Level.WARNING, ERROR_NO_TASK_ID);
 			throw new ParserException(ERROR_NO_TASK_ID);
 		}
 		try {
 			return Integer.parseInt(arguments[0]);
 		} catch (NumberFormatException e) {
+			logger.log(Level.WARNING, ERROR_INVALID_TASK_ID);
 			throw new ParserException(ERROR_INVALID_TASK_ID);
 		}
 	}
@@ -338,10 +391,12 @@ public class Parser {
 	}
 
 	private static String extractFirstWord (String input) {
+		assert input != null;
 		return stringToArray(input)[0];
 	}
 
 	private static String removeFirstWord (String input) {
+		assert input != null;
 		String firstWord = extractFirstWord(input);
 		return input.replaceFirst(firstWord, "").trim();
 	}

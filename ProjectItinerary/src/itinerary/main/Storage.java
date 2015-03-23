@@ -1,9 +1,10 @@
 package itinerary.main;
 
+import java.io.Closeable;
 import java.util.List;
 
 //@author A0121409R
-public abstract class Storage {
+public abstract class Storage implements Closeable{
 
     /**
      * Call this to add a task to the file. Asserts that task cannot be null.
@@ -60,6 +61,12 @@ public abstract class Storage {
      *             thrown if any error occurs trying to refill all tasks
      */
     abstract void refillAll(List<Task> tasks) throws StorageException;
+    
+    
+    /**
+     * Replaces the old file with the new tempFile.
+     */
+    public abstract void close();
 
     /**
      * Called by editTask to overwrite originalTask's non-null variables in
