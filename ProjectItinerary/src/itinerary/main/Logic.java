@@ -31,7 +31,7 @@ public class Logic {
 	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
 	private static final String MESSAGE_SEARCH_ERROR = "search error";
-	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
+	private static final String MESSAGE_SEARCH_SUCCESS = "search success. %1$d results found";
 	
 	private static final Logger logger = Logger.getGlobal();
 	static {
@@ -190,7 +190,7 @@ public class Logic {
 			logger.log(Level.WARNING, "Unsuccessful search", e);
 			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
         }
-		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList, allTasks);
+		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
 	}
 
 	private UserInterfaceContent executeUndo() {
@@ -224,6 +224,10 @@ public class Logic {
 
 	private String formatEditSuccess(int editTaskId) {
 		return String.format(MESSAGE_EDIT_SUCCESS, editTaskId);
+	}
+	
+	private String formatSearchSuccess (List<Task> tasks) {
+		return String.format(MESSAGE_SEARCH_SUCCESS, tasks.size());
 	}
 
 	private String formatInvalidCommand(String userInput) {
