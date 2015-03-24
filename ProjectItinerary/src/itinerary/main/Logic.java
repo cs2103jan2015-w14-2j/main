@@ -33,10 +33,10 @@ public class Logic {
 	private static final String MESSAGE_SEARCH_ERROR = "search error";
 	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
 	
-	private static final Logger logger = Logger.getLogger(Logic.class.getName());
+	private static final Logger logger = Logger.getGlobal();
 	static {
 		try {
-			logger.addHandler(new FileHandler(Constants.LOG_FILE));
+			logger.addHandler(new FileHandler(Constants.LOG_FILE, Constants.LOG_FILE_SIZE_LIMIT, 1, true));
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

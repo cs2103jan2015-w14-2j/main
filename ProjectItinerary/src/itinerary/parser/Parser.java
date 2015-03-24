@@ -54,16 +54,8 @@ public class Parser {
 	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
-	private static Logger logger = Logger.getLogger("Parser");
+	private static Logger logger = Logger.getGlobal();
 	private static String errorMessage;
-
-	static{
-		try {
-			logger.addHandler(new FileHandler(Constants.LOG_FILE));
-		} catch (SecurityException | IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	//returns a command object and it is called by logic
 	public static Command parseCommand(String input) throws ParserException {

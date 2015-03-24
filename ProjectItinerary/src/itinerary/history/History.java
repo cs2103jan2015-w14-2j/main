@@ -1,11 +1,8 @@
 package itinerary.history;
 
-import itinerary.main.Constants;
 import itinerary.main.Task;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,16 +13,7 @@ public class History {
 	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
 	private static final String MESSAGE_REDO_NOTHING = "nothing to redo";
 	
-	private static final Logger logger = Logger.getLogger(History.class.getName());
-	static {
-		try {
-			logger.addHandler(new FileHandler(Constants.LOG_FILE));
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	private static final Logger logger = Logger.getGlobal();
 	
 	public History(List<Task> initialState) {
 		assert initialState != null;
