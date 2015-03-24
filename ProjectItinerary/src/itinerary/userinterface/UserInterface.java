@@ -18,11 +18,15 @@ public class UserInterface extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource(WINDOW_FILE_NAME));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(WINDOW_FILE_NAME));
+		Parent root = (Parent)loader.load();
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.setTitle(WINDOW_TITLE);
 		stage.show();
+		
+		UiController controller = (UiController)loader.getController();
+		controller.setupStageAndListeners(stage);
 	}
 	
 }

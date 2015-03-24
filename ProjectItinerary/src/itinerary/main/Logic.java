@@ -71,6 +71,10 @@ public class Logic {
 		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
 	}
 	
+	public void close () {
+		storage.close();
+	}
+	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
 		if (command.getType() == CommandType.ADD) {
 			return executeAdd(command);
