@@ -47,8 +47,6 @@ public class UiController implements Initializable, SearchResultCallback {
 	private TextField basicSearchTextField;
 	private SuggestionBox suggestionBox;
 	
-	private Stage uiStage;
-	
 	private Logic logic = new Logic("test");	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
 	
