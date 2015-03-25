@@ -36,11 +36,13 @@ public class HistoryTest {
 		history = new History(TEST_LIST_1);
 	}
 	
+	/* This is a boundary case for when there is nothing to undo */
 	@Test (expected = HistoryException.class)
 	public void testUndoNothing () throws HistoryException {
 		history.undo();
 	}
 	
+	/* This is a boundary case for when there is nothing to redo */
 	@Test (expected = HistoryException.class)
 	public void testRedoNothing () throws HistoryException {
 		history.redo();

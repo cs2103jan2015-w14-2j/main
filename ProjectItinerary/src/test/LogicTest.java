@@ -63,7 +63,8 @@ public class LogicTest {
 		assertEquals(1, content.getDisplayableTasks().size());
 		assertEquals("line 1", content.getDisplayableTasks().get(0).getText());
 	}
-	
+
+	/* This is a boundary case for when the search query is null */
 	@Test (expected = NullPointerException.class)
 	public void testBasicSearchNull() {
 		logic.executeBasicSearch(null);
@@ -74,12 +75,15 @@ public class LogicTest {
 		UserInterfaceContent result = logic.executeUserInput("add this");
 		assertEquals(4, result.getAllTasks().size());
 	}
-	
+
+	/* This is a boundary case for when there is nothing after the add command */
 	@Test
 	public void testAddEmpty() {
-		logic.executeUserInput("add");
+		UserInterfaceContent result = logic.executeUserInput("add");
+		assertEquals(3, result.getAllTasks().size());
 	}
-	
+
+	/* This is a boundary case for when task description is null */
 	@Test
 	public void testAddNullDesc() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Command addNull = new Command(TASK_NULL, CommandType.ADD);
@@ -102,12 +106,14 @@ public class LogicTest {
 		assertEquals("line 3", content.getAllTasks().get(1).getText());
 	}
 	
+	/* This is a boundary case for when the taskId is negative */
 	@Test
 	public void testDeleteInvalidNeg () {
 		UserInterfaceContent content = logic.executeUserInput("delete -1");
 		assertEquals(3, content.getAllTasks().size());
 	}
 	
+	/* This is a boundary case for when the taskId is positive but invalid */
 	@Test
 	public void testDeleteInvalidPos () {
 		UserInterfaceContent content = logic.executeUserInput("delete 4");
@@ -130,6 +136,7 @@ public class LogicTest {
 		assertEquals("edited line 2", content.getAllTasks().get(1).getText());
 	}
 	
+	/* This is a boundary case for when the taskId is negative */
 	@Test
 	public void testEditInvalidNeg () {
 		UserInterfaceContent content = logic.executeUserInput("edit -1 edited line 2");
@@ -139,6 +146,7 @@ public class LogicTest {
 		assertEquals("line 3", content.getAllTasks().get(2).getText());
 	}
 	
+	/* This is a boundary case for when the taskId is positive but invalid */
 	@Test
 	public void testEditInvalidPos () {
 		UserInterfaceContent content = logic.executeUserInput("edit 4 edited line 2");
@@ -148,6 +156,7 @@ public class LogicTest {
 		assertEquals("line 3", content.getAllTasks().get(2).getText());
 	}
 	
+	/* This is a boundary case for when there is nothing after the search command */
 	@Test
 	public void testSearchEmpty () {
 		UserInterfaceContent content = logic.executeUserInput("search");
@@ -160,18 +169,22 @@ public class LogicTest {
 		assertEquals(1, content.getDisplayableTasks().size());
 	}
 	
+	/* This is a boundary case for when there is nothing that can be found */
 	@Test
 	public void testSearchInvalid () {
 		UserInterfaceContent content = logic.executeUserInput("search nothing valid");
 		assertEquals(0, content.getDisplayableTasks().size());
 	}
 	
+	/* This is a boundary case for when there is something input
+	 * by the user which is invalid */
 	@Test
 	public void testInvalidFilled () {
 		UserInterfaceContent content = logic.executeUserInput("invalid");
 		assertEquals("invalid command: \"invalid\"", content.getConsoleMessage());
 	}
 	
+	/* This is a boundary case for when there is nothing input by the user */
 	@Test
 	public void testInvalidEmpty () {
 		UserInterfaceContent content = logic.executeUserInput("");
@@ -191,12 +204,14 @@ public class LogicTest {
 		assertEquals(3, content.getAllTasks().size());
 	}
 	
+	/* This is a boundary case for when there is nothing to redo */
 	@Test
 	public void testRedoNothing () {
 		UserInterfaceContent content = logic.executeUserInput("redo");
 		assertEquals("nothing to redo", content.getConsoleMessage());
 	}
 	
+	/* This is a boundary case for when there is nothing to undo */
 	@Test
 	public void testUndoNothing () {
 		Logic logic = new Logic("logictest.txt");
