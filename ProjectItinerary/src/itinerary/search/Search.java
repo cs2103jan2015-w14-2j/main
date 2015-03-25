@@ -94,6 +94,7 @@ public class Search {
 		typeList = JsonConverter.getTypeList(taskList);
 		CharArraySet stopWords = new CharArraySet(5,false);
 		analyzer = new StandardAnalyzer(stopWords);
+		//analyzer = new StandardAnalyzer();
 		hitList = new ArrayList<String>();
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);

@@ -60,6 +60,7 @@ public class SearchTest {
 
 	}
 	@Test
+	//tries to query the list with the following search terms category:testcat text:wan pies
 	public void testSearch() throws SearchException{
 		SearchTask task = new SearchTask();
 		String[] field = {"text","category","isPriority"};
