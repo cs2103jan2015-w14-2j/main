@@ -70,7 +70,7 @@ public class UiController implements Initializable, SearchResultCallback {
 	private EventHandler<WindowEvent> closeHandler = new EventHandler<WindowEvent> () {
 		@Override
 		public void handle(WindowEvent event) {
-			logic.close();
+			logic.exitOperation();
 		}
 	};
 
