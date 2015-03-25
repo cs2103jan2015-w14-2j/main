@@ -73,7 +73,7 @@ public class Search {
 	private static final String DATE_EPOCH_ERROR = "Error parsing Epoch date";
 	private static final String DATE_SIMPLEFORMAT = "dd-M-yyyy hh:mm:ss";
 	private static final String DATE_EPOCH = "01-01-1970 00:00:00";
-	private static String[] possibleSearchFields = {FIELD_ISCOMPLETE,FIELD_ISPRIORITY,FIELD_TEXT,"to","from",FIELD_CATEGORY};
+	private static String[] possibleSearchFields = {FIELD_ISCOMPLETE,FIELD_ISPRIORITY,FIELD_TEXT,FIELD_TODATE,FIELD_FROMDATE,FIELD_CATEGORY};
 	private static List<String> list;
 	private static JsonParser parser;
 	private static JsonObject obj;
@@ -94,7 +94,6 @@ public class Search {
 		typeList = JsonConverter.getTypeList(taskList);
 		CharArraySet stopWords = new CharArraySet(5,false);
 		analyzer = new StandardAnalyzer(stopWords);
-		//analyzer = new StandardAnalyzer();
 		hitList = new ArrayList<String>();
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
