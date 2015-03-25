@@ -21,9 +21,6 @@ public class LogicTest {
 	private static final Task TASK_2 = new Task(2, "line 2", "cat 2", false, false);
 	private static final Task TASK_3 = new Task(3, "line 3", null, false, false);
 	
-	private static final Task TASK_4 = new Task(4, "line 4", null, false, false);
-
-	private static final Task TASK_NEG = new Task(-1, "line -1", null, false, true);
 	private static final Task TASK_NULL = new Task(-1, null, null, false, true);
 	
 	private static final Command ADD_1 = new Command(TASK_1, CommandType.ADD);
