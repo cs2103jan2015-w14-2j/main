@@ -56,16 +56,24 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 /**
  * 
- * README:to use this, first create a search object,specifying if youre searching by date in the constructor
- * then call search.query
- * search by date takes in 2 calendar objects and the field to search in.it returns any date that falls in between the two
- * given calendar dates inclusive.
  * 
  *
  */
 //@author A0121810Y
 public class Search {
-	private static String[] possibleSearchFields = {"isComplete","isPriority","text","to","from","category"};
+	private static final String LOGGER_IOERROR = "Error searching through index";
+	private static final String FIELD_ISPRIORITY = "isPriority";
+	private static final String FIELD_ISCOMPLETE = "isComplete";
+	private static final String FIELD_JSON = "json";
+	private static final String FIELD_CATEGORY = "category";
+	private static final String FIELD_TEXT = "text";
+	private static final String FIELD_FROMDATE = "fromDate";
+	private static final String FIELD_TODATE = "toDate";
+	private static final String FIELD_DEADLINE = "deadline";
+	private static final String DATE_EPOCH_ERROR = "Error parsing Epoch date";
+	private static final String DATE_SIMPLEFORMAT = "dd-M-yyyy hh:mm:ss";
+	private static final String DATE_EPOCH = "01-01-1970 00:00:00";
+	private static String[] possibleSearchFields = {FIELD_ISCOMPLETE,FIELD_ISPRIORITY,FIELD_TEXT,"to","from",FIELD_CATEGORY};
 	private static List<String> list;
 	private static JsonParser parser;
 	private static JsonObject obj;
@@ -112,46 +120,106 @@ public class Search {
 		BooleanQuery q = new BooleanQuery();
 		if(searchField != null){
 			for(int i =0;i<searchField.size();i++){
-				if(searchField.get(i).equals("isComplete")){
-					TermQuery cpQuery = createCompleteOrPriorityQuery( task.isComplete(),"isComplete");
-					q.add(cpQuery,BooleanClause.Occur.MUST);
+				if(searchingForComplete(searchField, i)){
+					TermQuery cpQuery = createCompleteQuery(task);
+					addMustOccur(q, cpQuery);
 				}
-				if(searchField.get(i).equals("isPriority")){
-					TermQuery cpQuery = createCompleteOrPriorityQuery( task.isPriority(),"isPriority");
-					q.add(cpQuery,BooleanClause.Occur.MUST);
+				if(searchingForPriority(searchField, i)){
+					TermQuery cpQuery = createPriorityQuery(task);
+					addMustOccur(q, cpQuery);
 				}
-				if(searchField.get(i).equals("text")){
-					BooleanQuery bQuery = createQuery("text",task.getText());
-					q.add(bQuery,BooleanClause.Occur.MUST);
+				if(searchingForText(searchField, i)){
+					BooleanQuery bQuery = createTextQuery(task);
+					addMustOccur(q, bQuery);
 				}
-				if(searchField.get(i).equals("category")){
+				if(searchingForCategory(searchField, i)){
 					List<String> categoryList = task.getCategoryList();
 					BooleanQuery bQuery = new BooleanQuery();
 					for(int j=0;j< categoryList.size();j++){
-						BooleanQuery cQuery = createQuery("category",categoryList.get(j));
-						bQuery.add(cQuery,BooleanClause.Occur.SHOULD);
-						System.out.println(cQuery.toString());
+						BooleanQuery cQuery = createCategoryQuery(categoryList,
+                                j);
+						addShouldOccur(bQuery, cQuery);
 					}
-					q.add(bQuery,BooleanClause.Occur.MUST);
+					addMustOccur(q, bQuery);
 					
 				}
-				if(searchField.get(i).equals("deadline")){
-					BooleanQuery bQuery = createDeadlineQuery(task.getDeadline());
-					q.add(bQuery,BooleanClause.Occur.MUST);
+				if(searchField.get(i).equals(FIELD_DEADLINE)){
+					BooleanQuery bQuery = createDeadlineQuery(task);
+					addMustOccur(q, bQuery);
 				}
 			}
 		}
-		searchQuery(q,searcher);
-		ScoreDoc[] hits = searchQuery(q, searcher);
+		
 		try {
-	        addToHitList(hitList, searcher, hits);
-	        displayHits(searcher, hits);
+			search(q);
         } catch (IOException e) {
-        	logger.log(Level.SEVERE, "Error searching through index", e);
+        	logger.log(Level.SEVERE, LOGGER_IOERROR, e);
 	        throw new SearchException(ERROR_IO);
         }
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
+
+	private void search(BooleanQuery q) throws SearchException, IOException {
+	    ScoreDoc[] hits = searchQuery(q, searcher);
+	    addToHitList(hitList, searcher, hits);
+	    displayHits(searcher, hits);
+    }
+
+	private BooleanQuery createDeadlineQuery(SearchTask task)
+            throws SearchException {
+	    BooleanQuery bQuery = createDeadlineQuery(task.getDeadline());
+	    return bQuery;
+    }
+
+	private boolean searchingForCategory(List<String> searchField, int i) {
+	    return searchField.get(i).equals(FIELD_CATEGORY);
+    }
+
+	private boolean searchingForComplete(List<String> searchField, int i) {
+	    return searchField.get(i).equals(FIELD_ISCOMPLETE);
+    }
+
+	private boolean searchingForPriority(List<String> searchField, int i) {
+	    return searchField.get(i).equals(FIELD_ISPRIORITY);
+    }
+
+	private boolean searchingForText(List<String> searchField, int i) {
+	    return searchField.get(i).equals(FIELD_TEXT);
+    }
+
+	private BooleanQuery createTextQuery(SearchTask task) {
+	    BooleanQuery bQuery = createQuery(FIELD_TEXT,task.getText());
+	    return bQuery;
+    }
+
+	private BooleanQuery createCategoryQuery(List<String> categoryList, int j) {
+	    BooleanQuery cQuery = createQuery(FIELD_CATEGORY,categoryList.get(j));
+	    return cQuery;
+    }
+
+	private void addShouldOccur(BooleanQuery bQuery, BooleanQuery cQuery) {
+	    bQuery.add(cQuery,BooleanClause.Occur.SHOULD);
+    }
+
+	private void addMustOccur(BooleanQuery q, BooleanQuery bQuery) {
+	    q.add(bQuery,BooleanClause.Occur.MUST);
+    }
+
+	private void addMustOccur(BooleanQuery q, TermQuery cpQuery) {
+	    q.add(cpQuery,BooleanClause.Occur.MUST);
+    }
+
+	private TermQuery createPriorityQuery(SearchTask task)
+            throws SearchException {
+	    TermQuery cpQuery = createCompleteOrPriorityQuery( task.isPriority(),FIELD_ISPRIORITY);
+	    return cpQuery;
+    }
+
+	private TermQuery createCompleteQuery(SearchTask task)
+            throws SearchException {
+	    TermQuery cpQuery = createCompleteOrPriorityQuery( task.isComplete(),FIELD_ISCOMPLETE);
+	    return cpQuery;
+    }
 	public <T extends Task> List<T> query(String query,String field) throws SearchException {
 		// The same analyzer should be used for indexing and searching
 		logger.log(Level.INFO, "Searching for: " + query);
@@ -159,9 +227,7 @@ public class Search {
 			
 			BooleanQuery q = new BooleanQuery();
 			q = createQuery(field,query.toLowerCase());
-			ScoreDoc[] hits = searchQuery(q, searcher);
-			addToHitList(hitList, searcher, hits);
-			displayHits(searcher, hits);
+			search(q);
 			reader.close();
 		} catch (IOException e) {
         	logger.log(Level.SEVERE, "Error searching through index ()", e);
@@ -169,16 +235,20 @@ public class Search {
 		}
 		return JsonConverter.convertJsonList(hitList,hitTypeList);
 	}
-
 	private void addToHitList(ArrayList<String> hitList,
             IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
 		hitTypeList = new ArrayList<String>();
 	    for(int i = 0;i<hits.length;i++){
-			int docId = hits[i].doc;
-			Document d = searcher.doc(docId);
-			hitList.add(d.get("json"));
-			hitTypeList.add(typeList.get(docId));
+			addHitList(hitList, searcher, hits, i);
 		}
+    }
+
+	private void addHitList(ArrayList<String> hitList, IndexSearcher searcher,
+            ScoreDoc[] hits, int i) throws IOException {
+	    int docId = hits[i].doc;
+	    Document d = searcher.doc(docId);
+	    hitList.add(d.get(FIELD_JSON));
+	    hitTypeList.add(typeList.get(docId));
     }
 	private void displayHits(IndexSearcher searcher, ScoreDoc[] hits)
             throws IOException {
@@ -186,7 +256,7 @@ public class Search {
 		for (int i = 0; i < hits.length; ++i) {
 			int docId = hits[i].doc;
 			Document d = searcher.doc(docId);
-			System.out.println((i + 1) + ". " + d.get("text"));
+			System.out.println((i + 1) + ". " + d.get(FIELD_TEXT));
 		}
     }
 
@@ -233,15 +303,19 @@ public class Search {
     }
 
 	public TermQuery createCompleteOrPriorityQuery(boolean setTrue,String field) throws SearchException{
-		String isTrue = (setTrue ? "true" : "false");
+		String isTrue = setTrueOrFalse(setTrue);
 		TermQuery termQuery = new TermQuery(new Term(field,isTrue));
 		return termQuery;
 	}
+
+	private String setTrueOrFalse(boolean setTrue) {
+	    return setTrue ? "true" : "false";
+    }
 	public BooleanQuery createDeadlineQuery(Calendar deadline) throws SearchException{
 		Gson gson = new Gson();
 		Calendar fromDate = getEpoch();
 		BooleanQuery bQuery = new BooleanQuery();
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(deadline),true,true);
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(FIELD_DEADLINE,gson.toJson(fromDate),gson.toJson(deadline),true,true);
 		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.MUST);
 		return bQuery;
 	}	
@@ -249,9 +323,9 @@ public class Search {
 		Gson gson = new Gson();
 		BooleanQuery bQuery = new BooleanQuery();
 		Calendar epochDate = getEpoch();
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(toDate),true,true);
-		TermRangeQuery rangeScheduleQ = TermRangeQuery.newStringRange("toDate",gson.toJson(fromDate),gson.toJson(toDate),true,true);
-		TermRangeQuery rangeFromScheduleQ = TermRangeQuery.newStringRange("fromDate", gson.toJson(epochDate), gson.toJson(fromDate), false, true);
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(FIELD_DEADLINE,gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		TermRangeQuery rangeScheduleQ = TermRangeQuery.newStringRange(FIELD_TODATE,gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		TermRangeQuery rangeFromScheduleQ = TermRangeQuery.newStringRange(FIELD_FROMDATE, gson.toJson(epochDate), gson.toJson(fromDate), false, true);
 		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeScheduleQ,BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeFromScheduleQ,BooleanClause.Occur.MUST_NOT);
@@ -264,7 +338,7 @@ public class Search {
 		Calendar fromDate = dateToCalendar(weekRange.get(0));
 		Calendar toDate = dateToCalendar(weekRange.get(1));
 		BooleanQuery bQuery = new BooleanQuery();
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange("deadline",gson.toJson(fromDate),gson.toJson(toDate),true,true);
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(FIELD_DEADLINE,gson.toJson(fromDate),gson.toJson(toDate),true,true);
 		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.MUST);
 		return bQuery;
 	}	
@@ -298,29 +372,29 @@ public class Search {
 		for (Entry<String, JsonElement> entry : obj.entrySet()) {
 			String key = entry.getKey();
 			JsonElement value = entry.getValue();
-			if(key.equals("text") || key.equals("category")){
+			if(key.equals(FIELD_TEXT) || key.equals(FIELD_CATEGORY)){
 				doc.add(new TextField(key, value.toString(), Field.Store.YES));
 			} else {
 				doc.add(new StringField(key, value.toString(), Field.Store.YES));
 			}
 		}
 		
-		doc.add(new StringField("json",obj.toString(),Field.Store.YES));
+		doc.add(new StringField(FIELD_JSON,obj.toString(),Field.Store.YES));
 		writer.addDocument(doc);
 	}
 	private void closeWriter(IndexWriter writer) throws IOException {
 	    writer.close();
     }
 	private Calendar getEpoch() throws SearchException{
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-		String dateInString = "01-01-1970 00:00:00";
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_SIMPLEFORMAT);
+		String dateInString = DATE_EPOCH;
 		Date date;
         Calendar fromDate = Calendar.getInstance();
         try {
 	        date = sdf.parse(dateInString);
 			fromDate.setTime(date);
         } catch (ParseException e) {
-        	logger.log(Level.SEVERE, "Error parsing Epoch date", e);
+        	logger.log(Level.SEVERE, DATE_EPOCH_ERROR, e);
         	throw new SearchException(ERROR_IO);
         }
         assert(fromDate.getTime().toString().equals(date.toString()));
