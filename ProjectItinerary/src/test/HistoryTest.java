@@ -22,14 +22,7 @@ public class HistoryTest {
 	private static final List<Task> TEST_LIST_3 = new ArrayList<Task>();
 	private static final Task TEST_TASK_1 = new Task(1, "TASK 1", null, false, false);
 	private static final Task TEST_TASK_2 = new Task(2, "TASK 2", null, false, false);
-	
-	// Add -ea to VM arguments in Run Configurations for HistoryTest
-	// This enables assertions
-	@Test(expected = AssertionError.class)
-	public void testNullConstructor() {
-		new History(null);
-	}
-	
+		
 	@BeforeClass
 	public static void setupLists () {
 		TEST_LIST_2.add(TEST_TASK_1);

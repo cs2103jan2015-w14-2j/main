@@ -77,7 +77,7 @@ public class ParserSearch {
 				catList.add(categories[i]);
 			}
 		}
-		task.setCategories(catList);
+		task.setCategoryList(catList);
 		searchFields.add("category");
     }
 	private void parsePriority(String string) {

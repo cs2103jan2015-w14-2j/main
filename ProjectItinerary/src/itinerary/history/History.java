@@ -1,11 +1,8 @@
 package itinerary.history;
 
-import itinerary.main.Constants;
 import itinerary.main.Task;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,27 +13,14 @@ public class History {
 	private static final String MESSAGE_UNDO_NOTHING = "nothing to undo";
 	private static final String MESSAGE_REDO_NOTHING = "nothing to redo";
 	
-	private static final Logger logger = Logger.getLogger(History.class.getName());
-	static {
-		try {
-			logger.addHandler(new FileHandler(Constants.LOG_FILE));
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	private static final Logger logger = Logger.getGlobal();
 	
 	public History(List<Task> initialState) {
-		assert initialState != null;
-		
 		this.currentPoint = new HistoryNode(null, initialState);
 		logger.log(Level.INFO, "Creating History object");
 	}
 	
 	public void addNewState (List<Task> tasks) {
-		assert tasks != null;
-		
 		currentPoint = new HistoryNode(currentPoint, tasks);
 		logger.log(Level.INFO, "Adding new state to History");
 	}
@@ -62,9 +46,6 @@ public class History {
 	}
 	
 	public List<Task> getCurrentState () {
-		if (currentPoint == null) {
-			return null;
-		}
 		return currentPoint.getCurrentState();
 	}
 	
@@ -74,8 +55,6 @@ public class History {
 		private List<Task> currentState;
 		
 		private HistoryNode (HistoryNode back, List<Task> state) {
-			assert state != null;
-			
 			if (back != null) {
 				back.forward = this;
 			}

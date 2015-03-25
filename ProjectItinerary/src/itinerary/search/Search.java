@@ -80,24 +80,13 @@ public class Search {
 	private static List<String> typeList;
 	ArrayList<String> hitTypeList;
 	private static final String ERROR_IO = "Error attempting to search.";
-	private static final Logger logger =
-		       Logger.getLogger("searchLogger");
+	private static final Logger logger = Logger.getGlobal();
 	ArrayList<String> hitList;
 	StandardAnalyzer analyzer;
 	IndexSearcher searcher;
 	IndexReader reader;
 	IndexWriter writer;
 	Document doc;
-	
-	static {
-		try {
-			logger.addHandler(new FileHandler(Constants.LOG_FILE));
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public <T extends Task> Search(List<T> taskList) throws SearchException {
 		list = JsonConverter.convertTaskList(taskList);
