@@ -67,13 +67,12 @@ public class Search {
 	private static final String FIELD_JSON = "json";
 	private static final String FIELD_CATEGORY = "category";
 	private static final String FIELD_TEXT = "text";
-	private static final String FIELD_FROMDATE = "fromDate";
-	private static final String FIELD_TODATE = "toDate";
+	private static final String FIELD_DATE = "Date";
 	private static final String FIELD_DEADLINE = "deadline";
 	private static final String DATE_EPOCH_ERROR = "Error parsing Epoch date";
 	private static final String DATE_SIMPLEFORMAT = "dd-M-yyyy hh:mm:ss";
 	private static final String DATE_EPOCH = "01-01-1970 00:00:00";
-	private static String[] possibleSearchFields = {FIELD_ISCOMPLETE,FIELD_ISPRIORITY,FIELD_TEXT,"to","from",FIELD_CATEGORY};
+	private static String[] possibleSearchFields = {FIELD_ISCOMPLETE,FIELD_ISPRIORITY,FIELD_TEXT,FIELD_DATE,FIELD_CATEGORY};
 	private static List<String> list;
 	private static JsonParser parser;
 	private static JsonObject obj;
@@ -81,6 +80,8 @@ public class Search {
 	ArrayList<String> hitTypeList;
 	private static final String ERROR_IO = "Error attempting to search.";
 	private static final Logger logger = Logger.getGlobal();
+	private static final String FIELD_FROMDATE = "fromDate";
+	private static final String FIELD_TODATE = "toDate";
 	ArrayList<String> hitList;
 	StandardAnalyzer analyzer;
 	IndexSearcher searcher;
@@ -132,9 +133,14 @@ public class Search {
 					addMustOccur(q, bQuery);
 					
 				}
+				
 				if(searchField.get(i).equals(FIELD_DEADLINE)){
 					BooleanQuery bQuery = createDeadlineQuery(task);
 					addMustOccur(q, bQuery);
+				}
+				if(searchField.get(i).equals(FIELD_DATE)){
+					BooleanQuery bQuery = createDateQuery(task.getToDate(),task.getFromDate());
+					addMustOccur(q,bQuery);
 				}
 			}
 		}
@@ -302,9 +308,8 @@ public class Search {
     }
 	public BooleanQuery createDeadlineQuery(Calendar deadline) throws SearchException{
 		Gson gson = new Gson();
-		Calendar fromDate = getEpoch();
 		BooleanQuery bQuery = new BooleanQuery();
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(FIELD_DEADLINE,gson.toJson(fromDate),gson.toJson(deadline),true,true);
+		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(FIELD_DEADLINE,gson.toJson(deadline),gson.toJson(deadline),true,true);
 		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.MUST);
 		return bQuery;
 	}	
@@ -314,7 +319,7 @@ public class Search {
 		Calendar epochDate = getEpoch();
 		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(FIELD_DEADLINE,gson.toJson(fromDate),gson.toJson(toDate),true,true);
 		TermRangeQuery rangeScheduleQ = TermRangeQuery.newStringRange(FIELD_TODATE,gson.toJson(fromDate),gson.toJson(toDate),true,true);
-		TermRangeQuery rangeFromScheduleQ = TermRangeQuery.newStringRange(FIELD_FROMDATE, gson.toJson(epochDate), gson.toJson(fromDate), false, true);
+		TermRangeQuery rangeFromScheduleQ = TermRangeQuery.newStringRange(FIELD_FROMDATE, gson.toJson(epochDate), gson.toJson(fromDate), false, false);
 		bQuery.add(rangeDeadlineQ,BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeScheduleQ,BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeFromScheduleQ,BooleanClause.Occur.MUST_NOT);

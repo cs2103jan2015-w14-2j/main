@@ -9,6 +9,7 @@ import org.junit.Test;
 
 public class ParserTest {
 	
+	//Corner test case when there exists duplicate key word
 	@Test (expected = ParserException.class)
 	public void testTwoPriKeyword () throws ParserException {
 		Parser.parseCommand("add this pri pri");
@@ -54,6 +55,7 @@ public class ParserTest {
 		Parser.parseCommand("delete");
 	}
 	
+	//Corner test case when the index of task is not valid
 	@Test (expected = ParserException.class)
 	public void testInvalidTaskID () throws ParserException {
 		Parser.parseCommand("delete job");
@@ -64,6 +66,7 @@ public class ParserTest {
 		Parser.parseCommand("edit");
 	}
 	
+	//Corner test case when the things to be edited is not specified
 	@Test (expected = ParserException.class)
 	public void testEditContentMissing () throws ParserException {
 		Parser.parseCommand("edit 1");
@@ -84,11 +87,13 @@ public class ParserTest {
 		Parser.parseCommand("add");
 	}
 	
+	//Corner test case when the task to be added is not described
 	@Test (expected = ParserException.class)
 	public void testAddContentMissingWithKeyword() throws ParserException {
 		Parser.parseCommand("add by Sunday");
 	}
 	
+	//Corner test case when there is not description for category
 	@Test (expected = ParserException.class)
 	public void testAddCatMissing () throws ParserException {
 		Parser.parseCommand("add this cat");
