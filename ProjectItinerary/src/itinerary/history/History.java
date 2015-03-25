@@ -16,15 +16,11 @@ public class History {
 	private static final Logger logger = Logger.getGlobal();
 	
 	public History(List<Task> initialState) {
-		assert initialState != null;
-		
 		this.currentPoint = new HistoryNode(null, initialState);
 		logger.log(Level.INFO, "Creating History object");
 	}
 	
 	public void addNewState (List<Task> tasks) {
-		assert tasks != null;
-		
 		currentPoint = new HistoryNode(currentPoint, tasks);
 		logger.log(Level.INFO, "Adding new state to History");
 	}
@@ -50,9 +46,6 @@ public class History {
 	}
 	
 	public List<Task> getCurrentState () {
-		if (currentPoint == null) {
-			return null;
-		}
 		return currentPoint.getCurrentState();
 	}
 	
@@ -62,8 +55,6 @@ public class History {
 		private List<Task> currentState;
 		
 		private HistoryNode (HistoryNode back, List<Task> state) {
-			assert state != null;
-			
 			if (back != null) {
 				back.forward = this;
 			}

@@ -66,24 +66,14 @@ public class FileStorageTest {
     }
     
     @Test
-    public void testAddTask() {
-        
-        try {
-            fileStorage.addTask(task1);
-            fileStorage.addTask(task2);
-            fileStorage.addTask(task3);
-            
-            assertEquals(task1String + "\n" + task2String + "\n" + task3String
-                         + "\n", fileStorage.currentListTaskString(false));
+    public void testAddTask() throws StorageException {
 
-        } catch (StorageException e) {
-            
-            System.out.println(e.getMessage());
-        
-        } catch (Exception e) {
-            
-            fail("testAddTask() has failed.");
-        }
+    	fileStorage.addTask(task1);
+    	fileStorage.addTask(task2);
+    	fileStorage.addTask(task3);
+
+    	assertEquals(task1String + "\n" + task2String + "\n" + task3String
+    			+ "\n", fileStorage.currentListTaskString(false));
     }
 
     @AssertionFailure
@@ -103,20 +93,12 @@ public class FileStorageTest {
     }
     
     @Test
-    public void testEditTask() {
+    public void testEditTask() throws StorageException {
         
-        try {
             fileStorage.addTask(task1);
             fileStorage.editTask(task4);
             
             assertEquals(task4String + "\n", fileStorage.currentListTaskString(false));
-        } catch (StorageException e) {
-            
-            System.out.println(e.getMessage());
-        } catch (Exception e) {
-            
-            fail("testEditTask() has failed.");
-        }
     }
     
     @AssertionFailure
@@ -133,21 +115,13 @@ public class FileStorageTest {
     }
     
     @Test
-    public void testDeleteTask() {
+    public void testDeleteTask() throws StorageException {
         
-        try {
             fileStorage.addTask(task1);
             fileStorage.editTask(task4);
             fileStorage.deleteTask(task4);
             
             assertEquals("", fileStorage.currentListTaskString(false));
-        } catch (StorageException e) {
-            
-            System.out.println(e.getMessage());
-        } catch (Exception e) {
-            
-            fail("testDeleteTask() has failed.");
-        }
     }
 
     @Test
