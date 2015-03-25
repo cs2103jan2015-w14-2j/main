@@ -69,11 +69,11 @@ public class SearchTest {
 		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
 		task.setSearchField(fields);
 		task.setCategoryList(catList);
-		task.setText("hello");
+		task.setText("wan pis");
 		task.setPriority(true);
 		Search search = new Search(jsonList);
 		List<Task> testList = search.query(task);
-		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(1)));
+		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 
 	}
 //	@test
