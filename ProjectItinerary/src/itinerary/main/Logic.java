@@ -71,7 +71,7 @@ public class Logic {
 		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
 	}
 	
-	public void close () {
+	public void exitOperation () {
 		storage.close();
 	}
 	
@@ -79,7 +79,7 @@ public class Logic {
 		if (command.getType() == CommandType.ADD) {
 			return executeAdd(command);
 		} else if (command.getType() == CommandType.CLEAR) {
-			return executeClear(command);
+			return executeClear();
 		} else if (command.getType() == CommandType.DELETE) {
 			return executeDelete(command);
 		} else if (command.getType() == CommandType.DISPLAY) {
@@ -109,7 +109,7 @@ public class Logic {
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
 	}
 
-	private UserInterfaceContent executeClear(Command command) {
+	private UserInterfaceContent executeClear() {
 		try {
 			storage.clearAll();
 		} catch (StorageException e) {
@@ -245,9 +245,5 @@ public class Logic {
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
-	}
-	
-	public void exitOp() {
-	    storage.close();
 	}
 }
