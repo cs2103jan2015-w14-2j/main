@@ -1,5 +1,15 @@
 package itinerary.main;
 
+import itinerary.history.History;
+import itinerary.history.HistoryException;
+import itinerary.parser.Parser;
+import itinerary.parser.ParserException;
+import itinerary.search.Search;
+import itinerary.search.SearchException;
+import itinerary.storage.FileStorage;
+import itinerary.storage.Storage;
+import itinerary.storage.StorageException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +31,12 @@ public class Logic {
 	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
 	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
 	private static final String MESSAGE_SEARCH_ERROR = "search error";
-	private static final String MESSAGE_SEARCH_SUCCESS = "search success";
+	private static final String MESSAGE_SEARCH_SUCCESS = "search success. %1$d results found";
 	
-	private static final Logger logger = Logger.getLogger(Logic.class.getName());
+	private static final Logger logger = Logger.getGlobal();
 	static {
 		try {
-			logger.addHandler(new FileHandler(Constants.LOG_FILE));
+			logger.addHandler(new FileHandler(Constants.LOG_FILE, Constants.LOG_FILE_SIZE_LIMIT, 1, true));
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -58,7 +68,11 @@ public class Logic {
 	public UserInterfaceContent initialLaunch () {
 		UserInterfaceContent displayContent = executeDisplay();
 		String welcomeMessage = formatWelcomeMessage();
-		return new UserInterfaceContent(welcomeMessage, displayContent.getTasks());
+		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
+	}
+	
+	public void close () {
+		storage.close();
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
@@ -167,16 +181,20 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeSearch(Command command) {
+		return executeBasicSearch(command.getTask().getText());
+	}
+	
+	public UserInterfaceContent executeBasicSearch (String query) {
 		List<Task> searchList= new ArrayList<Task>();
-	        try {
-	        	Search search = new Search(storage.getAllTasks());
-	            searchList = search.query(command.getTask().getText(),"text");
-            } catch (SearchException e) {
-				logger.log(Level.WARNING, "Unsuccessful search", e);
-    			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, storage.getAllTasks());
-            }
-       
-		return new UserInterfaceContent(MESSAGE_SEARCH_SUCCESS, searchList);
+		List<Task> allTasks = storage.getAllTasks();
+		try {
+        	Search search = new Search(allTasks);
+            searchList = search.query(query ,"text");
+        } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
+        }
+		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
 	}
 
 	private UserInterfaceContent executeUndo() {
@@ -210,6 +228,10 @@ public class Logic {
 
 	private String formatEditSuccess(int editTaskId) {
 		return String.format(MESSAGE_EDIT_SUCCESS, editTaskId);
+	}
+	
+	private String formatSearchSuccess (List<Task> tasks) {
+		return String.format(MESSAGE_SEARCH_SUCCESS, tasks.size());
 	}
 
 	private String formatInvalidCommand(String userInput) {
