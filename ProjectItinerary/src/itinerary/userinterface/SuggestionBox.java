@@ -24,6 +24,8 @@ public class SuggestionBox {
 	
 	private int maxSuggestionsShown = 6;
 	private double width = -1.0;
+	private double anchorX = -1.0;
+	private double anchorY = -1.0;
 	
 	private List<String> suggestionSource = new ArrayList<String>();
 	private ObservableList<String> suggestions = FXCollections.observableArrayList();
@@ -49,13 +51,13 @@ public class SuggestionBox {
 		@Override
 		public void changed(ObservableValue<? extends String> observable,
 				String oldValue, String newValue) {
-			if (newValue.length() == 0) {
+			if (newValue == null || newValue.length() == 0) {
 				hidePopup();
 			} else {
+				filterSuggestions(newValue);
 				if (!suggestionPopup.isShowing()) {
 					showPopup();
 				}
-				filterSuggestions(newValue);
 			}
 		}
 	};
@@ -110,6 +112,32 @@ public class SuggestionBox {
 		return width;
 	}
 	
+	public double getAnchorX() {
+		if (anchorX < 0) {
+			Scene scene = textField.getScene();
+			Window window = scene.getWindow();
+			return window.getX() + textField.localToScene(0, 0).getX() + scene.getX();
+		}
+		return anchorX;
+	}
+
+	public void setAnchorX(double anchorX) {
+		this.anchorX = anchorX;
+	}
+
+	public double getAnchorY() {
+		if (anchorY < 0) {
+			Scene scene = textField.getScene();
+			Window window = scene.getWindow();
+			return window.getY() + textField.localToScene(0, 0).getY() + scene.getY() + textField.getHeight();
+		}
+		return anchorY;
+	}
+
+	public void setAnchorY(double anchorY) {
+		this.anchorY = anchorY;
+	}
+
 	private void selectSuggestion(String suggestion) {
 		if (suggestion != null) {
 			textField.setText(suggestion);
@@ -120,19 +148,15 @@ public class SuggestionBox {
 	}
 	
 	public void updateSource (List<String> source) {
-		while (!suggestionSource.isEmpty()) {
-			suggestionSource.remove(0);
-		}
+		suggestionSource.clear();
 		for (String string : source) {
 			suggestionSource.add(string);
 		}
 		Collections.sort(suggestionSource);
 	}
 	
-	public void filterSuggestions (String filter) {
-		while (!suggestions.isEmpty()) {
-			suggestions.remove(0);
-		}
+	private void filterSuggestions (String filter) {
+		suggestions.clear();
 		String lowerFilter = filter.toLowerCase();
 		for (String string : suggestionSource) {
 			if (string.toLowerCase().contains(lowerFilter)) {
@@ -140,28 +164,25 @@ public class SuggestionBox {
 			}
 		}
 		int count = suggestions.size();
+		if (count > maxSuggestionsShown) {
+			suggestionListView.setPrefHeight(maxSuggestionsShown * SUGGESTIONS_HEIGHT);
+		} else {
+			suggestionListView.setPrefHeight(count * SUGGESTIONS_HEIGHT);
+		}
 		if (count == 0 && suggestionPopup.isShowing()) {
 			hidePopup();
-		} else if (suggestionPopup.isShowing()) {
-			if (count > maxSuggestionsShown) {
-				suggestionListView.setPrefHeight(maxSuggestionsShown * SUGGESTIONS_HEIGHT);
-			} else {
-				suggestionListView.setPrefHeight(count * SUGGESTIONS_HEIGHT);
-			}
 		}
 	}
 	
 	private void showPopup () {
-		suggestionListView.setPrefWidth(this.getWidth());
-		Scene scene = textField.getScene();
-		Window window = scene.getWindow();
-		double anchorX = window.getX() + textField.localToScene(0, 0).getX() + scene.getX();
-		double anchorY = window.getY() + textField.localToScene(0, 0).getY() + scene.getY()
-				+ textField.getHeight();
-		suggestionPopup.show(window, anchorX, anchorY);
-		
-		suggestionListView.getSelectionModel().clearSelection();
-		suggestionListView.getFocusModel().focus(-1);
+		if (suggestions != null && suggestions.size() > 0) {
+			suggestionListView.setPrefWidth(this.getWidth());
+			Scene scene = textField.getScene();
+			Window window = scene.getWindow();
+			suggestionPopup.show(window, getAnchorX(), getAnchorY());
+			suggestionListView.getSelectionModel().clearSelection();
+			suggestionListView.getFocusModel().focus(-1);
+		}
 	}
 	
 	private void hidePopup () {
