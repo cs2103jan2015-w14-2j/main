@@ -3,6 +3,7 @@ package itinerary.userinterface;
 import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
+import itinerary.search.SearchTask;
 import itinerary.userinterface.SearchStage.SearchResultCallback;
 
 import java.io.IOException;
@@ -49,6 +50,9 @@ public class UiController implements Initializable, SearchResultCallback {
 	
 	private Logic logic = new Logic("test");	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
+	private List<Task> allTasks = new ArrayList<Task>();
+	
+	private SearchStage searchStage = null;
 	
 	private SuggestionImplementation autoComplete = new SuggestionImplementation() {
 		@Override
@@ -98,7 +102,11 @@ public class UiController implements Initializable, SearchResultCallback {
 	private void updateContent(UserInterfaceContent content) {
 		appendConsoleMessage(content.getConsoleMessage());
 		updateTaskList(content.getDisplayableTasks());
-		updateDescriptions(content.getAllTasks());
+		allTasks = content.getAllTasks();
+		updateDescriptions(allTasks);
+		if (searchStage != null) {
+			searchStage.updateTasks(allTasks);		
+		}
 	}
 	
 	private void updateDescriptions(List<Task> tasks) {
@@ -109,19 +117,17 @@ public class UiController implements Initializable, SearchResultCallback {
 		suggestionBox.updateSource(suggestions);
 	}
 
-	public void openAdvancedSearch (ActionEvent event) {
-		try {
-			SearchStage searchStage = SearchStage.getInstance(this);
-			searchStage.show();
-		} catch (IOException e) {
-			appendConsoleMessage(ERROR_OPEN_SEARCH);
+	public void openAdvancedSearch (ActionEvent event) throws IOException {
+		if (searchStage == null) {
+			searchStage = SearchStage.getInstance(this, allTasks);
 		}
+		searchStage.show();
 	}
 	
 	@Override
-	public void executeAdvancedSearch() {
+	public void executeAdvancedSearch(SearchTask searchTask) {
 		// TODO Update Search Results
-		appendConsoleMessage("Update search results");
+		appendConsoleMessage("Update search results" + searchTask.toString());
 	}
 	
 	public void executeBasicSearch (ActionEvent event) {
@@ -138,11 +144,11 @@ public class UiController implements Initializable, SearchResultCallback {
 	}
 	
 	private void updateTaskList (List<Task> tasks) {
-		list = convertList(tasks);
+		list = convertTasksToHBoxes(tasks);
 		listView.setItems(list);
 	}
 	
-	private static ObservableList<TaskHBox> convertList (List<Task> tasks) {
+	private static ObservableList<TaskHBox> convertTasksToHBoxes (List<Task> tasks) {
 		ObservableList<TaskHBox> list = FXCollections.observableArrayList();
 		for (Task task : tasks) {
 			list.add(new TaskHBox(task));
