@@ -2,15 +2,15 @@ package itinerary.main;
 
 //@author A0121437N
 public class Task implements Cloneable {
-    private int taskId;
+    private Integer taskId;
     private String text;
     private String category;
-    private boolean isPriority;
-    private boolean isComplete;
+    private Boolean isPriority;
+    private Boolean isComplete;
 
     //@author generated
-    public Task(int taskId, String text, String category,
-                boolean isPriority, boolean isComplete) {
+    public Task(Integer taskId, String text, String category,
+                Boolean isPriority, Boolean isComplete) {
         super();
         this.setTaskId(taskId);
         this.setText(text);
@@ -19,7 +19,7 @@ public class Task implements Cloneable {
         this.setComplete(isComplete);
     }
 
-    public int getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
@@ -31,15 +31,15 @@ public class Task implements Cloneable {
         return category;
     }
 
-    public boolean isPriority() {
+    public Boolean isPriority() {
         return isPriority;
     }
 
-    public boolean isComplete() {
+    public Boolean isComplete() {
         return isComplete;
     }
 
-    public void setTaskId(int taskId) {
+    public void setTaskId(Integer taskId) {
         this.taskId = taskId;
     }
 
@@ -51,11 +51,11 @@ public class Task implements Cloneable {
         this.category = category;
     }
 
-    public void setPriority(boolean isPriority) {
+    public void setPriority(Boolean isPriority) {
         this.isPriority = isPriority;
     }
 
-    public void setComplete(boolean isComplete) {
+    public void setComplete(Boolean isComplete) {
         this.isComplete = isComplete;
     }
     
@@ -91,7 +91,7 @@ public class Task implements Cloneable {
                         this.isComplete());
     }
     
-    public boolean hasNoText() {
+    public Boolean hasNoText() {
 
         if (this.text == null || this.text.isEmpty()) {
             return true;
@@ -99,7 +99,7 @@ public class Task implements Cloneable {
         return false;
     }
 
-    public boolean hasNoCategory() {
+    public Boolean hasNoCategory() {
 
         if (this.category == null || this.category.isEmpty()) {
             return true;
@@ -109,7 +109,7 @@ public class Task implements Cloneable {
     
 
     @Override
-    public boolean equals(Object task) {
+    public Boolean equals(Object task) {
         //Overrides default Object equals().
         if (task == null) {
             return false;

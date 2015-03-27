@@ -16,10 +16,10 @@ public class SearchTask extends Task implements Cloneable {
     private List<String> searchNotField;
     //@author generated
     public SearchTask() {
-        super(1,"","", false, false);
+        super(null,null,null, null, null);
     }
-    public SearchTask(int taskId, String text, String category,
-                        boolean isPriority, boolean isComplete,
+    public SearchTask(Integer taskId, String text, String category,
+                        Boolean isPriority, Boolean isComplete,
                         Calendar fromDate, Calendar toDate,List<String> fields) {
         super(taskId, text, category, isPriority, isComplete);
         this.fromDate = fromDate;
@@ -63,7 +63,7 @@ public class SearchTask extends Task implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object searchTask) {
+    public Boolean equals(Object searchTask) {
         // Overrides Object equals() method
         if (!super.equals(searchTask)) {
             return false;
