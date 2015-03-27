@@ -167,7 +167,7 @@ public class ParserTest {
 		Command command = Parser.parseCommand("edit 1 +cat catches mouse");
 		assertEquals(command.getType(), CommandType.EDIT);
 		Task task = command.getTask();
-		assertEquals(task.getTaskId(), 1);
+		assertEquals((int)task.getTaskId(), 1);
 		assertEquals(task.getText(), "cat catches mouse");
 	}
 	
@@ -178,7 +178,7 @@ public class ParserTest {
 		Task task = command.getTask();
 		assertTrue(task instanceof DeadlineTask);
 		DeadlineTask scheduleTask = (DeadlineTask) task;
-		assertEquals(scheduleTask.getTaskId(), 1);
+		assertEquals((int)scheduleTask.getTaskId(), 1);
 		assertEquals(scheduleTask.getText(), "eat");
 		assertEquals(scheduleTask.getCategory(), "gain weight");
 		assertTrue(scheduleTask.isPriority());

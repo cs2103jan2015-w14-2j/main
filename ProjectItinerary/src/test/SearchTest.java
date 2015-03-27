@@ -49,7 +49,7 @@ public class SearchTest {
 		testDeadlineDate = Calendar.getInstance();
 		testFromDate.set(2015,3,20);
 		testToDate.set(2015,3,25);
-		testDeadlineDate.set(2015,3,24);
+		testDeadlineDate.set(2015,3,25);
 		task = new ScheduleTask(1, "testtest gjhjy", "testcat",
 				 true,
 				true,fromDate, toDate);
@@ -88,7 +88,6 @@ public class SearchTest {
 		List<String> fields = new ArrayList<String>();
 		fields.addAll(Arrays.asList(field));
 		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
-		task.setSearchField(fields);
 		task.setCategoryList(catList);
 		task.setText("wan pis");
 		task.setPriority(true);
@@ -109,21 +108,18 @@ public class SearchTest {
 	//tries to query the list with the following search terms isComplete:true
 	public void testisCompleteSearch() throws SearchException{
 		SearchTask task = new SearchTask();
-		String[] field = {"isComplete"};
 		String[] catArray = {"testcat"};
-		List<String> fields = new ArrayList<String>();
-		fields.addAll(Arrays.asList(field));
 		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
-		task.setSearchField(fields);
 		task.setCategoryList(catList);
 		task.setText("wan pis");
 		task.setPriority(true);
 		task.setComplete(true);
 		Search search = new Search(jsonList);
 		List<Task> testList = search.query(task);
-		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(1)));
+		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 
 	}
+
 	@Test
 	public void testSearchWithDeadline() throws SearchException{
 		SearchTask task = new SearchTask();
@@ -132,7 +128,6 @@ public class SearchTest {
 		List<String> fields = new ArrayList<String>();
 		fields.addAll(Arrays.asList(field));
 		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
-		task.setSearchField(fields);
 		task.setCategoryList(catList);
 		task.setText("Hello Everybody");
 		task.setPriority(true);
@@ -145,16 +140,9 @@ public class SearchTest {
 	@Test
 	public void testSearchWithSchedule() throws SearchException{
 		SearchTask task = new SearchTask();
-		String[] field = {"Date"};
 		String[] catArray = {"testcat"};
-		List<String> fields = new ArrayList<String>();
-		fields.addAll(Arrays.asList(field));
 		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
-		task.setSearchField(fields);
 		task.setCategoryList(catList);
-		task.setText("Hello Everybody");
-		task.setPriority(true);
-		task.setDeadline(testDeadlineDate);
 		task.setToDate(testToDate);
 		task.setFromDate(testFromDate);
 		Search search = new Search(jsonList);
