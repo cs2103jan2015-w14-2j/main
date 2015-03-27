@@ -109,7 +109,7 @@ public class Task implements Cloneable {
     
 
     @Override
-    public Boolean equals(Object task) {
+    public boolean equals(Object task) {
         //Overrides default Object equals().
         if (task == null) {
             return false;

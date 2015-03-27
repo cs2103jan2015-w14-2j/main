@@ -9,8 +9,8 @@ public class DeadlineTask extends Task implements Cloneable {
     private Calendar deadline;
 
     //@author generated
-    public DeadlineTask(int taskId, String text, String category,
-                        boolean isPriority, boolean isComplete,
+    public DeadlineTask(Integer taskId, String text, String category,
+                        Boolean isPriority, Boolean isComplete,
                         Calendar deadline) {
         super(taskId, text, category, isPriority, isComplete);
         this.deadline = deadline;

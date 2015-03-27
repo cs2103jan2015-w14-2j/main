@@ -11,8 +11,8 @@ public class ScheduleTask extends Task implements Cloneable {
 
     //@author generated
 
-    public ScheduleTask(int taskId, String text, String category,
-                        boolean isPriority, boolean isComplete,
+    public ScheduleTask(Integer taskId, String text, String category,
+                        Boolean isPriority, Boolean isComplete,
                         Calendar fromDate, Calendar toDate) {
         super(taskId, text, category, isPriority, isComplete);
         this.fromDate = fromDate;
