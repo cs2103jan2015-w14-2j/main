@@ -103,7 +103,7 @@ public class SearchController implements Initializable {
 					toLd.getDayOfMonth(), 23, 59);
 		}
 		
-		SearchTask searchTask = new SearchTask(0, description, category, searchPriority, false, from, to, null);
+		SearchTask searchTask = new SearchTask(0, description, category, searchPriority, false, from, to);
 		
 		searchStage.invokeCaller(searchTask);
 		searchStage.close();
