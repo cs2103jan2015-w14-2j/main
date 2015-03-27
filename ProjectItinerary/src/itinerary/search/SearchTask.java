@@ -11,7 +11,6 @@ public class SearchTask extends Task implements Cloneable {
 	private Calendar fromDate;
     private Calendar toDate;
     private Calendar deadline;
-    private List<String> searchField;
     private List<String> categoryList;
     private List<String> searchNotField;
     //@author generated
@@ -20,18 +19,12 @@ public class SearchTask extends Task implements Cloneable {
     }
     public SearchTask(Integer taskId, String text, String category,
                         Boolean isPriority, Boolean isComplete,
-                        Calendar fromDate, Calendar toDate,List<String> fields) {
+                        Calendar fromDate, Calendar toDate) {
         super(taskId, text, category, isPriority, isComplete);
         this.fromDate = fromDate;
         this.toDate = toDate;
-        this.searchField = fields;
     }
-    public List<String> getSearchField() {
-    	return searchField;
-    }
-    public void setSearchField(List<String> fields) {
-    	this.searchField = fields;
-    }
+
     public Calendar getFromDate() {
         return fromDate;
     }
@@ -59,11 +52,11 @@ public class SearchTask extends Task implements Cloneable {
         return new SearchTask(this.getTaskId(), this.getText(),
                                 this.getCategory(), this.isPriority(),
                                 this.isComplete(), this.getFromDate(),
-                                this.getToDate(),this.getSearchField());
+                                this.getToDate());
     }
 
     @Override
-    public Boolean equals(Object searchTask) {
+    public boolean equals(Object searchTask) {
         // Overrides Object equals() method
         if (!super.equals(searchTask)) {
             return false;
