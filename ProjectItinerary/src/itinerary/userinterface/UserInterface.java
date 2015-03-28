@@ -30,7 +30,6 @@ public class UserInterface extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
-		Logic logic = new Logic();
 		if (!logic.isConfigured()) {
 			new FileNameRequestDialog(listener).start(stage);
 		} else {

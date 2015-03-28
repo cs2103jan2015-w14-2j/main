@@ -152,7 +152,6 @@ public class SuggestionBox {
 		for (String string : source) {
 			suggestionSource.add(string);
 		}
-		Collections.sort(suggestionSource);
 	}
 	
 	private void filterSuggestions (String filter) {
