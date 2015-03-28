@@ -1,10 +1,12 @@
 package itinerary.storage;
 
 import itinerary.main.Task;
+import itinerary.main.TaskSorter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 //@author A0121409R
@@ -22,7 +24,7 @@ import java.util.List;
  * each of the Task objects in listTask will be auto-updated.
  * <li>5) If no fileName is given, a default fileName will be used.
  * <ul>
- * <p>
+ * </p>
  */
 public class FileStorage extends Storage {
     
@@ -126,12 +128,23 @@ public class FileStorage extends Storage {
     public String currentListTaskString(boolean toAddTags) {
         return JsonIOHandler.readJSON(tempFile, toAddTags);
     }
+    
+    /**
+     * Sorts listTask. Super inefficient.
+     */
+    private void sortList() {
+        
+        this.listTask = TaskSorter.sort(this.listTask);
+    }
 
     /**
      * Update the taskId variables in each Task object after operation.
      */
     private void updateTaskId() {
         if (this.listTask != null && this.listTask.size() != 0) {
+            
+            sortList();
+            
             List<Task> tempTaskList = this.getAllTasks();
             int currentTaskId = 1;
 
