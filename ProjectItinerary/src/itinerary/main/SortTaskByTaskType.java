@@ -2,7 +2,7 @@ package itinerary.main;
 
 import java.util.Comparator;
 
-// @author A0121409R
+//@author A0121409R
 /**
  * Sorts the contents of a given List<Task> object by Task Type. <br>
  * Order: <li>1) DeadlineTask <li>2) ScheduleTask <li>3) Task
