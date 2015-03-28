@@ -45,6 +45,9 @@ public class UiController implements Initializable, SearchResultCallback {
 	private Hyperlink advSearch;
 	
 	@FXML
+	private Hyperlink config;
+	
+	@FXML
 	private TextField basicSearchTextField;
 	private SuggestionBox suggestionBox;
 	
@@ -62,7 +65,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		
 		@Override
 		public void onEnterAction() {
-			executeBasicSearch(null);
+			executeBasicSearch();
 		}
 		
 		@Override
@@ -101,7 +104,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		stage.setOnCloseRequest(closeHandler);
 	}
 	
-	public void commandEntered (ActionEvent event) {
+	public void commandEntered () {
 		// adding things to the console
 		String command = commandTextField.getText();
 		UserInterfaceContent result = logic.executeUserInput(command);
@@ -127,7 +130,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		suggestionBox.updateSource(suggestions);
 	}
 
-	public void openAdvancedSearch (ActionEvent event) throws IOException {
+	public void openAdvancedSearch () throws IOException {
 		if (searchStage == null) {
 			searchStage = SearchStage.getInstance(this, allTasks);
 		}
@@ -140,7 +143,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		appendConsoleMessage("Update search results" + searchTask.toString());
 	}
 	
-	public void executeBasicSearch (ActionEvent event) {
+	public void executeBasicSearch () {
 		UserInterfaceContent result = logic.executeBasicSearch(basicSearchTextField.getText());
 		updateContent(result);
 	}
@@ -164,5 +167,9 @@ public class UiController implements Initializable, SearchResultCallback {
 			list.add(new TaskHBox(task));
 		}
 		return list;
+	}
+	
+	public void onConfigSource () {
+		// Open FileNameRequestDialog
 	}
 }

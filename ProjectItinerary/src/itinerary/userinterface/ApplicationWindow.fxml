@@ -25,6 +25,7 @@
    <top>
       <HBox BorderPane.alignment="CENTER">
          <children>
+            <Hyperlink fx:id="config" onAction="#onConfigSource" text="Configure Source" />
             <Pane HBox.hgrow="ALWAYS" />
             <Hyperlink fx:id="advSearch" onAction="#openAdvancedSearch" text="Advanced Search">
                <HBox.margin>
