@@ -1,11 +1,8 @@
 package itinerary.storage;
 
-import itinerary.main.DeadlineTask;
-import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 //@author A0121409R
@@ -16,13 +13,6 @@ public class StorageStub extends Storage {
     //@author A0121437N
     public StorageStub() {
         this.tasks = new ArrayList<Task>();
-        this.tasks.add(new DeadlineTask(1, "Finish homework", "cat6", true, false,
-                Calendar.getInstance()));
-        this.tasks.add(new ScheduleTask(2, "Team meeting", "cat5", true, false,
-                        Calendar.getInstance(),
-                        Calendar.getInstance()));
-        this.tasks.add(new Task(3, "Feed the dog", "cat1", false, false));
-        this.tasks.add(new Task(4, "Have dinner", "cat2", false, true));
     }
 
     /*
@@ -30,7 +20,9 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
     public void addTask(Task task) throws StorageException {
-    	tasks.add(task);
+    	Task taskClone = task.clone();
+    	tasks.add(taskClone);
+    	updateIds();
     }
 
     /*
@@ -45,6 +37,7 @@ public class StorageStub extends Storage {
     	Task originalTask = tasks.remove(taskIndex);
     	Task editedTask = super.updateTaskDetails(originalTask, task);
     	tasks.add(taskIndex, editedTask);
+    	updateIds();
     }
 
     /*
@@ -57,6 +50,7 @@ public class StorageStub extends Storage {
     		throw new StorageException(ERROR_INVALID_ID);
     	}
     	tasks.remove(taskId - 1);
+    	updateIds();
     }
 
     /*
@@ -64,7 +58,11 @@ public class StorageStub extends Storage {
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
     public List<Task> getAllTasks() {
-        return tasks;
+    	ArrayList<Task> tempTasks = new ArrayList<Task>();
+    	for (Task task : tasks) {
+    		tempTasks.add(task.clone());
+    	}
+        return tempTasks;
     }
 
     /*
@@ -81,6 +79,13 @@ public class StorageStub extends Storage {
      */
     public void refillAll(List<Task> tasks) throws StorageException {
     	this.tasks = tasks;
+    	updateIds();
+    }
+    
+    private void updateIds () {
+    	for (int i = 0; i < tasks.size(); i++) {
+    		tasks.get(i).setTaskId(i + 1);
+    	}
     }
     
     public void close() {
