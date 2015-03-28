@@ -9,5 +9,6 @@ public enum CommandType {
 	SEARCH,
 	REDO,
 	UNDO,
+	MARK,
 	UNABLE_TO_DETERMINE
 }

@@ -35,15 +35,7 @@ public class Parser {
 	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
 	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
 	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
-
-	private static final String COMMAND_ADD = "add";
-	private static final String COMMAND_DELETE = "delete";
-	private static final String COMMAND_DISPLAY = "display";
-	private static final String COMMAND_CLEAR = "clear";
-	private static final String COMMAND_SEARCH = "search";
-	private static final String COMMAND_EDIT = "edit";
-	private static final String COMMAND_REDO = "redo";
-	private static final String COMMAND_UNDO = "undo";
+	private static final String COMMAND_ADD_PLUS = "+";
 
 	private static final String KEYWORD_SCHEDULE_TO = "to";
 	private static final String KEYWORD_SCHEDULE_FROM = "from";
@@ -85,6 +77,9 @@ public class Parser {
 		}
 		if(type.equals(CommandType.SEARCH)){
 			return createTaskToSearch(argument);
+		}
+		if(type.equals(CommandType.MARK)){
+			return createTaskToMark(argument);
 		}
 		return null;
 	}
@@ -347,7 +342,7 @@ public class Parser {
 		assert argument != null;
 		String[] arguments = stringToArray(argument);
 		int id = identifyTargetId(arguments);
-		return new Task (id, null, null, false, false);
+		return new Task (id, null, null, null, null);
 	}
 
 	private static Task createTaskToEdit(String input) throws ParserException {
@@ -367,6 +362,13 @@ public class Parser {
 		return task;
 	}
 
+	private static Task createTaskToMark(String argument) throws ParserException {
+		assert argument != null;
+		String[] arguments = stringToArray(argument);
+		int id = identifyTargetId(arguments);
+		return new Task (id, null, null, null, true);
+	}
+	
 	private static int identifyTargetId(String[] arguments) throws ParserException {
 		logger.log(Level.INFO, LOGGER_CHECK_TASK_ID);
 		if (arguments.length == 0) {
@@ -397,36 +399,14 @@ public class Parser {
 	private static String removeFirstWord (String input) {
 		assert input != null;
 		String firstWord = extractFirstWord(input);
+		if(firstWord.equals(COMMAND_ADD_PLUS)){
+			firstWord = "\\" + COMMAND_ADD_PLUS;
+		}
 		return input.replaceFirst(firstWord, "").trim();
 	}
 
 	private static CommandType determineCommandType(String command){
-		if(command.equalsIgnoreCase(COMMAND_ADD)){
-			return CommandType.ADD;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_DELETE)){
-			return CommandType.DELETE;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_DISPLAY)){
-			return CommandType.DISPLAY;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_SEARCH)){
-			return CommandType.SEARCH;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_CLEAR)){
-			return CommandType.CLEAR;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_EDIT)){
-			return CommandType.EDIT;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_UNDO)){
-			return CommandType.UNDO;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_REDO)){
-			return CommandType.REDO;
-		}		
-		else{
-			return CommandType.UNABLE_TO_DETERMINE;
-		}
+	   ParserAlias parserAlias =  new ParserAlias();
+	   return parserAlias.getType(command);
 	}
 }
