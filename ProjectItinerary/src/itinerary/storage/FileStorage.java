@@ -14,7 +14,7 @@ import java.util.List;
  * Assumptions:
  * <p>
  * <ul>
- * <li>1) Writes to file after commands that alter the state of the data.
+ * <li>1) Writes to a tempFile first. Only upon exit will it overwrite the old file.
  * <li>2) Assume Task taskIds start from 1, not 0.
  * <li>3) When returning the list of Tasks, it will return a duplicated copy and
  * not the direct reference.
