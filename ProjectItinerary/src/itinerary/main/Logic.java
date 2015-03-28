@@ -6,6 +6,7 @@ import itinerary.parser.Parser;
 import itinerary.parser.ParserException;
 import itinerary.search.Search;
 import itinerary.search.SearchException;
+import itinerary.storage.ConfigStorage;
 import itinerary.storage.FileStorage;
 import itinerary.storage.Storage;
 import itinerary.storage.StorageException;
@@ -47,11 +48,26 @@ public class Logic {
 	private String fileName;
 	private Storage storage;
 	private History history;
+	private ConfigStorage config;
 	
-	public Logic (String fileName) {
-		this.fileName = fileName;
-		this.storage = new FileStorage(fileName);
-		this.history = new History(storage.getAllTasks());
+	/**
+	 * Must call setUpLogicVariables to initialize variables in logic if empty constructor is called
+	 */
+	public Logic () {
+		config = new ConfigStorage();
+	}
+	
+	/**
+	 * Constructor used for testing, setUpLogicVariables not required
+	 * 
+	 * @param filename the filename that will be printed after initial launch
+	 * @param storage the storage object which will be referenced
+	 * @param history the history object which will be referenced
+	 */
+	public Logic (String filename, Storage storage, History history) {
+		this.fileName = filename;
+		this.storage = storage;
+		this.history = history;
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
@@ -63,6 +79,38 @@ public class Logic {
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		return determineActions(userCommand, userInput);
+	}
+	
+	// returns true if config file with storage file name is found, false otherwise
+	// if true, isConfigured will initialize all required objects
+	public boolean isConfigured () {
+		String fileName = null;
+		try {
+			fileName = config.getStorageFileName();
+		} catch (IOException e) {
+			// should not result in errors, for safety
+			e.printStackTrace();
+		}
+		if (fileName == null) {
+			return false;
+		} else {
+			setUpLogicVariables(fileName);
+			return true;
+		}
+	}
+	
+	public void saveStorageFileName (String fileName) {
+		try {
+			config.setStorageFileName(fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setUpLogicVariables (String fileName) {
+		this.fileName = fileName;
+		storage = new FileStorage(this.fileName);
+		history = new History(storage.getAllTasks());
 	}
 	
 	public UserInterfaceContent initialLaunch () {

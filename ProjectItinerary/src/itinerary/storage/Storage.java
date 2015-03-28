@@ -3,6 +3,8 @@ package itinerary.storage;
 import itinerary.main.Task;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 //@author A0121409R
@@ -86,4 +88,16 @@ public abstract class Storage implements Closeable{
     	template.updateDetails(details);
     	return template;
     }
+    
+    // To check if the any file name provided for storage is valid
+ 	public static boolean isValidFileName (String fileName) {
+ 		File file = new File (fileName);
+ 		try {
+ 			file.createNewFile();
+ 		} catch (IOException e) {
+ 			// filename is invalid, cannot create file
+ 			return false;
+ 		}
+ 		return true;
+ 	}
 }

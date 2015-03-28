@@ -48,7 +48,7 @@ public class UiController implements Initializable, SearchResultCallback {
 	private TextField basicSearchTextField;
 	private SuggestionBox suggestionBox;
 	
-	private Logic logic = new Logic("test");	
+	private Logic logic = new Logic();	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
 	private List<Task> allTasks = new ArrayList<Task>();
 	
@@ -80,6 +80,16 @@ public class UiController implements Initializable, SearchResultCallback {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+	}
+	
+	public void setUpController (Logic logic, Stage stage) {
+		this.logic = logic;
+		setupStageAndListeners(stage);
+		setLaunchContent();
+	}
+
+	private void setLaunchContent() {
 		consoleTextArea.setFocusTraversable(false);
 		UserInterfaceContent launch = logic.initialLaunch();
 		
@@ -87,7 +97,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		updateContent(launch);
 	}
 
-	public void setupStageAndListeners(Stage stage) {
+	private void setupStageAndListeners(Stage stage) {
 		stage.setOnCloseRequest(closeHandler);
 	}
 	
