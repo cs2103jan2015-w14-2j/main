@@ -35,6 +35,8 @@ public class Parser {
 	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
 	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
 	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
+	private static final String DELETE_CATEGORY = "del";
+	private static final String ESCAPE_CHARACTER = "+";
 	private static final String COMMAND_ADD_PLUS = "+";
 
 	private static final String KEYWORD_SCHEDULE_TO = "to";
@@ -132,6 +134,10 @@ public class Parser {
 		String category = extractCategory(argument);
 		boolean priority = extractPriority(argument);
 
+		if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
+			category = category.substring(1, category.length());
+		}
+		
 		if (isDeadline(argumentWords)) {
 			Calendar deadline = extractDeadline(argument);
 			return new DeadlineTask(-1, description, category, priority, false, deadline);
@@ -251,10 +257,17 @@ public class Parser {
 		}
 		words = stringToArray(textAfterKeyword);
 		String textNeeded = removeExtraWords(words, textAfterKeyword);
+		
+		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(DELETE_CATEGORY)){
+			return textNeeded;
+		}
+		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
+			return textNeeded;
+		}
 		return replaceKeywordInContent(textNeeded).trim();
 	}
 	
-	private static String extractCategory(String arg) throws ParserException {
+	private static String extractCategory(String arg) throws ParserException {		
 		return extractAfterKeyword(arg, KEYWORDS[1], ERROR_NO_DESCRIPTION_CATEGORY);
 	}
 	
@@ -359,6 +372,15 @@ public class Parser {
 		if (task.getText().equals("")) {
 			task.setText(null);
 		}
+		
+		String category = extractCategory(textAfterIndex);
+		if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
+			category = category.substring(1, category.length());
+		}
+		else if(category.equals(DELETE_CATEGORY)){
+			category = "";
+		}
+		task.setCategory(category);
 		return task;
 	}
 
