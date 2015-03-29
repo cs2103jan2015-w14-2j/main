@@ -107,6 +107,15 @@ public class Logic {
 		}
 	}
 	
+	// returns null if the current filename is null
+	public String getCurrentFileName () {
+		try {
+			return config.getStorageFileName();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
 	public void setUpLogicVariables (String fileName) {
 		this.fileName = fileName;
 		storage = new FileStorage(this.fileName);

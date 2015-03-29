@@ -9,14 +9,20 @@ import javafx.stage.Stage;
 
 public class MainApplication extends Application {
 
-	private static final String WINDOW_TITLE = "ITnerary";
+	private static final String WINDOW_TITLE = "ITnerary - %1$s";
 	private static final String WINDOW_FILE_NAME = "ApplicationWindow.fxml";
 	
 	private Logic logic;
+	private String name;
 
-	public MainApplication(Logic logic) {
+	public MainApplication(Logic logic, String name) {
 		super();
 		this.logic = logic;
+		if (name != null) {
+			this.name = name;
+		} else {
+			this.name = logic.getCurrentFileName();
+		}
 	}
 
 	@Override
@@ -25,11 +31,14 @@ public class MainApplication extends Application {
 		Parent root = (Parent)loader.load();
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
-		stage.setTitle(WINDOW_TITLE);
+		stage.setTitle(formatTitle(name));
 		stage.show();
 		
-		UiController controller = (UiController)loader.getController();
+		MainController controller = (MainController)loader.getController();
 		controller.setUpController(logic, stage);
 	}
 
+	public static String formatTitle (String name) {
+		return String.format(WINDOW_TITLE, name);
+	}
 }

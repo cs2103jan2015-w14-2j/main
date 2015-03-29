@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 public class UserInterface extends Application {
 	Logic logic = new Logic();
 	Stage stage;
+	String fileName;
 
 	public static void main (String[] args) {
 		launch();
@@ -19,6 +20,7 @@ public class UserInterface extends Application {
 		public void onFileNameEntered(String name) {
 			logic.saveStorageFileName(name);
 			logic.setUpLogicVariables(name);
+			fileName = name;
 			try {
 				openMainApplication(stage);
 			} catch (Exception e) {
@@ -31,13 +33,13 @@ public class UserInterface extends Application {
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
 		if (!logic.isConfigured()) {
-			new FileNameRequestDialog(listener).start(stage);
+			new FileNameRequestDialog(listener, null).show();
 		} else {
 			openMainApplication(this.stage);
 		}
 	}
 	
 	private void openMainApplication (Stage stage) throws Exception {
-		new MainApplication(logic).start(stage);		
+		new MainApplication(logic, fileName).start(stage);		
 	}
 }

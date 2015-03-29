@@ -4,6 +4,7 @@ import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
 import itinerary.search.SearchTask;
+import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;
 import itinerary.userinterface.SearchStage.SearchResultCallback;
 
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,26 +29,22 @@ import javafx.stage.WindowEvent;
 // TODO New advanced search window when clicked advanced search
 
 //@author A0121437N
-public class UiController implements Initializable, SearchResultCallback {
+public class MainController implements Initializable, SearchResultCallback {
 	
-	private static final String ERROR_OPEN_SEARCH = "Error! Unable to open Advanced Search window";
 	@FXML
 	private TextField commandTextField;
-	
 	@FXML
 	private TextArea consoleTextArea;
-	
 	@FXML
 	private ListView<TaskHBox> listView;
-	
 	@FXML
 	private Hyperlink advSearch;
-	
 	@FXML
 	private Hyperlink config;
-	
 	@FXML
 	private TextField basicSearchTextField;
+	
+	private Stage mainStage;
 	private SuggestionBox suggestionBox;
 	
 	private Logic logic = new Logic();	
@@ -89,6 +85,7 @@ public class UiController implements Initializable, SearchResultCallback {
 	public void setUpController (Logic logic, Stage stage) {
 		this.logic = logic;
 		setupStageAndListeners(stage);
+		this.mainStage = stage;
 		setLaunchContent();
 	}
 
@@ -170,6 +167,18 @@ public class UiController implements Initializable, SearchResultCallback {
 	}
 	
 	public void onConfigSource () {
-		// Open FileNameRequestDialog
+		String current = logic.getCurrentFileName();
+		logic.exitOperation();
+		new FileNameRequestDialog(nameRequestListener, current).show();
 	}
+	
+	NameRequestListener nameRequestListener = new NameRequestListener() {
+		@Override
+		public void onFileNameEntered(String name) {
+			logic.saveStorageFileName(name);
+			logic.setUpLogicVariables(name);
+			mainStage.setTitle(MainApplication.formatTitle(name));
+			setLaunchContent();
+		}
+	};
 }
