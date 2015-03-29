@@ -1,5 +1,8 @@
 package itinerary.parser;
 
+import java.util.ArrayList;
+import java.util.TreeMap;
+
 import itinerary.main.CommandType;
 
 //@author A0114823M
@@ -28,77 +31,137 @@ public class ParserAlias {
 	private static final String COMMAND_REDO = "redo";
 	private static final String COMMAND_UNDO = "undo";
 
-	public CommandType getType(String command){
+	private TreeMap<CommandType, Integer> commandTree = new TreeMap<CommandType, Integer>();
+	private ArrayList<ArrayList<String>> commandList = new  ArrayList<ArrayList<String>>();
+
+	private int addIndex, deleteIndex, editIndex, displayIndex, clearIndex, searchIndex, markIndex, redoIndex, undoIndex;
+
+	public void createCommandTree(){
+		int i = 0;
+		commandTree.put(CommandType.ADD, i++);
+		commandTree.put(CommandType.CLEAR, i++);
+		commandTree.put(CommandType.DELETE, i++);
+		commandTree.put(CommandType.DISPLAY, i++);
+		commandTree.put(CommandType.EDIT, i++);
+		commandTree.put(CommandType.MARK, i++);
+		commandTree.put(CommandType.REDO, i++);
+		commandTree.put(CommandType.SEARCH, i++);
+		commandTree.put(CommandType.UNDO, i);			
+	}	
+
+	public void createIndex(){
+		addIndex = commandTree.get(CommandType.ADD);
+		deleteIndex = commandTree.get(CommandType.DELETE);
+		displayIndex = commandTree.get(CommandType.DISPLAY);
+		editIndex = commandTree.get(CommandType.EDIT);
+		clearIndex = commandTree.get(CommandType.CLEAR);
+		searchIndex = commandTree.get(CommandType.SEARCH);
+		markIndex = commandTree.get(CommandType.MARK);
+		redoIndex = commandTree.get(CommandType.REDO);
+		undoIndex = commandTree.get(CommandType.UNDO);
+	}
+
+	public void initializeCommandList(){
+		for(int i=0; i < 9; i++){
+			commandList.add(new ArrayList<String>());
+		}
+	}
+
+	public void createCommandList (){
+		createCommandTree();
+		createIndex();
+		initializeCommandList();
+
+		commandList.get(addIndex).add(COMMAND_ADD);
+		commandList.get(addIndex).add(COMMAND_ADD_PLUS);
+		commandList.get(deleteIndex).add(COMMAND_DELETE );
+		commandList.get(deleteIndex).add(COMMAND_DELETE_MINUS);
+		commandList.get(deleteIndex).add(COMMAND_DELETE_REMOVE);
+		commandList.get(deleteIndex).add(COMMAND_DELETE_CANCEL);
+		commandList.get(displayIndex).add(COMMAND_DISPLAY);
+		commandList.get(displayIndex).add(COMMAND_DISPLAY_SHOW);
+		commandList.get(displayIndex).add(COMMAND_DISPLAY_LIST);
+		commandList.get(clearIndex).add(COMMAND_CLEAR);
+		commandList.get(searchIndex).add(COMMAND_SEARCH);
+		commandList.get(searchIndex).add(COMMAND_SEARCH_FIND);
+		commandList.get(editIndex).add(COMMAND_EDIT);
+		commandList.get(editIndex).add(COMMAND_EDIT_CHANGE);
+		commandList.get(editIndex).add(COMMAND_EDIT_UPDATE);
+		commandList.get(markIndex).add(COMMAND_MARK);
+		commandList.get(markIndex).add(COMMAND_MARK_COMPLETE);
+		commandList.get(markIndex).add(COMMAND_MARK_FINISH);
+		commandList.get(markIndex).add(COMMAND_MARK_DONE);
+		commandList.get(markIndex).add(COMMAND_MARK_TICK);
+		commandList.get(redoIndex).add(COMMAND_REDO);
+		commandList.get(undoIndex).add(COMMAND_UNDO);		
+	}
+
+	public boolean isThisType(String command, CommandType type, int index){
+		for(String alias: commandList.get(index)){
+			if(command.equalsIgnoreCase(alias)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public CommandType determineType(String command){
 		
-		if(command.equalsIgnoreCase(COMMAND_ADD)){
+		if( isThisType(command, CommandType.ADD, addIndex) ){
 			return CommandType.ADD;
 		}
-		else if(command.equalsIgnoreCase(COMMAND_ADD_PLUS)){
-			return CommandType.ADD;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_DELETE)){
+		
+		if( isThisType(command, CommandType.DELETE, deleteIndex) ){
 			return CommandType.DELETE;
 		}
-		else if(command.equalsIgnoreCase(COMMAND_DELETE_REMOVE)){
-			return CommandType.DELETE;
+		
+		if( isThisType(command, CommandType.EDIT, editIndex) ){
+			return CommandType.EDIT;
 		}
-		else if(command.equalsIgnoreCase(COMMAND_DELETE_MINUS)){
-			return CommandType.DELETE;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_DELETE_CANCEL)){
-			return CommandType.DELETE;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_DISPLAY)){
+		
+		if( isThisType(command, CommandType.DISPLAY, displayIndex) ){
 			return CommandType.DISPLAY;
 		}
-		else if(command.equalsIgnoreCase(COMMAND_DISPLAY_LIST)){
-			return CommandType.DISPLAY;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_DISPLAY_SHOW)){
-			return CommandType.DISPLAY;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_SEARCH)){
-			return CommandType.SEARCH;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_SEARCH_FIND)){
-			return CommandType.SEARCH;
-		}
-		else if(command.equalsIgnoreCase(COMMAND_CLEAR)){
+		
+		if( isThisType(command, CommandType.CLEAR, clearIndex) ){
 			return CommandType.CLEAR;
 		}
-		else if(command.equalsIgnoreCase(COMMAND_EDIT)){
-			return CommandType.EDIT;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_EDIT_CHANGE)){
-			return CommandType.EDIT;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_EDIT_UPDATE)){
-			return CommandType.EDIT;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_MARK)){
-			return CommandType.MARK;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_MARK_COMPLETE)){
-			return CommandType.MARK;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_MARK_FINISH)){
-			return CommandType.MARK;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_MARK_DONE)){
-			return CommandType.MARK;
-		}	
-		else if(command.equalsIgnoreCase(COMMAND_MARK_TICK)){
-			return CommandType.MARK;
-		}	
-		else if(command.equalsIgnoreCase(COMMAND_UNDO)){
-			return CommandType.UNDO;
-		}		
-		else if(command.equalsIgnoreCase(COMMAND_REDO)){
-			return CommandType.REDO;
-		}		
-		else{
-			return CommandType.UNABLE_TO_DETERMINE;
+		
+		if( isThisType(command, CommandType.SEARCH, searchIndex) ){
+			return CommandType.SEARCH;
 		}
+		
+		if( isThisType(command, CommandType.MARK, markIndex) ){
+			return CommandType.MARK;
+		}
+		
+		if( isThisType(command, CommandType.REDO, redoIndex) ){
+			return CommandType.REDO;
+		}
+		
+		if( isThisType(command, CommandType.UNDO, undoIndex) ){
+			return CommandType.UNDO;
+		}
+		
+		if( isThisType(command, CommandType.ADD, addIndex) ){
+			return CommandType.ADD;
+		}
+		
+		if( isThisType(command, CommandType.ADD, addIndex) ){
+			return CommandType.ADD;
+		}
+		
+		return CommandType.UNABLE_TO_DETERMINE;
+	}
+	
+	public ArrayList<ArrayList<String>> getCommandList(){
+		createCommandList();
+		return commandList;
+	}
+	
+	public CommandType getType(String command){
+		createCommandList();
+		return determineType(command);
 	}
 }
 
