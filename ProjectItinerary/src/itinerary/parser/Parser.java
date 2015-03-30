@@ -9,18 +9,13 @@ import itinerary.main.Task;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.joestelmach.natty.DateGroup;
-
 //@author A0114823M
 public class Parser {
 
-	private static final String ERROR_DATE_FORMAT = "Error! Date format error";
 	private static final String ERROR_SCHEDULE_MISSING_DATE = "Error! Schedule task must have both from and to";
 	private static final String ERROR_BOTH_DEADLINE_SCHEDULE = "Error! Invalid input format, cannot be both deadline and schedule";
 	private static final String ERROR_DUPLICATE_KEYWORDS = "Error! Duplicate keywords detected";
@@ -36,8 +31,9 @@ public class Parser {
 	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
 	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
 	private static final String DELETE_CATEGORY = "del";
-	private static final String ESCAPE_CHARACTER = "+";
+	private static final String ESCAPE_STRING = "+";
 	private static final String COMMAND_ADD_PLUS = "+";
+	private static final Character ESCAPE_CHARACTER = '+';
 
 	private static final String KEYWORD_SCHEDULE_TO = "to";
 	private static final String KEYWORD_SCHEDULE_FROM = "from";
@@ -62,7 +58,7 @@ public class Parser {
 		Command command = new Command(task, commandType);
 		return command;
 	}
-	
+
 	public static String getErrorMessage (){
 		return errorMessage;
 	}
@@ -100,18 +96,18 @@ public class Parser {
 		if (argument.length() == 0){
 			return argument;
 		}
-		
+
 		String resultString = "";
 		String[] words = stringToArray(argument);
 		for(int i=0; i < words.length; i++){
 			String stringAfterFirstChar = words[i].substring(1);
 			String letterString = removeNonLetterChar(stringAfterFirstChar);
-			if(words[i].charAt(0) == '+' && identifyKeyword(letterString) > -1){
+			if(words[i].charAt(0) == ESCAPE_CHARACTER && identifyKeyword(letterString) > -1){
 				words[i] = stringAfterFirstChar;
 			}
 			resultString = resultString + words[i] + " ";
 		}
-		
+
 		resultString = resultString.substring(0, resultString.length()-1);
 		return resultString;
 	}
@@ -134,10 +130,13 @@ public class Parser {
 		String category = extractCategory(argument);
 		boolean priority = extractPriority(argument);
 
-		if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
-			category = category.substring(1, category.length());
+		if(category != null){
+			if(category.equals(ESCAPE_STRING + DELETE_CATEGORY)){
+				category = category.substring(1, category.length());
+			}
 		}
-		
+
+
 		if (isDeadline(argumentWords)) {
 			Calendar deadline = extractDeadline(argument);
 			return new DeadlineTask(-1, description, category, priority, false, deadline);
@@ -159,7 +158,7 @@ public class Parser {
 	private static void checkArgumentValidity(String argument) throws ParserException {
 		String[] words = stringToArray(argument);
 		logger.log(Level.INFO, LOGGER_CHECK_ARGUMENT_VALIDITY);
-		
+
 		if (hasDuplicateKeywords(words)) {
 			logger.log(Level.WARNING, ERROR_DUPLICATE_KEYWORDS);
 			throw new ParserException(ERROR_DUPLICATE_KEYWORDS);
@@ -176,7 +175,7 @@ public class Parser {
 			logger.log(Level.WARNING, ERROR_SCHEDULE_MISSING_DATE);
 			throw new ParserException(ERROR_SCHEDULE_MISSING_DATE);
 		}
-		
+
 		logger.log(Level.INFO, LOGGER_CHECKED_ARGUMENT_VALIDITY);
 	}
 
@@ -198,22 +197,15 @@ public class Parser {
 		String fromDateString =  extractAfterKeyword(arg, KEYWORDS[3], ERROR_NO_DESCRIPTION_FROM);
 		return parseDateFromText(fromDateString);
 	}
-	
+
 	private static Calendar extractDeadline(String arg) throws ParserException{
 		String deadlineString =  extractAfterKeyword(arg, KEYWORDS[2], ERROR_NO_DESCRIPTION_BY);
 		return parseDateFromText(deadlineString);
 	}
 
 	private static Calendar parseDateFromText(String dateString) throws ParserException {
-		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
-		List<DateGroup> dateGroups = dateParser.parse(dateString);
-		if (dateGroups.isEmpty()) {
-			throw new ParserException(ERROR_DATE_FORMAT);
-		}
-		List<Date> dates = dateGroups.get(0).getDates();
-		Date date = dates.get(0);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
+	    ParserDate parserDate = new ParserDate();
+		Calendar calendar = parserDate.getDate(dateString);
 		return calendar;
 	}
 
@@ -221,13 +213,13 @@ public class Parser {
 		String[] words = stringToArray(arg);
 		return containsKeyword(words, KEYWORDS[0]);
 	}
-	
+
 	private static String extractAfterKeyword(String arg, String keyword, String error) throws ParserException{
 		String[] words = stringToArray(arg);
 		String[] textsAroundKeyword = {};
 		String textAfterKeyword = "";
 		int keywordIndex = 0;
-		
+
 		if (!containsKeyword(words, keyword)) {
 			return null;
 		}
@@ -257,23 +249,23 @@ public class Parser {
 		}
 		words = stringToArray(textAfterKeyword);
 		String textNeeded = removeExtraWords(words, textAfterKeyword);
-		
+
 		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(DELETE_CATEGORY)){
 			return textNeeded;
 		}
-		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
+		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(ESCAPE_STRING + DELETE_CATEGORY)){
 			return textNeeded;
 		}
 		return replaceKeywordInContent(textNeeded).trim();
 	}
-	
+
 	private static String extractCategory(String arg) throws ParserException {		
 		return extractAfterKeyword(arg, KEYWORDS[1], ERROR_NO_DESCRIPTION_CATEGORY);
 	}
-	
+
 	private static String removeExtraWords(String[] words, String text) {
 		int nextType = findNextKeywordType(words);
-		
+
 		if (nextType != -1) {
 			int index = text.indexOf(" " + KEYWORDS[nextType] + " ");
 			if (index < 0) {
@@ -287,7 +279,7 @@ public class Parser {
 			}
 			text = text.substring(0, index);
 		}
-		
+
 		return text.trim();
 	}
 
@@ -372,13 +364,15 @@ public class Parser {
 		if (task.getText().equals("")) {
 			task.setText(null);
 		}
-		
+
 		String category = extractCategory(textAfterIndex);
-		if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
-			category = category.substring(1, category.length());
-		}
-		else if(category.equals(DELETE_CATEGORY)){
-			category = "";
+		if(category!=null){
+			if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
+				category = category.substring(1, category.length());
+			}
+			else if(category.equals(DELETE_CATEGORY)){
+				category = "";
+			}
 		}
 		task.setCategory(category);
 		return task;
@@ -390,7 +384,7 @@ public class Parser {
 		int id = identifyTargetId(arguments);
 		return new Task (id, null, null, null, true);
 	}
-	
+
 	private static int identifyTargetId(String[] arguments) throws ParserException {
 		logger.log(Level.INFO, LOGGER_CHECK_TASK_ID);
 		if (arguments.length == 0) {
@@ -428,7 +422,7 @@ public class Parser {
 	}
 
 	private static CommandType determineCommandType(String command){
-	   ParserAlias parserAlias =  new ParserAlias();
-	   return parserAlias.getType(command);
+		ParserAlias parserAlias =  new ParserAlias();
+		return parserAlias.getType(command);
 	}
 }

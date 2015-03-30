@@ -24,5 +24,12 @@ public class ParserDateTest {
 		String resultDate = parserDate.switchDateMonth("1/28/2015");
 		assertEquals(expectedDate, resultDate);
 	}
+	
+	@Test
+	public void testSwitchDateMonthFail(){
+		String expectedDate = "2018/12/5";
+		String resultDate = parserDate.switchDateMonth("2018/12/5");
+		assertEquals(expectedDate, resultDate);
+	}
 }
 

@@ -46,7 +46,7 @@ public class ParserTest {
 	}
 	
 	@Test (expected = ParserException.class)
-	public void testEditFromMissing () throws ParserException {
+	public void testEditByMissing () throws ParserException {
 		Parser.parseCommand("edit 1 by");
 	}
 	
@@ -119,7 +119,7 @@ public class ParserTest {
 	
 	@Test
 	public void testAddSchedule () throws ParserException {
-		Command command = Parser.parseCommand("add do homework pri cat study from 2015/3/4 8pm to 2015/5/6 9pm");
+		Command command = Parser.parseCommand("add do homework pri cat study from 2017/3/4 8pm to 2017/5/6 9pm");
 		assertEquals(command.getType(), CommandType.ADD);
 		Task task = command.getTask();
 		assertTrue(task instanceof ScheduleTask);
