@@ -137,7 +137,8 @@ public class MainController implements Initializable, SearchResultCallback {
 	@Override
 	public void executeAdvancedSearch(SearchTask searchTask) {
 		// TODO Update Search Results
-		appendConsoleMessage("Update search results" + searchTask.toString());
+		UserInterfaceContent result = logic.executeAdvancedSearch(searchTask);
+		updateContent(result);
 	}
 	
 	public void executeBasicSearch () {

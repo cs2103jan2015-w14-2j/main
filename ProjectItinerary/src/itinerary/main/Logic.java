@@ -6,6 +6,7 @@ import itinerary.parser.Parser;
 import itinerary.parser.ParserException;
 import itinerary.search.Search;
 import itinerary.search.SearchException;
+import itinerary.search.SearchTask;
 import itinerary.storage.ConfigStorage;
 import itinerary.storage.FileStorage;
 import itinerary.storage.Storage;
@@ -247,6 +248,19 @@ public class Logic {
 		try {
         	Search search = new Search(allTasks);
             searchList = search.query(query ,"text");
+        } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
+        }
+		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
+	}
+	
+	public UserInterfaceContent executeAdvancedSearch (SearchTask task) {
+		List<Task> searchList= new ArrayList<Task>();
+		List<Task> allTasks = storage.getAllTasks();
+		try {
+        	Search search = new Search(allTasks);
+            searchList = search.query(task);
         } catch (SearchException e) {
 			logger.log(Level.WARNING, "Unsuccessful search", e);
 			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);

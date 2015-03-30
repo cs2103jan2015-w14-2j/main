@@ -86,7 +86,7 @@ public class SearchController implements Initializable {
 		String description = descText.getText();
 		String category = catText.getText();
 		
-		boolean searchPriority = priorityCheckBox.isSelected();
+		Boolean searchPriority = priorityCheckBox.isSelected() ? true : null;
 		
 		LocalDate fromLd = fromDatePicker.getValue();
 		LocalDate toLd = toDatePicker.getValue();
