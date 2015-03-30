@@ -131,7 +131,7 @@ public class Search {
 
 		}
 		if (task.getCategory() != null) {
-			BooleanQuery bQuery = createQuery(FIELD_CATEGORY, task.getCategory());
+			BooleanQuery bQuery = createCategoryQuery(task);
 			addMustOccur(q, bQuery);
 
 		}
@@ -154,6 +154,11 @@ public class Search {
 		}
 		return JsonConverter.convertJsonList(hitList, hitTypeList);
 	}
+
+	private BooleanQuery createCategoryQuery(SearchTask task) {
+	    BooleanQuery bQuery = createQuery(FIELD_CATEGORY, task.getCategory());
+	    return bQuery;
+    }
 
 	private void search(BooleanQuery q) throws SearchException, IOException {
 		ScoreDoc[] hits = searchQuery(q, searcher);
