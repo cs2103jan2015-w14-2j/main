@@ -124,9 +124,14 @@ public class Search {
 			List<String> categoryList = task.getCategoryList();
 			BooleanQuery bQuery = new BooleanQuery();
 			for (int i = 0; i < categoryList.size(); i++) {
-				BooleanQuery cQuery = createCategoryQuery(categoryList, i);
+				BooleanQuery cQuery = createCategoryListQuery(categoryList, i);
 				addShouldOccur(bQuery, cQuery);
 			}
+			addMustOccur(q, bQuery);
+
+		}
+		if (task.getCategory() != null) {
+			BooleanQuery bQuery = createQuery(FIELD_CATEGORY, task.getCategory());
 			addMustOccur(q, bQuery);
 
 		}
@@ -167,7 +172,7 @@ public class Search {
 		return bQuery;
 	}
 
-	private BooleanQuery createCategoryQuery(List<String> categoryList, int j) {
+	private BooleanQuery createCategoryListQuery(List<String> categoryList, int j) {
 		BooleanQuery cQuery = createQuery(FIELD_CATEGORY, categoryList.get(j));
 		return cQuery;
 	}
