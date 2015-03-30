@@ -52,10 +52,22 @@ public class Logic {
 	private ConfigStorage config;
 	
 	/**
-	 * Must call setUpLogicVariables to initialize variables in logic if empty constructor is called
+	 * Must call setUpLogicVariables to initialize variables
+	 * in logic if this constructor is called
 	 */
 	public Logic () {
 		config = new ConfigStorage();
+	}
+	
+	/**
+	 * Constructor that can be used in instances where a user 
+	 * always has to specify their preferred filename
+	 * 
+	 * @param filename
+	 */
+	public Logic (String filename) {
+		this();
+		setupLogicVariables(filename);
 	}
 	
 	/**
@@ -95,7 +107,7 @@ public class Logic {
 		if (fileName == null) {
 			return false;
 		} else {
-			setUpLogicVariables(fileName);
+			setupLogicVariables(fileName);
 			return true;
 		}
 	}
@@ -117,7 +129,7 @@ public class Logic {
 		}
 	}
 	
-	public void setUpLogicVariables (String fileName) {
+	public void setupLogicVariables (String fileName) {
 		this.fileName = fileName;
 		storage = new FileStorage(this.fileName);
 		history = new History(storage.getAllTasks());
