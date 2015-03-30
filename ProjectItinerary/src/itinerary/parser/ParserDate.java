@@ -29,16 +29,16 @@ public class ParserDate {
 
 	public String changeDateFormat(String dateString){ 
 		String changedFormat = dateString;
-		if(dateString.indexOf(CHARACTER_DOT) != -1){
-			changedFormat = dateString.replaceAll("\\" + CHARACTER_DOT, CHARACTER_SLASH);
-		}
+
 		if(dateString.indexOf(CHARACTER_DASH) != -1){
 			changedFormat = dateString.replaceAll( CHARACTER_DASH, CHARACTER_SLASH);
+			return changedFormat;
 		}
 		if(dateString.indexOf(CHARACTER_UNDERSCORE) != -1){
-			changedFormat = dateString.replaceAll( CHARACTER_DASH, CHARACTER_SLASH);
+			changedFormat = dateString.replaceAll( CHARACTER_UNDERSCORE, CHARACTER_SLASH);
+			return changedFormat;
 		}
-		return changedFormat;
+		return dateString;
 	}
 
 	public String switchDateMonth(String dateString){
