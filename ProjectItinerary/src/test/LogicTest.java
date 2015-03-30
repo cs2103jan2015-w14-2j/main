@@ -1,11 +1,14 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import itinerary.history.History;
 import itinerary.main.Command;
 import itinerary.main.CommandType;
 import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
+import itinerary.storage.Storage;
+import itinerary.storage.StorageStub;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,7 +34,9 @@ public class LogicTest {
 	
 	@BeforeClass
 	public static void setUpTest() {
-		logic = new Logic("logictest.txt");
+		Storage storage = new StorageStub();
+		History history = new History(storage.getAllTasks());
+		logic = new Logic("", storage, history);
 	}
 	
 	@Before
@@ -78,15 +83,6 @@ public class LogicTest {
 	public void testAddEmpty() {
 		UserInterfaceContent result = logic.executeUserInput("add");
 		assertEquals(3, result.getAllTasks().size());
-	}
-
-	/* This is a boundary case for when task description is null */
-	@Test
-	public void testAddNullDesc() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Command addNull = new Command(TASK_NULL, CommandType.ADD);
-		Method executeAdd = getPrivateMethod(Logic.class, "executeAdd", new Class[]{Command.class});
-		UserInterfaceContent content = (UserInterfaceContent) executeAdd.invoke(logic, new Object[]{addNull});
-		assertEquals(3, content.getAllTasks().size());
 	}
 	
 	@Test
@@ -211,7 +207,9 @@ public class LogicTest {
 	/* This is a boundary case for when there is nothing to undo */
 	@Test
 	public void testUndoNothing () {
-		Logic logic = new Logic("logictest.txt");
+		Storage storage = new StorageStub();
+		History history = new History(storage.getAllTasks());
+		Logic logic = new Logic("", storage, history);
 		UserInterfaceContent content = logic.executeUserInput("undo");
 		assertEquals("nothing to undo", content.getConsoleMessage());
 	}

@@ -1,32 +1,45 @@
 package itinerary.userinterface;
 
+import itinerary.main.Logic;
+import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 //@author A0121437N
 public class UserInterface extends Application {
-
-	private static final String WINDOW_TITLE = "ITnerary";
-	private static final String WINDOW_FILE_NAME = "ApplicationWindow.fxml";
+	Logic logic = new Logic();
+	Stage stage;
+	String fileName;
 
 	public static void main (String[] args) {
-		launch(args);
+		launch();
 	}
+	
+	NameRequestListener listener = new NameRequestListener() {
+		@Override
+		public void onFileNameEntered(String name) {
+			logic.saveStorageFileName(name);
+			logic.setUpLogicVariables(name);
+			fileName = name;
+			try {
+				openMainApplication(stage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	};
 	
 	@Override
 	public void start(Stage stage) throws Exception {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(WINDOW_FILE_NAME));
-		Parent root = (Parent)loader.load();
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
-		stage.setTitle(WINDOW_TITLE);
-		stage.show();
-		
-		UiController controller = (UiController)loader.getController();
-		controller.setupStageAndListeners(stage);
+		this.stage = stage;
+		if (!logic.isConfigured()) {
+			new FileNameRequestDialog(listener, null).show();
+		} else {
+			openMainApplication(this.stage);
+		}
 	}
 	
+	private void openMainApplication (Stage stage) throws Exception {
+		new MainApplication(logic, fileName).start(stage);		
+	}
 }

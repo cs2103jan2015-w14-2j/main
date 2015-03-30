@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="itinerary.userinterface.UiController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="itinerary.userinterface.MainController">
    <bottom>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -25,6 +25,7 @@
    <top>
       <HBox BorderPane.alignment="CENTER">
          <children>
+            <Hyperlink fx:id="config" onAction="#onConfigSource" text="Configure Source" />
             <Pane HBox.hgrow="ALWAYS" />
             <Hyperlink fx:id="advSearch" onAction="#openAdvancedSearch" text="Advanced Search">
                <HBox.margin>

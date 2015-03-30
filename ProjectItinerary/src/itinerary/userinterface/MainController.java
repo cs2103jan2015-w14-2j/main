@@ -4,6 +4,7 @@ import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
 import itinerary.search.SearchTask;
+import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;
 import itinerary.userinterface.SearchStage.SearchResultCallback;
 
 import java.io.IOException;
@@ -14,7 +15,6 @@ import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,26 +29,25 @@ import javafx.stage.WindowEvent;
 // TODO New advanced search window when clicked advanced search
 
 //@author A0121437N
-public class UiController implements Initializable, SearchResultCallback {
+public class MainController implements Initializable, SearchResultCallback {
 	
-	private static final String ERROR_OPEN_SEARCH = "Error! Unable to open Advanced Search window";
 	@FXML
 	private TextField commandTextField;
-	
 	@FXML
 	private TextArea consoleTextArea;
-	
 	@FXML
 	private ListView<TaskHBox> listView;
-	
 	@FXML
 	private Hyperlink advSearch;
-	
+	@FXML
+	private Hyperlink config;
 	@FXML
 	private TextField basicSearchTextField;
+	
+	private Stage mainStage;
 	private SuggestionBox suggestionBox;
 	
-	private Logic logic = new Logic("test");	
+	private Logic logic = new Logic();	
 	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
 	private List<Task> allTasks = new ArrayList<Task>();
 	
@@ -62,7 +61,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		
 		@Override
 		public void onEnterAction() {
-			executeBasicSearch(null);
+			executeBasicSearch();
 		}
 		
 		@Override
@@ -80,6 +79,17 @@ public class UiController implements Initializable, SearchResultCallback {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		
+	}
+	
+	public void setUpController (Logic logic, Stage stage) {
+		this.logic = logic;
+		setupStageAndListeners(stage);
+		this.mainStage = stage;
+		setLaunchContent();
+	}
+
+	private void setLaunchContent() {
 		consoleTextArea.setFocusTraversable(false);
 		UserInterfaceContent launch = logic.initialLaunch();
 		
@@ -87,11 +97,11 @@ public class UiController implements Initializable, SearchResultCallback {
 		updateContent(launch);
 	}
 
-	public void setupStageAndListeners(Stage stage) {
+	private void setupStageAndListeners(Stage stage) {
 		stage.setOnCloseRequest(closeHandler);
 	}
 	
-	public void commandEntered (ActionEvent event) {
+	public void commandEntered () {
 		// adding things to the console
 		String command = commandTextField.getText();
 		UserInterfaceContent result = logic.executeUserInput(command);
@@ -117,7 +127,7 @@ public class UiController implements Initializable, SearchResultCallback {
 		suggestionBox.updateSource(suggestions);
 	}
 
-	public void openAdvancedSearch (ActionEvent event) throws IOException {
+	public void openAdvancedSearch () throws IOException {
 		if (searchStage == null) {
 			searchStage = SearchStage.getInstance(this, allTasks);
 		}
@@ -127,10 +137,11 @@ public class UiController implements Initializable, SearchResultCallback {
 	@Override
 	public void executeAdvancedSearch(SearchTask searchTask) {
 		// TODO Update Search Results
-		appendConsoleMessage("Update search results" + searchTask.toString());
+		UserInterfaceContent result = logic.executeAdvancedSearch(searchTask);
+		updateContent(result);
 	}
 	
-	public void executeBasicSearch (ActionEvent event) {
+	public void executeBasicSearch () {
 		UserInterfaceContent result = logic.executeBasicSearch(basicSearchTextField.getText());
 		updateContent(result);
 	}
@@ -155,4 +166,20 @@ public class UiController implements Initializable, SearchResultCallback {
 		}
 		return list;
 	}
+	
+	public void onConfigSource () {
+		String current = logic.getCurrentFileName();
+		logic.exitOperation();
+		new FileNameRequestDialog(nameRequestListener, current).show();
+	}
+	
+	NameRequestListener nameRequestListener = new NameRequestListener() {
+		@Override
+		public void onFileNameEntered(String name) {
+			logic.saveStorageFileName(name);
+			logic.setUpLogicVariables(name);
+			mainStage.setTitle(MainApplication.formatTitle(name));
+			setLaunchContent();
+		}
+	};
 }

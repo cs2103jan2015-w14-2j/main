@@ -6,6 +6,8 @@ import itinerary.parser.Parser;
 import itinerary.parser.ParserException;
 import itinerary.search.Search;
 import itinerary.search.SearchException;
+import itinerary.search.SearchTask;
+import itinerary.storage.ConfigStorage;
 import itinerary.storage.FileStorage;
 import itinerary.storage.Storage;
 import itinerary.storage.StorageException;
@@ -47,11 +49,38 @@ public class Logic {
 	private String fileName;
 	private Storage storage;
 	private History history;
+	private ConfigStorage config;
 	
-	public Logic (String fileName) {
-		this.fileName = fileName;
-		this.storage = new FileStorage(fileName);
-		this.history = new History(storage.getAllTasks());
+	/**
+	 * Must call setUpLogicVariables to initialize variables
+	 * in logic if this constructor is called
+	 */
+	public Logic () {
+		config = new ConfigStorage();
+	}
+	
+	/**
+	 * Constructor that can be used in instances where a user 
+	 * always has to specify their preferred filename
+	 * 
+	 * @param filename
+	 */
+	public Logic (String filename) {
+		this();
+		setupLogicVariables(filename);
+	}
+	
+	/**
+	 * Constructor used for testing, setUpLogicVariables not required
+	 * 
+	 * @param filename the filename that will be printed after initial launch
+	 * @param storage the storage object which will be referenced
+	 * @param history the history object which will be referenced
+	 */
+	public Logic (String filename, Storage storage, History history) {
+		this.fileName = filename;
+		this.storage = storage;
+		this.history = history;
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
@@ -63,6 +92,47 @@ public class Logic {
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
 		return determineActions(userCommand, userInput);
+	}
+	
+	// returns true if config file with storage file name is found, false otherwise
+	// if true, isConfigured will initialize all required objects
+	public boolean isConfigured () {
+		String fileName = null;
+		try {
+			fileName = config.getStorageFileName();
+		} catch (IOException e) {
+			// should not result in errors, for safety
+			e.printStackTrace();
+		}
+		if (fileName == null) {
+			return false;
+		} else {
+			setupLogicVariables(fileName);
+			return true;
+		}
+	}
+	
+	public void saveStorageFileName (String fileName) {
+		try {
+			config.setStorageFileName(fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// returns null if the current filename is null
+	public String getCurrentFileName () {
+		try {
+			return config.getStorageFileName();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	public void setupLogicVariables (String fileName) {
+		this.fileName = fileName;
+		storage = new FileStorage(this.fileName);
+		history = new History(storage.getAllTasks());
 	}
 	
 	public UserInterfaceContent initialLaunch () {
@@ -190,6 +260,19 @@ public class Logic {
 		try {
         	Search search = new Search(allTasks);
             searchList = search.query(query ,"text");
+        } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
+        }
+		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
+	}
+	
+	public UserInterfaceContent executeAdvancedSearch (SearchTask task) {
+		List<Task> searchList= new ArrayList<Task>();
+		List<Task> allTasks = storage.getAllTasks();
+		try {
+        	Search search = new Search(allTasks);
+            searchList = search.query(task);
         } catch (SearchException e) {
 			logger.log(Level.WARNING, "Unsuccessful search", e);
 			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
