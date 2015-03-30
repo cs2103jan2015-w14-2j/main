@@ -1,6 +1,7 @@
 package itinerary.parser;
 
 import com.joestelmach.natty.*;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,9 @@ public class ParserDate {
 
 	public Calendar getDate(String dateString) throws ParserException {
 		dateString = changeDateFormat(dateString);
+		if(!isValidDate(dateString)){
+			throw new ParserException(ERROR_DATE_FORMAT);
+		}
 		dateString = switchDateMonth(dateString);
 		return parseDateByNatty(dateString);
 	}
@@ -68,11 +72,11 @@ public class ParserDate {
 	public Calendar parseDateByNatty(String dateString) throws ParserException{
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
 		List<DateGroup> dateGroups = dateParser.parse(dateString);
-		
+
 		if (dateGroups.isEmpty()) {
 			throw new ParserException(ERROR_DATE_FORMAT);
 		}
-		
+
 		List<Date> dates = dateGroups.get(0).getDates();
 		Date date = dates.get(0);
 		Calendar calendar = Calendar.getInstance();
@@ -80,10 +84,58 @@ public class ParserDate {
 		return calendar;
 	}
 
-	public Calendar convertToCalendar (Date date){
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
-		return calendar;
-	} 
+	public boolean isValidDate (String dateString) throws ParserException{				
+		if(dateString.indexOf(CHARACTER_SLASH) != -1){
+			return isValidArguments(dateString);
+		}
+		return true;
+	}
+
+	public boolean isValidArguments (String dateString) throws ParserException{
+		int valueExceedDay = 0;
+		int valueWithinMonth = 0;		
+		String[] dateWords = stringToArray(dateString);
+		
+		for(int i=0; i < dateWords.length; i++){
+			if(dateWords[i].indexOf(CHARACTER_SLASH) != -1){
+				dateString = dateWords[i];
+			}
+		}
+		String[] textAroundCharacter = dateString.split(CHARACTER_SLASH);
+		if(textAroundCharacter.length > 3){
+			return false;
+		}
+		
+		for(String text: textAroundCharacter){			
+			try{
+				Integer.parseInt(text);
+			}catch(NumberFormatException e){
+			}
+
+			if(Integer.parseInt(text) <= 0){
+				return false;
+			}
+			if(Integer.parseInt(text) > 31){
+				valueExceedDay++;
+			}
+			if(Integer.parseInt(text) <= 12){
+				valueWithinMonth++;
+			}			
+		}	
+		return isValidValues(valueExceedDay, valueWithinMonth);
+	}
+
+	public boolean isValidValues (int valueExceedDay, int valueWithinMonth){
+		if(valueExceedDay >= 2 || valueExceedDay == 0){
+			return false;
+		}
+		if( valueWithinMonth < 1){
+			return false;
+		}
+		return true;
+	}
+
+	private static String[] stringToArray(String input){
+		return input.trim().split("\\s+");
+	}
 }
