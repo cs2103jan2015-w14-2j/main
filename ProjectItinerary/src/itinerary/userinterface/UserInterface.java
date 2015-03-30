@@ -19,7 +19,7 @@ public class UserInterface extends Application {
 		@Override
 		public void onFileNameEntered(String name) {
 			logic.saveStorageFileName(name);
-			logic.setUpLogicVariables(name);
+			logic.setupLogicVariables(name);
 			fileName = name;
 			try {
 				openMainApplication(stage);

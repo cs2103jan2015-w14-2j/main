@@ -177,7 +177,7 @@ public class MainController implements Initializable, SearchResultCallback {
 		@Override
 		public void onFileNameEntered(String name) {
 			logic.saveStorageFileName(name);
-			logic.setUpLogicVariables(name);
+			logic.setupLogicVariables(name);
 			mainStage.setTitle(MainApplication.formatTitle(name));
 			setLaunchContent();
 		}
