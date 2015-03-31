@@ -290,15 +290,31 @@ public class Search {
 
 	private Query getFuzzyQuery(String field, String[] splitQuery) {
 		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
+		FuzzyQuery fuzzyQuery;
 		for (int i = 0; i < splitQuery.length; i++) {
-			FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field,
-			        splitQuery[i]));
+			if(notMinLength(splitQuery, i)){
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,2);
+			} else {
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,0);
+			}
+			
 			queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(
 			        fuzzyQuery);
 		}
 		SpanNearQuery q = new SpanNearQuery(queryParts, 5, true);
 		return q;
 	}
+
+	private boolean notMinLength(String[] splitQuery, int i) {
+	    return splitQuery[i].length() >3;
+    }
+
+	private FuzzyQuery createFuzzyQuery(String field, String[] splitQuery, int i,int lDistance) {
+	    FuzzyQuery fuzzyQuery;
+	    fuzzyQuery = new FuzzyQuery(new Term(field,
+	        splitQuery[i]),lDistance);
+	    return fuzzyQuery;
+    }
 
 	public TermQuery createCompleteOrPriorityQuery(boolean setTrue, String field)
 	        throws SearchException {
@@ -430,9 +446,6 @@ public class Search {
 		        .toInstant()));
 		dates.add(Date.from(sunday.atStartOfDay(ZoneId.systemDefault())
 		        .toInstant()));
-		System.out.println("Today: " + today);
-		System.out.println("Monday of the Week: " + monday);
-		System.out.println("Sunday of the Week: " + sunday);
 		return dates;
 
 	}
