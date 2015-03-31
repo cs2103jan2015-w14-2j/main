@@ -39,8 +39,8 @@ public class TaskSorter {
     public static List<Task> sort(List<Task> toSort) {
         
         Collections.sort(toSort, new SortTaskByDesc());
-        Collections.sort(toSort, new SortTaskByDates());
         Collections.sort(toSort, new SortTaskByTaskType());
+        Collections.sort(toSort, new SortTaskByDates());
         Collections.sort(toSort, new SortTaskByPriority());
         Collections.sort(toSort, new SortTaskByComplete());
         
