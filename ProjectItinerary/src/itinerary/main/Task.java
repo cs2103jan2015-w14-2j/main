@@ -109,33 +109,34 @@ public class Task implements Cloneable {
     
 
     @Override
-    public boolean equals(Object task) {
+    public boolean equals(Object object) {
         //Overrides default Object equals().
-        if (task == null) {
+        if (object == null) {
             return false;
         }
         
-        if (!(task instanceof Task)) {
+        if (!(object instanceof Task)) {
             return false;
         }
 
-        if (((Task) task).getTaskId() != this.taskId) {
+        Task task = (Task) object;
+		if (task.getTaskId() != this.taskId) {
             return false;
         }
 
-        if (!((Task) task).getText().equals(this.text)) {
+        if (!task.getText().equals(this.text)) {
             return false;
         }
 
-        if (!((Task) task).getCategory().equals(this.category)) {
+        if (task.getCategory() != null && !task.getCategory().equals(this.category)) {
             return false;
         }
 
-        if (((Task) task).isPriority() != this.isPriority) {
+        if (task.isPriority() != this.isPriority) {
             return false;
         }
 
-        if (((Task) task).isComplete() != this.isComplete) {
+        if (task.isComplete() != this.isComplete) {
             return false;
         }
 
