@@ -1,7 +1,6 @@
 package itinerary.userinterface;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javafx.beans.value.ChangeListener;
@@ -20,9 +19,10 @@ import javafx.stage.Window;
 
 //@author A0121437N
 public class SuggestionBox {
-	private static final int SUGGESTIONS_HEIGHT = 24;
+	private static final int MAX_VISIBLE_SUGGESTIONS = 6;
+	private static final double SCROLL_BAR_HEIGHT = 15.0;
+	private static final int SUGGESTION_HEIGHT = 24;
 	
-	private int maxSuggestionsShown = 6;
 	private double width = -1.0;
 	private double anchorX = -1.0;
 	private double anchorY = -1.0;
@@ -33,11 +33,11 @@ public class SuggestionBox {
 	private TextField textField;
 	private Popup suggestionPopup = new Popup();
 	private ListView<String> suggestionListView = new ListView<String>(suggestions);
-	private SuggestionImplementation implementation;
+	private OnEnterPressedListener listener;
 	
-	public SuggestionBox (TextField textField, SuggestionImplementation implementation) {
+	public SuggestionBox (TextField textField, OnEnterPressedListener implementation) {
 		this.textField = textField;
-		this.implementation = implementation;
+		this.listener = implementation;
 		this.textField.textProperty().addListener(textChangeListener);
 		this.textField.focusedProperty().addListener(focusChangeListener);
 		
@@ -66,7 +66,8 @@ public class SuggestionBox {
 		@Override
 		public void changed(ObservableValue<? extends Boolean> observable,
 				Boolean oldValue, Boolean newValue) {
-			if (newValue && implementation.focusShowCondition()) {
+			// Show the popup only if it is in focus and the length of text is greater than 0
+			if (newValue && textField.getText().length() > 0) {
 				filterSuggestions(textField.getText());
 				showPopup();
 			} else {
@@ -81,13 +82,15 @@ public class SuggestionBox {
 			boolean isFromListView = event.getSource() == suggestionListView;
 			boolean isEnterPressed = event.getCode() == KeyCode.ENTER;
 			boolean isEscapePressed = event.getCode() == KeyCode.ESCAPE;
+			
+			// The currently selected suggestion
 			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
 			if (isFromListView && isEnterPressed) {
 				if (suggestion != null) {
 					selectSuggestion(suggestion);
-				} else {
+				} else { // Nothing is selected
 					hidePopup();
-					implementation.onEnterAction();
+					listener.onEnterPressed();
 				}
 			} else if (isEscapePressed && suggestionPopup.isShowing()) {
 				suggestionPopup.hide();
@@ -100,7 +103,6 @@ public class SuggestionBox {
 		public void handle(MouseEvent event) {
 			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
 			selectSuggestion(suggestion);
-			hidePopup();
 		}
 	};
 	
@@ -167,15 +169,23 @@ public class SuggestionBox {
 				}
 			}
 		}
+		
 		int count = suggestions.size();
-		if (count > maxSuggestionsShown) {
-			suggestionListView.setPrefHeight(maxSuggestionsShown * SUGGESTIONS_HEIGHT);
+		double height;
+		if (count > MAX_VISIBLE_SUGGESTIONS) {
+			height = calculateSuggestionHeight(MAX_VISIBLE_SUGGESTIONS);
 		} else {
-			suggestionListView.setPrefHeight(count * SUGGESTIONS_HEIGHT);
+			height = calculateSuggestionHeight(count);
 		}
+		suggestionListView.setPrefHeight(height);
+		
 		if (count == 0 && suggestionPopup.isShowing()) {
 			hidePopup();
 		}
+	}
+
+	private double calculateSuggestionHeight(int count) {
+		return count * SUGGESTION_HEIGHT  + SCROLL_BAR_HEIGHT;
 	}
 	
 	private void showPopup () {
@@ -191,5 +201,9 @@ public class SuggestionBox {
 	
 	private void hidePopup () {
 		suggestionPopup.hide();
+	}
+	
+	public interface OnEnterPressedListener {
+		void onEnterPressed ();
 	}
 }

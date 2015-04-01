@@ -6,6 +6,7 @@ import itinerary.main.UserInterfaceContent;
 import itinerary.search.SearchTask;
 import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;
 import itinerary.userinterface.SearchStage.SearchResultCallback;
+import itinerary.userinterface.SuggestionBox.OnEnterPressedListener;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,9 +25,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-// Things To Do
-// TODO New advanced search window when clicked advanced search
 
 //@author A0121437N
 public class MainController implements Initializable, SearchResultCallback {
@@ -53,20 +51,10 @@ public class MainController implements Initializable, SearchResultCallback {
 	
 	private SearchStage searchStage = null;
 	
-	private SuggestionImplementation autoComplete = new SuggestionImplementation() {
+	private OnEnterPressedListener searchBoxEnter = new OnEnterPressedListener() {
 		@Override
-		public boolean textChangedHideCondition(String oldValue, String newValue) {
-			return newValue.length() == 0;
-		}
-		
-		@Override
-		public void onEnterAction() {
+		public void onEnterPressed() {
 			executeBasicSearch();
-		}
-		
-		@Override
-		public boolean focusShowCondition() {
-			return basicSearchTextField.getText().length() > 0;
 		}
 	};
 	
@@ -75,6 +63,9 @@ public class MainController implements Initializable, SearchResultCallback {
 		public void handle(WindowEvent event) {
 			if (searchStage != null && searchStage.isShowing()) {
 				searchStage.close();
+			}
+			if (FileNameRequestDialog.isDialogShowing()) {
+				FileNameRequestDialog.closeDialog();
 			}
 			logic.exitOperation();
 		}
@@ -96,7 +87,7 @@ public class MainController implements Initializable, SearchResultCallback {
 		consoleTextArea.setFocusTraversable(false);
 		UserInterfaceContent launch = logic.initialLaunch();
 		
-		suggestionBox = new SuggestionBox(basicSearchTextField, autoComplete);
+		suggestionBox = new SuggestionBox(basicSearchTextField, searchBoxEnter);
 		updateContent(launch);
 	}
 
@@ -139,7 +130,6 @@ public class MainController implements Initializable, SearchResultCallback {
 	
 	@Override
 	public void executeAdvancedSearch(SearchTask searchTask) {
-		// TODO Update Search Results
 		UserInterfaceContent result = logic.executeAdvancedSearch(searchTask);
 		updateContent(result);
 	}
@@ -170,10 +160,10 @@ public class MainController implements Initializable, SearchResultCallback {
 		return list;
 	}
 	
-	public void onConfigSource () {
+	public void onConfigSourceClicked () {
 		String current = logic.getCurrentFileName();
 		logic.exitOperation();
-		new FileNameRequestDialog(nameRequestListener, current).show();
+		FileNameRequestDialog.getInstance(nameRequestListener, current).show();
 	}
 	
 	NameRequestListener nameRequestListener = new NameRequestListener() {

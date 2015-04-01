@@ -10,39 +10,62 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class FileNameRequestDialog extends Stage {
 	
 	private static final String LABEL_TEXT = "Preferred file name or path below";
 	private static final String TITLE = "Enter file name";
+	private static FileNameRequestDialog onlyInstance = null;
+	
 	NameRequestListener listener;
-	Label label;
+	Label textLabel;
 	TextField fileNameTextField;
 	
-	public FileNameRequestDialog(NameRequestListener listener, String currFileName) {
-		this.listener = listener;
-		
+	public FileNameRequestDialog(String currFileName) {		
 		Insets insets = new Insets(5.0);
 		this.setTitle(TITLE);
 		
-		label = new Label(LABEL_TEXT);
-		label.setFont(new Font(label.getFont().getFamily(), 15));
+		textLabel = new Label(LABEL_TEXT);
+		String currentFontFamily = textLabel.getFont().getFamily();
+		textLabel.setFont(new Font(currentFontFamily, 15));
 		
 		fileNameTextField = new TextField();
 		fileNameTextField.setOnAction(enterPressed);
 		// Set the textfield to the current file name
-		if (currFileName != null) {
-			fileNameTextField.setText(currFileName);
-			fileNameTextField.selectAll();
-		}
 		
 		VBox vbox = new VBox();
 		vbox.setSpacing(5.0);
 		vbox.setPadding(insets);
-		vbox.getChildren().addAll(label, fileNameTextField);
+		vbox.getChildren().addAll(textLabel, fileNameTextField);
 		
 		Scene scene = new Scene(vbox);
 		this.setScene(scene);
+		this.setResizable(false);
+		this.initStyle(StageStyle.UTILITY);
+	}
+	
+	public static FileNameRequestDialog getInstance (NameRequestListener listener, String currFileName) {
+		if (onlyInstance == null) {
+			onlyInstance = new FileNameRequestDialog(currFileName);
+		}
+		onlyInstance.listener = listener;
+		if (currFileName != null) {
+			onlyInstance.fileNameTextField.setText(currFileName);
+			onlyInstance.fileNameTextField.selectAll();
+		}
+		return onlyInstance;
+	}
+	
+	public static boolean isDialogShowing () {
+		if (onlyInstance == null) {
+			return false;
+		}
+		return ((Stage)onlyInstance).isShowing();
+	}
+	
+	public static void closeDialog () {
+		onlyInstance.close();
 	}
 	
 	private EventHandler<ActionEvent> enterPressed = new EventHandler<ActionEvent>() {

@@ -36,8 +36,8 @@ public class UserInterface extends Application {
 		this.stage.setMinHeight(STAGE_MIN_HEIGHT);
 		double STAGE_MIN_WIDTH = 504.0;
 		this.stage.setMinWidth(STAGE_MIN_WIDTH);
-		if (!logic.isConfigured()) {
-			new FileNameRequestDialog(listener, null).show();
+		if (!logic.isFileConfigured()) {
+			FileNameRequestDialog.getInstance(listener, null).show();
 		} else {
 			openMainApplication(this.stage);
 		}
