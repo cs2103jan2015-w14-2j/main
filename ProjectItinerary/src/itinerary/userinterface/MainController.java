@@ -173,7 +173,7 @@ public class MainController implements Initializable, SearchResultCallback {
 		return list;
 	}
 	
-	public void onConfigSource () {
+	public void onConfigSourceClicked () {
 		String current = logic.getCurrentFileName();
 		logic.exitOperation();
 		FileNameRequestDialog.getInstance(nameRequestListener, current).show();

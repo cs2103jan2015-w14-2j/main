@@ -13,7 +13,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -80,7 +79,7 @@ public class SearchController implements Initializable {
 		dateCheckBox.selectedProperty().addListener(onDateCheckChange);
 	}
 
-	public void executeSearch (ActionEvent event) {
+	public void executeSearch () {
 		SearchStage searchStage = (SearchStage) searchButton.getScene().getWindow();		
 		// Get values from all of the entries
 		String description = descText.getText();
