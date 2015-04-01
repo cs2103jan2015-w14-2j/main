@@ -63,6 +63,7 @@ import java.io.IOException;
  */
 // @author A0121810Y
 public class Search {
+	private static final int MIN_LENGTH = 2;
 	private static final String LOGGER_IOERROR = "Error searching through index";
 	private static final String FIELD_ISPRIORITY = "isPriority";
 	private static final String FIELD_ISCOMPLETE = "isComplete";
@@ -272,7 +273,6 @@ public class Search {
 		Query fuzzyQ = getFuzzyQuery(field, splitQuery);
 		bQuery.add(fuzzyQ, BooleanClause.Occur.SHOULD);
 		bQuery.add(wildQ, BooleanClause.Occur.SHOULD);
-		System.out.println(bQuery.toString());
 		return bQuery;
 	}
 
@@ -306,7 +306,7 @@ public class Search {
 	}
 
 	private boolean notMinLength(String[] splitQuery, int i) {
-	    return splitQuery[i].length() >3;
+	    return splitQuery[i].length() >MIN_LENGTH;
     }
 
 	private FuzzyQuery createFuzzyQuery(String field, String[] splitQuery, int i,int lDistance) {
