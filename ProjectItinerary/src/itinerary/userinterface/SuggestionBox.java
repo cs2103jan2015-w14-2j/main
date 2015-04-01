@@ -158,8 +158,10 @@ public class SuggestionBox {
 		suggestions.clear();
 		String lowerFilter = filter.toLowerCase();
 		for (String string : suggestionSource) {
-			if (string.toLowerCase().contains(lowerFilter)) {
-				suggestions.add(string);
+			if (string != null && string.toLowerCase().contains(lowerFilter)) {
+				if (!suggestions.contains(string)) {
+					suggestions.add(string);
+				}
 			}
 		}
 		int count = suggestions.size();
