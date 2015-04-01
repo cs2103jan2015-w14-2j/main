@@ -7,6 +7,8 @@ import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.DateTools.Resolution;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -41,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +51,8 @@ import java.util.Map.Entry;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -89,7 +94,8 @@ public class Search {
 	IndexReader reader;
 	IndexWriter writer;
 	Document doc;
-
+	Gson gson;
+	
 	public <T extends Task> Search(List<T> taskList) throws SearchException {
 		list = JsonConverter.convertTaskList(taskList);
 		parser = new JsonParser();
@@ -100,7 +106,7 @@ public class Search {
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		createIndex(index, config);
-
+		gson = new Gson();
 	}
 
 	public <T extends Task> List<T> query(SearchTask task)
@@ -144,6 +150,7 @@ public class Search {
 		if (task.getToDate() != null && task.getFromDate() != null) {
 			BooleanQuery bQuery = createDateQuery(task.getToDate(),
 			        task.getFromDate());
+			Gson gson = new Gson();
 			addMustOccur(q, bQuery);
 		}
 
@@ -340,17 +347,18 @@ public class Search {
 
 	public BooleanQuery createDateQuery(Calendar toDate, Calendar fromDate)
 	        throws SearchException {
-		Gson gson = new Gson();
+		String sFromDate = DateTools.dateToString(fromDate.getTime(), Resolution.SECOND);
+		String sToDate = DateTools.dateToString(toDate.getTime(), Resolution.SECOND);
 		BooleanQuery bQuery = new BooleanQuery();
-		Calendar epochDate = getEpoch();
+		String epochDate = DateTools.dateToString(getEpoch().getTime(), Resolution.SECOND);
 		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(
-		        FIELD_DEADLINE, gson.toJson(fromDate), gson.toJson(toDate),
+		        FIELD_DEADLINE, sFromDate, sToDate,
 		        true, true);
 		TermRangeQuery rangeScheduleQ = TermRangeQuery.newStringRange(
-		        FIELD_TODATE, gson.toJson(fromDate), gson.toJson(toDate), true,
+		        FIELD_TODATE, sFromDate, sToDate, true,
 		        true);
 		TermRangeQuery rangeFromScheduleQ = TermRangeQuery.newStringRange(
-		        FIELD_FROMDATE, gson.toJson(epochDate), gson.toJson(fromDate),
+		        FIELD_FROMDATE, epochDate, sFromDate,
 		        false, false);
 		bQuery.add(rangeDeadlineQ, BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeScheduleQ, BooleanClause.Occur.SHOULD);
@@ -400,21 +408,29 @@ public class Search {
 
 	private void addDoc(IndexWriter writer, JsonObject obj) throws IOException {
 		doc = new Document();
-
 		for (Entry<String, JsonElement> entry : obj.entrySet()) {
 			String key = entry.getKey();
 			JsonElement value = entry.getValue();
 			if (key.equals(FIELD_TEXT) || key.equals(FIELD_CATEGORY)) {
 				doc.add(new TextField(key, value.toString(), Field.Store.YES));
+			} else if (key.equals(FIELD_TODATE) || key.equals(FIELD_FROMDATE) || key.equals(FIELD_DEADLINE)){
+				Calendar date = convertJsonToDate(value.toString());
+				doc.add(new StringField(key, DateTools.dateToString(date.getTime(), Resolution.SECOND), Field.Store.YES));
 			} else {
 				doc.add(new StringField(key, value.toString(), Field.Store.YES));
 			}
 		}
-
 		doc.add(new StringField(FIELD_JSON, obj.toString(), Field.Store.YES));
 		writer.addDocument(doc);
 	}
-
+	private Calendar convertJsonToDate(String obj){
+		Calendar date = Calendar.getInstance();
+		String[] oString = obj.split(",|\"|:|\\{|\\}");
+		System.out.println(Arrays.toString(oString));
+		date.set(Integer.parseInt(oString[4]),Integer.parseInt(oString[8]),Integer.parseInt(oString[12])
+				,Integer.parseInt(oString[16]),Integer.parseInt(oString[20]),Integer.parseInt(oString[24]));
+		return date;
+	}
 	private void closeWriter(IndexWriter writer) throws IOException {
 		writer.close();
 	}
