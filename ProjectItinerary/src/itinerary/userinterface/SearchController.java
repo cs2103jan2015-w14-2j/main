@@ -83,8 +83,8 @@ public class SearchController implements Initializable {
 	public void executeSearch (ActionEvent event) {
 		SearchStage searchStage = (SearchStage) searchButton.getScene().getWindow();		
 		// Get values from all of the entries
-		String description = descText.getText();
-		String category = catText.getText();
+		String description = descText.getText().equals("") ? null :descText.getText() ;
+		String category = catText.getText().equals("") ? null :catText.getText();
 		
 		Boolean searchPriority = priorityCheckBox.isSelected() ? true : null;
 		
@@ -103,7 +103,7 @@ public class SearchController implements Initializable {
 					toLd.getDayOfMonth(), 23, 59);
 		}
 		
-		SearchTask searchTask = new SearchTask(0, description, category, searchPriority, false, from, to);
+		SearchTask searchTask = new SearchTask(0, description, category, searchPriority, null, from, to);
 		
 		searchStage.invokeCaller(searchTask);
 		searchStage.close();
