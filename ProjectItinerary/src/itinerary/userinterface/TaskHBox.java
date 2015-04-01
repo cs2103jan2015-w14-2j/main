@@ -15,12 +15,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 //@author A0121437N
 public class TaskHBox extends HBox {
+	private static final String STYLE_BOLD = "-fx-font-weight: bold";
 	private static final double PADDING_AMOUNT = 8.0;
 	private static final String DATE_FORMAT = "EEE, dd MMM yyyy";
 	private static final String TIME_FORMAT = "hh:mm aaa";
+	private static final Color COLOR_OVERDUE = Color.RED;
 	
 	VBox textContainer = new VBox();
 	HBox upperText = new HBox();
@@ -54,14 +57,29 @@ public class TaskHBox extends HBox {
 	private void extractSpecialTaskDetails(Task task) {
 		if (task instanceof ScheduleTask || task instanceof DeadlineTask) {
 			taskDate.setText(formatDates(task));
+			if (task instanceof DeadlineTask) {
+				DeadlineTask deadlineTask = (DeadlineTask) task;
+				setOverdueColor(deadlineTask);
+			}
 			lowerText.getChildren().addAll(taskDate);
 			textContainer.getChildren().add(lowerText);
 		}
 	}
 
+	private void setOverdueColor(DeadlineTask deadlineTask) {
+		Calendar deadline = deadlineTask.getDeadline();
+		Calendar now = Calendar.getInstance();
+		if (deadline.compareTo(now) < 0) {
+			taskDate.setTextFill(COLOR_OVERDUE);
+		}
+	}
+
 	private void extractNormalTaskDetails(Task task) {
 		taskIdLabel.setText(task.getTaskId() + ". ");
+		taskIdLabel.setStyle(STYLE_BOLD);
+		
 		taskDesLabel.setText(task.getText());
+		taskDesLabel.setStyle(STYLE_BOLD);
 		
 		taskCatLabel.setText(task.getCategory());
 		if (task.isPriority()) {
@@ -90,6 +108,7 @@ public class TaskHBox extends HBox {
 			return result;
 		} else {
 			DeadlineTask deadlineTask = (DeadlineTask) task;
+			
 			result += formatCalendarDate(deadlineTask.getDeadline());
 			result += ", ";
 			result += formatCalendarTime(deadlineTask.getDeadline());
