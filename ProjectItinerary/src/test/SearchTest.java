@@ -47,9 +47,14 @@ public class SearchTest {
 		testFromDate = Calendar.getInstance();
 		testToDate = Calendar.getInstance();
 		testDeadlineDate = Calendar.getInstance();
-		testFromDate.set(2015,3,20);
-		testToDate.set(2015,3,25);
-		testDeadlineDate.set(2015,3,25);
+		testFromDate.set(2015,3,20,0,0);
+		testToDate.set(2015,3,25,23,59);
+		testDeadlineDate.set(2015,3,25,23,59);
+		Calendar testFromDate2 = Calendar.getInstance();
+		testFromDate2.set(2016,5,28,21,59);
+		Calendar testToDate2 = Calendar.getInstance();
+		testToDate2.set(2015,3,24,23,59);
+
 		task = new ScheduleTask(1, "testtest gjhjy", "testcat",
 				 true,
 				true,fromDate, toDate);
@@ -65,7 +70,7 @@ public class SearchTest {
 				true,testDeadlineDate);
 		task4 =new ScheduleTask(7, "true schedule hello everybody!", "testcat",
 				 false,
-				false,testFromDate, testToDate);
+				false,testFromDate2, testToDate2);
 		jsonList.add(new ScheduleTask(3, "fest", "testcat",
 				 true,
 				true,fromDate, toDate));
@@ -79,7 +84,6 @@ public class SearchTest {
 		jsonList.add(task4);
 	
 	}
-	@Test
 	//tries to query the list with the following search terms category:testcat text:wan pies
 	public void testSearch() throws SearchException{
 		SearchTask task = new SearchTask();
@@ -96,7 +100,6 @@ public class SearchTest {
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 
 	}
-	@Test
 	//tries to query the list with the following search terms isComplete:true
 	public void testBasicSearch() throws SearchException{
 		Search search = new Search(jsonList);
@@ -104,7 +107,6 @@ public class SearchTest {
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 
 	}
-	@Test
 	//tries to query the list with the following search terms isComplete:true
 	public void testisCompleteSearch() throws SearchException{
 		SearchTask task = new SearchTask();
@@ -120,7 +122,6 @@ public class SearchTest {
 
 	}
 
-	@Test
 	public void testSearchWithDeadline() throws SearchException{
 		SearchTask task = new SearchTask();
 		String[] field = {"deadline"};
@@ -140,9 +141,6 @@ public class SearchTest {
 	@Test
 	public void testSearchWithSchedule() throws SearchException{
 		SearchTask task = new SearchTask();
-		String[] catArray = {"testcat"};
-		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
-		task.setCategoryList(catList);
 		task.setToDate(testToDate);
 		task.setFromDate(testFromDate);
 		Search search = new Search(jsonList);
