@@ -37,6 +37,12 @@ public class SystemTest {
 		this.logic.executeUserInput("clear");
 	}
 
+	/**
+	 * TODO Add Javadoc comments to all test cases!
+	 * What?
+	 * What is expected?
+	 * Why? For weird conditions
+	 */
 	@Test
 	public void testAddNormal() {
 		UserInterfaceContent result = this.logic.executeUserInput("add first task cat +cat");
