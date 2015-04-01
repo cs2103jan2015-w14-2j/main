@@ -76,6 +76,9 @@ public class MainController implements Initializable, SearchResultCallback {
 			if (searchStage != null && searchStage.isShowing()) {
 				searchStage.close();
 			}
+			if (FileNameRequestDialog.isDialogShowing()) {
+				FileNameRequestDialog.closeDialog();
+			}
 			logic.exitOperation();
 		}
 	};
@@ -173,7 +176,7 @@ public class MainController implements Initializable, SearchResultCallback {
 	public void onConfigSource () {
 		String current = logic.getCurrentFileName();
 		logic.exitOperation();
-		new FileNameRequestDialog(nameRequestListener, current).show();
+		FileNameRequestDialog.getInstance(nameRequestListener, current).show();
 	}
 	
 	NameRequestListener nameRequestListener = new NameRequestListener() {
