@@ -426,7 +426,6 @@ public class Search {
 	private Calendar convertJsonToDate(String obj){
 		Calendar date = Calendar.getInstance();
 		String[] oString = obj.split(",|\"|:|\\{|\\}");
-		System.out.println(Arrays.toString(oString));
 		date.set(Integer.parseInt(oString[4]),Integer.parseInt(oString[8]),Integer.parseInt(oString[12])
 				,Integer.parseInt(oString[16]),Integer.parseInt(oString[20]),Integer.parseInt(oString[24]));
 		return date;
