@@ -24,6 +24,7 @@ public class TaskHBox extends HBox {
 	private static final String DATE_FORMAT = "EEE, dd MMM yyyy";
 	private static final String TIME_FORMAT = "hh:mm aaa";
 	private static final Color COLOR_OVERDUE = Color.RED;
+	private static final Image starImage = new Image("itinerary/userinterface/star.png");
 	
 	VBox textContainer = new VBox();
 	HBox upperText = new HBox();
@@ -36,7 +37,6 @@ public class TaskHBox extends HBox {
 	
 	Pane spacerPane = new Pane();
 	Label taskCatLabel = new Label();
-	Image starImage = new Image("itinerary/userinterface/star.png");
 	ImageView starImageView = new ImageView();
 	
 	Task task;
