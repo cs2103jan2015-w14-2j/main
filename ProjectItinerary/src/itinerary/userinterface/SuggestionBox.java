@@ -1,7 +1,6 @@
 package itinerary.userinterface;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javafx.beans.value.ChangeListener;
@@ -33,9 +32,9 @@ public class SuggestionBox {
 	private TextField textField;
 	private Popup suggestionPopup = new Popup();
 	private ListView<String> suggestionListView = new ListView<String>(suggestions);
-	private SuggestionImplementation implementation;
+	private OnEnterPressedListener implementation;
 	
-	public SuggestionBox (TextField textField, SuggestionImplementation implementation) {
+	public SuggestionBox (TextField textField, OnEnterPressedListener implementation) {
 		this.textField = textField;
 		this.implementation = implementation;
 		this.textField.textProperty().addListener(textChangeListener);
@@ -66,7 +65,7 @@ public class SuggestionBox {
 		@Override
 		public void changed(ObservableValue<? extends Boolean> observable,
 				Boolean oldValue, Boolean newValue) {
-			if (newValue && implementation.focusShowCondition()) {
+			if (!newValue && textField.getText().length() > 0) {
 				filterSuggestions(textField.getText());
 				showPopup();
 			} else {
@@ -87,7 +86,7 @@ public class SuggestionBox {
 					selectSuggestion(suggestion);
 				} else {
 					hidePopup();
-					implementation.onEnterAction();
+					implementation.onEnterPressed();
 				}
 			} else if (isEscapePressed && suggestionPopup.isShowing()) {
 				suggestionPopup.hide();
@@ -191,5 +190,9 @@ public class SuggestionBox {
 	
 	private void hidePopup () {
 		suggestionPopup.hide();
+	}
+	
+	public interface OnEnterPressedListener {
+		void onEnterPressed ();
 	}
 }

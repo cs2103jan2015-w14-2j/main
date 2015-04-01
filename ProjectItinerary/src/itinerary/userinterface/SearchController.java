@@ -2,6 +2,7 @@ package itinerary.userinterface;
 
 import itinerary.main.Task;
 import itinerary.search.SearchTask;
+import itinerary.userinterface.SuggestionBox.OnEnterPressedListener;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -133,24 +134,11 @@ public class SearchController implements Initializable {
 		toDatePicker.setValue(null);
 	}
 	
-	private static SuggestionImplementation createSuggestionImplementation (TextField textField) {
-		return new SuggestionImplementation() {
+	private static OnEnterPressedListener createSuggestionImplementation (TextField textField) {
+		return new OnEnterPressedListener() {
 			@Override
-			public boolean textChangedHideCondition(String oldValue, String newValue) {
-				return newValue.length() == 0;
-			}
-			
-			@Override
-			public void onEnterAction() {
-				// do nothing on enter
-			}
-			
-			@Override
-			public boolean focusShowCondition() {
-				if (textField.getText() == null) {
-					return false;
-				}
-				return textField.getText().length() > 0;
+			public void onEnterPressed() {
+				// do nothing on enter pressed
 			}
 		};
 	}

@@ -21,19 +21,19 @@ import java.util.logging.Logger;
 
 //@author A0121437N
 public class Logic {
-	private static final String MESSAGE_WELCOME = "Welcome! %1$s is ready for use";
-	private static final String MESSAGE_DELETE_SUCCESS = "deleted task %1$s";
-	private static final String MESSAGE_CLEAR_SUCCESS = "cleared all tasks";
-	private static final String MESSAGE_ADD_SUCCESS = "added \"%1$s\"";
-	private static final String MESSAGE_EDIT_SUCCESS = "edited task %1$d";
-	private static final String MESSAGE_DISPLAY_ALL = "displaying all tasks";
-	private static final String MESSAGE_REDO_ERROR = "redo error";
-	private static final String MESSAGE_REDO_SUCCESS = "redo successful";
-	private static final String MESSAGE_UNDO_ERROR = "undo error";
-	private static final String MESSAGE_UNDO_SUCCESS = "undo successful";
-	private static final String MESSAGE_INVALID_COMMAND = "invalid command: \"%1$s\"";
-	private static final String MESSAGE_SEARCH_ERROR = "search error";
-	private static final String MESSAGE_SEARCH_SUCCESS = "search success. %1$d results found";
+	private static final String MESSAGE_WELCOME = "Welcome to ITnerary! %1$s is ready for use.";
+	private static final String MESSAGE_DELETE_SUCCESS = "Deleted task %1$s.";
+	private static final String MESSAGE_CLEAR_SUCCESS = "Cleared all tasks.";
+	private static final String MESSAGE_ADD_SUCCESS = "Added \"%1$s\".";
+	private static final String MESSAGE_EDIT_SUCCESS = "Edited task %1$d.";
+	private static final String MESSAGE_DISPLAY_ALL = "Displaying all tasks.";
+	private static final String MESSAGE_REDO_ERROR = "Redo error.";
+	private static final String MESSAGE_REDO_SUCCESS = "Redo successful.";
+	private static final String MESSAGE_UNDO_ERROR = "Undo error.";
+	private static final String MESSAGE_UNDO_SUCCESS = "Undo successful.";
+	private static final String MESSAGE_INVALID_COMMAND = "Invalid command: \"%1$s\"";
+	private static final String MESSAGE_SEARCH_ERROR = "Search error.";
+	private static final String MESSAGE_SEARCH_SUCCESS = "Search success. %1$d result(s) found.";
 	
 	private static final Logger logger = Logger.getGlobal();
 	static {
@@ -96,7 +96,7 @@ public class Logic {
 	
 	// returns true if config file with storage file name is found, false otherwise
 	// if true, isConfigured will initialize all required objects
-	public boolean isConfigured () {
+	public boolean isFileConfigured () {
 		String fileName = null;
 		try {
 			fileName = config.getStorageFileName();
