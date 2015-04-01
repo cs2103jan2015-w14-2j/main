@@ -19,24 +19,34 @@ import javafx.scene.paint.Color;
 
 //@author A0121437N
 public class TaskHBox extends HBox {
-	private static final String STYLE_BOLD = "-fx-font-weight: bold";
+	private static final String DATE_SEPARTATOR = " - ";
+	private static final String DAY_DATE_SEPARATOR = ", ";
+	private static final String DOT_AFTER_ID = ". ";
+	
+	private static final double MIN_SPACER_WIDTH = 10.0;
+	private static final double IMAGE_PANE_WIDTH = 20.0;
 	private static final double PADDING_AMOUNT = 8.0;
+	
+	private static final String STYLE_BOLD = "-fx-font-weight: bold";
 	private static final String DATE_FORMAT = "EEE, dd MMM yyyy";
 	private static final String TIME_FORMAT = "hh:mm aaa";
+	
 	private static final Color COLOR_OVERDUE = Color.RED;
 	private static final Image starImage = new Image("itinerary/userinterface/star.png");
 	
 	VBox textContainer = new VBox();
-	HBox upperText = new HBox();
-	HBox lowerText = new HBox();
+	HBox upperLayer = new HBox();
+	HBox lowerLayer = new HBox();
 	
+	// Upper layer
 	Label taskIdLabel = new Label();
 	Label taskDesLabel = new Label();
-	
 	Label taskDate = new Label();
 	
 	Pane spacerPane = new Pane();
 	Label taskCatLabel = new Label();
+	Pane catImageSpacer = new Pane();
+	Pane imagePane = new Pane();
 	ImageView starImageView = new ImageView();
 	
 	Task task;
@@ -46,9 +56,13 @@ public class TaskHBox extends HBox {
 		this.task = task;
 		extractNormalTaskDetails(task);
 		extractSpecialTaskDetails(task);
-		
+
 		HBox.setHgrow(spacerPane, Priority.ALWAYS);
-		getChildren().addAll(textContainer, spacerPane, taskCatLabel, starImageView);
+		spacerPane.setMinWidth(MIN_SPACER_WIDTH);
+		catImageSpacer.setMinWidth(MIN_SPACER_WIDTH);
+		imagePane.getChildren().add(starImageView);
+		imagePane.setMinWidth(IMAGE_PANE_WIDTH);
+		getChildren().addAll(textContainer, spacerPane, taskCatLabel, catImageSpacer, imagePane);
 		
 		// Set padding around HBox for visual appeal
 		setPadding(new Insets(PADDING_AMOUNT));
@@ -61,8 +75,8 @@ public class TaskHBox extends HBox {
 				DeadlineTask deadlineTask = (DeadlineTask) task;
 				setOverdueColor(deadlineTask);
 			}
-			lowerText.getChildren().addAll(taskDate);
-			textContainer.getChildren().add(lowerText);
+			lowerLayer.getChildren().addAll(taskDate);
+			textContainer.getChildren().add(lowerLayer);
 		}
 	}
 
@@ -75,19 +89,20 @@ public class TaskHBox extends HBox {
 	}
 
 	private void extractNormalTaskDetails(Task task) {
-		taskIdLabel.setText(task.getTaskId() + ". ");
+		taskIdLabel.setText(task.getTaskId() + DOT_AFTER_ID);
 		taskIdLabel.setStyle(STYLE_BOLD);
 		
 		taskDesLabel.setText(task.getText());
 		taskDesLabel.setStyle(STYLE_BOLD);
 		
 		taskCatLabel.setText(task.getCategory());
+		
 		if (task.isPriority()) {
 			starImageView.setImage(starImage);
 		}
 		
-		upperText.getChildren().addAll(taskIdLabel, taskDesLabel);
-		textContainer.getChildren().add(upperText);
+		upperLayer.getChildren().addAll(taskIdLabel, taskDesLabel);
+		textContainer.getChildren().add(upperLayer);
 	}
 
 	private String formatDates(Task task) {
@@ -97,12 +112,12 @@ public class TaskHBox extends HBox {
 			Calendar from = scheduleTask.getFromDate();
 			Calendar to = scheduleTask.getToDate();
 			
-			result += formatCalendarDate(from) + ", ";
-			result += formatCalendarTime(from) + " - ";
+			result += formatCalendarDate(from) + DAY_DATE_SEPARATOR;
+			result += formatCalendarTime(from) + DATE_SEPARTATOR;
 			
 			// Don't need to repeat the date again if it is on the same day
 			if (!isSameDay(from, to)) {
-				result += formatCalendarDate(to) + ", ";
+				result += formatCalendarDate(to) + DAY_DATE_SEPARATOR;
 			}
 			result += formatCalendarTime(to);
 			return result;
@@ -110,7 +125,7 @@ public class TaskHBox extends HBox {
 			DeadlineTask deadlineTask = (DeadlineTask) task;
 			
 			result += formatCalendarDate(deadlineTask.getDeadline());
-			result += ", ";
+			result += DAY_DATE_SEPARATOR;
 			result += formatCalendarTime(deadlineTask.getDeadline());
 			return result;
 		}
