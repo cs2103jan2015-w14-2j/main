@@ -80,6 +80,7 @@ public class SuggestionBox {
 		public void handle(KeyEvent event) {
 			boolean isFromListView = event.getSource() == suggestionListView;
 			boolean isEnterPressed = event.getCode() == KeyCode.ENTER;
+			boolean isEscapePressed = event.getCode() == KeyCode.ESCAPE;
 			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
 			if (isFromListView && isEnterPressed) {
 				if (suggestion != null) {
@@ -88,6 +89,8 @@ public class SuggestionBox {
 					hidePopup();
 					implementation.onEnterAction();
 				}
+			} else if (isEscapePressed && suggestionPopup.isShowing()) {
+				suggestionPopup.hide();
 			}
 		}
 	};
