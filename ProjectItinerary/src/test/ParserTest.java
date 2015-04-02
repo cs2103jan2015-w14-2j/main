@@ -138,13 +138,14 @@ public class ParserTest {
 	
 	@Test
 	public void testSearchFull () throws ParserException {
-		Command command = Parser.parseCommand("search CS pri cat exam from 2015/3/4 to future");
+		Command command = Parser.parseCommand("search CS pri cat exam com from 2015/3/4 to future");
 		assertEquals(command.getType(), CommandType.SEARCH);
 		Task task = command.getTask();
 		assertTrue(task instanceof ScheduleTask);
 		ScheduleTask scheduleTask = (ScheduleTask) task;
 		assertEquals(scheduleTask.getText(), "CS");
 		assertEquals(scheduleTask.getCategory(), "exam");
+		assertTrue(scheduleTask.isComplete());
 		assertTrue(scheduleTask.isPriority());
 		assertNotNull(scheduleTask.getFromDate());
 		assertNotNull(scheduleTask.getToDate());
@@ -182,11 +183,11 @@ public class ParserTest {
 	
     @Test
 	public void testAddReplcaeKeyword () throws ParserException {
-		Command command = Parser.parseCommand("add buy +cat, go home pri cat entertainment +from animal");
+		Command command = Parser.parseCommand("add buy +cat +dog, go home pri cat www.entertainment +from animal. +com");
 		assertEquals(command.getType(), CommandType.ADD);
 		Task task = command.getTask();
-		assertEquals(task.getText(), "buy cat, go home");
-		assertEquals(task.getCategory(), "entertainment from animal");
+		assertEquals(task.getText(), "buy cat +dog, go home");
+		assertEquals(task.getCategory(), "www.entertainment from animal. com");
 		assertTrue(task.isPriority());
 	}
     
