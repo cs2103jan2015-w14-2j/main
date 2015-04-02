@@ -61,20 +61,20 @@ public class Task implements Cloneable {
     
     //@author A0121437N
     public void updateDetails (Task details) {
-    	if (details.getText() != null) {
+    	if (details.text != null) {
     		this.setText(details.getText());
     	}
     	
-    	if (details.getCategory() != null) {
+    	if (details.category != null) {
     		this.setCategory(details.getCategory());
     	}
     	
-    	if (details.isComplete() != this.isComplete()) {
+    	if (details.isComplete != null && details.isComplete != this.isComplete) {
     		this.setComplete(details.isComplete());
     	}
     	
-    	if (details.isPriority() == true) {
-    		if(this.isPriority()){
+    	if (details.isPriority != null && details.isPriority == true) {
+    		if(this.isPriority){
     			this.setPriority(false);
     		}
     		else{

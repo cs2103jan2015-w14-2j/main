@@ -146,21 +146,22 @@ public class Logic {
 	}
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
-		if (command.getType() == CommandType.ADD) {
+		CommandType type = command.getType();
+		if (type == CommandType.ADD) {
 			return executeAdd(command);
-		} else if (command.getType() == CommandType.CLEAR) {
+		} else if (type == CommandType.CLEAR) {
 			return executeClear();
-		} else if (command.getType() == CommandType.DELETE) {
+		} else if (type == CommandType.DELETE) {
 			return executeDelete(command);
-		} else if (command.getType() == CommandType.DISPLAY) {
+		} else if (type == CommandType.DISPLAY) {
 			return executeDisplay();
-		} else if (command.getType() == CommandType.EDIT) {
+		} else if (type == CommandType.EDIT || type == CommandType.MARK) {
 			return executeEdit(command);
-		} else if (command.getType() == CommandType.SEARCH) {
+		} else if (type == CommandType.SEARCH) {
 			return executeSearch(command);
-		} else if (command.getType() == CommandType.REDO) {
+		} else if (type == CommandType.REDO) {
 			return executeRedo();
-		} else if (command.getType() == CommandType.UNDO) {
+		} else if (type == CommandType.UNDO) {
 			return executeUndo();
 		} else {
 			return unknownCommand(userInput);
