@@ -10,5 +10,7 @@ public enum CommandType {
 	REDO,
 	UNDO,
 	MARK,
+	UNMARK,
+	HELP,
 	UNABLE_TO_DETERMINE
 }

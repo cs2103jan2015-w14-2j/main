@@ -87,6 +87,11 @@ public class ParserTest {
 		Parser.parseCommand("add");
 	}
 	
+	@Test (expected = ParserException.class)
+	public void testSearchContentMissing () throws ParserException {
+		Parser.parseCommand("search");
+	}
+	
 	//Corner test case when the task to be added is not described
 	@Test (expected = ParserException.class)
 	public void testAddContentMissingWithKeyword() throws ParserException {
@@ -132,6 +137,29 @@ public class ParserTest {
 	}
 	
 	@Test
+	public void testSearchFull () throws ParserException {
+		Command command = Parser.parseCommand("search CS pri cat exam from 2015/3/4 to future");
+		assertEquals(command.getType(), CommandType.SEARCH);
+		Task task = command.getTask();
+		assertTrue(task instanceof ScheduleTask);
+		ScheduleTask scheduleTask = (ScheduleTask) task;
+		assertEquals(scheduleTask.getText(), "CS");
+		assertEquals(scheduleTask.getCategory(), "exam");
+		assertTrue(scheduleTask.isPriority());
+		assertNotNull(scheduleTask.getFromDate());
+		assertNotNull(scheduleTask.getToDate());
+	}
+	
+	public void testSearch () throws ParserException {
+		Command command = Parser.parseCommand("search pri");
+		assertEquals(command.getType(), CommandType.SEARCH);
+		Task task = command.getTask();
+		assertNull(task.getText());
+		assertNull(task.getCategory());
+		assertTrue(task.isPriority());
+	}
+	
+	@Test
 	public void testAddDeadline () throws ParserException {
 		Command command = Parser.parseCommand("add swim pri cat sports by tomorrow");
 		assertEquals(command.getType(), CommandType.ADD);
@@ -169,6 +197,24 @@ public class ParserTest {
 		Task task = command.getTask();
 		assertEquals((int)task.getTaskId(), 1);
 		assertEquals(task.getText(), "cat catches mouse");
+	}
+    
+    @Test
+	public void testUnmark () throws ParserException {
+		Command command = Parser.parseCommand("Unmark 1");
+		assertEquals(command.getType(), CommandType.MARK);
+		Task task = command.getTask();
+		assertEquals((int)task.getTaskId(), 1);
+		assertFalse( task.isComplete());
+	}
+    
+    @Test
+	public void testMark () throws ParserException {
+		Command command = Parser.parseCommand("Mark 1");
+		assertEquals(command.getType(), CommandType.MARK);
+		Task task = command.getTask();
+		assertEquals((int)task.getTaskId(), 1);
+		assertTrue( task.isComplete());
 	}
 	
 	@Test

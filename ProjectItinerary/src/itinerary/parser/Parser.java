@@ -2,14 +2,11 @@ package itinerary.parser;
 
 import itinerary.main.Command;
 import itinerary.main.CommandType;
-import itinerary.main.Constants;
 import itinerary.main.DeadlineTask;
 import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
 
-import java.io.IOException;
 import java.util.Calendar;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +24,7 @@ public class Parser {
 	private static final String ERROR_INVALID_TASK_ID = "Error! Invalid target task id";
 	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contenets for edit";
 	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description for the task to be added";
+	private static final String ERROR_NO_DESCRIPTION_FOR_SEARCH = "Error! Please enter content for search";
 	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
 	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
 	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
@@ -40,9 +38,10 @@ public class Parser {
 	private static final String KEYWORD_DEADLINE = "by";
 	private static final String KEYWORD_PRIORITY = "pri";
 	private static final String KEYWORD_CATEGORY = "cat";
+	private static final String KEYWORD_COMPLETE = "com";
 
 	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
-		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
+		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO, KEYWORD_COMPLETE};
 
 	private static Logger logger = Logger.getGlobal();
 
@@ -54,6 +53,7 @@ public class Parser {
 		checkArgumentValidity(argument);
 		CommandType commandType = determineCommandType(firstWord);
 		Task task = createTask(commandType, argument);
+		commandType = unmarkToMark(commandType);
 		Command command = new Command(task, commandType);
 		return command;
 	}
@@ -73,6 +73,11 @@ public class Parser {
 		}
 		if(type.equals(CommandType.MARK)){
 			return createTaskToMark(argument);
+		}
+		if(type.equals(CommandType.UNMARK)){
+			return createTaskToUnmark(argument);
+		}	
+		if(type.equals(CommandType.HELP)){
 		}
 		return null;
 	}
@@ -199,7 +204,7 @@ public class Parser {
 	}
 
 	private static Calendar parseDateFromText(String dateString) throws ParserException {
-	    ParserDate parserDate = new ParserDate();
+		ParserDate parserDate = new ParserDate();
 		Calendar calendar = parserDate.getDate(dateString);
 		return calendar;
 	}
@@ -207,6 +212,11 @@ public class Parser {
 	private static boolean extractPriority(String arg) {
 		String[] words = stringToArray(arg);
 		return containsKeyword(words, KEYWORDS[0]);
+	}
+
+	private static boolean extractComplete(String arg) {
+		String[] words = stringToArray(arg);
+		return containsKeyword(words, KEYWORDS[5]);
 	}
 
 	private static String extractAfterKeyword(String arg, String keyword, String error) throws ParserException{
@@ -373,11 +383,38 @@ public class Parser {
 		return task;
 	}
 
+	private static Task createTaskToSearch(String input) throws ParserException{
+		if(input.equals("") || input == null){
+			throw new ParserException(ERROR_NO_DESCRIPTION_FOR_SEARCH);
+		}
+			
+		Task task = extractContent(input);
+		boolean isCompleted = extractComplete(input);
+
+		if(isCompleted){
+			task.setComplete(true);
+		}
+		if (task.getText() != null && task.getText().equals("")) {
+			task.setText(null);
+		}
+			if (task.getCategory() != null &&  task.getCategory().equals("")) {
+				task.setCategory(null);
+			}
+		return task;
+	}
+
 	private static Task createTaskToMark(String argument) throws ParserException {
 		assert argument != null;
 		String[] arguments = stringToArray(argument);
 		int id = identifyTargetId(arguments);
 		return new Task (id, null, null, null, true);
+	}
+
+	private static Task createTaskToUnmark(String argument) throws ParserException {
+		assert argument != null;
+		String[] arguments = stringToArray(argument);
+		int id = identifyTargetId(arguments);
+		return new Task (id, null, null, null, false);
 	}
 
 	private static int identifyTargetId(String[] arguments) throws ParserException {
@@ -392,10 +429,6 @@ public class Parser {
 			logger.log(Level.WARNING, ERROR_INVALID_TASK_ID);
 			throw new ParserException(ERROR_INVALID_TASK_ID);
 		}
-	}
-
-	private static Task createTaskToSearch(String input){
-		return new Task(1, input, "", false, false);
 	}
 
 	private static String[] stringToArray(String input){
@@ -418,6 +451,14 @@ public class Parser {
 
 	private static CommandType determineCommandType(String command){
 		ParserAlias parserAlias =  new ParserAlias();
-		return parserAlias.getType(command);
+		CommandType commandType =  parserAlias.getType(command);
+		return commandType;
+	}
+
+	private static CommandType unmarkToMark(CommandType commandType){
+		if(commandType.equals(CommandType.UNMARK)){
+			commandType = CommandType.MARK;
+		}
+		return commandType;
 	}
 }

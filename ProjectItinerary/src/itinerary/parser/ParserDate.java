@@ -10,6 +10,8 @@ import java.util.List;
 public class ParserDate {
 
 	private static final String ERROR_DATE_FORMAT = "Error! Date format error";
+	private static final String AFTER_TEN_YEAR = "after 10 years";
+	private static final String FUTURE = "future";
 	private static final String CHARACTER_DOT = ".";
 	private static final String CHARACTER_DASH = "-";
 	private static final String CHARACTER_UNDERSCORE = "_";
@@ -69,11 +71,21 @@ public class ParserDate {
 		return dateString;
 	}
 
+	public String futureToOneYear(String dateString){
+		if(dateString.equalsIgnoreCase(FUTURE)){
+			dateString = AFTER_TEN_YEAR;
+		}
+		return dateString;
+	}
+	
 	public Calendar parseDateByNatty(String dateString) throws ParserException{
+		dateString = futureToOneYear(dateString);
+		System.out.println(dateString);
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
 		List<DateGroup> dateGroups = dateParser.parse(dateString);
 
 		if (dateGroups.isEmpty()) {
+			System.out.println("problem.....");
 			throw new ParserException(ERROR_DATE_FORMAT);
 		}
 

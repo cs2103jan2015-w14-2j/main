@@ -28,13 +28,17 @@ public class ParserAlias {
 	private static final String COMMAND_MARK_FINISH = "finish";
 	private static final String COMMAND_MARK_DONE = "done";
 	private static final String COMMAND_MARK_TICK = "tick";
+	private static final String COMMAND_UNMARK = "Unmark";
 	private static final String COMMAND_REDO = "redo";
 	private static final String COMMAND_UNDO = "undo";
+	private static final String COMMAND_HELP = "help";
+	private static final String COMMAND_HELP_QUESTIONMARK = "?";
 
 	private TreeMap<CommandType, Integer> commandTree = new TreeMap<CommandType, Integer>();
 	private ArrayList<ArrayList<String>> commandList = new  ArrayList<ArrayList<String>>();
 
-	private int addIndex, deleteIndex, editIndex, displayIndex, clearIndex, searchIndex, markIndex, redoIndex, undoIndex;
+	private int addIndex, deleteIndex, editIndex, displayIndex, clearIndex, searchIndex, markIndex, unmarkIndex,
+	                   redoIndex, undoIndex, helpIndex;
 
 	public void createCommandTree(){
 		int i = 0;
@@ -44,9 +48,11 @@ public class ParserAlias {
 		commandTree.put(CommandType.DISPLAY, i++);
 		commandTree.put(CommandType.EDIT, i++);
 		commandTree.put(CommandType.MARK, i++);
+		commandTree.put(CommandType.UNMARK, i++);
 		commandTree.put(CommandType.REDO, i++);
 		commandTree.put(CommandType.SEARCH, i++);
-		commandTree.put(CommandType.UNDO, i);			
+		commandTree.put(CommandType.UNDO, i++);			
+		commandTree.put(CommandType.HELP, i++);		
 	}	
 
 	public void createIndex(){
@@ -57,12 +63,14 @@ public class ParserAlias {
 		clearIndex = commandTree.get(CommandType.CLEAR);
 		searchIndex = commandTree.get(CommandType.SEARCH);
 		markIndex = commandTree.get(CommandType.MARK);
+		unmarkIndex = commandTree.get(CommandType.UNMARK);
 		redoIndex = commandTree.get(CommandType.REDO);
 		undoIndex = commandTree.get(CommandType.UNDO);
+		helpIndex = commandTree.get(CommandType.HELP);
 	}
 
 	public void initializeCommandList(){
-		for(int i=0; i < 9; i++){
+		for(int i=0; i < 11; i++){
 			commandList.add(new ArrayList<String>());
 		}
 	}
@@ -92,8 +100,11 @@ public class ParserAlias {
 		commandList.get(markIndex).add(COMMAND_MARK_FINISH);
 		commandList.get(markIndex).add(COMMAND_MARK_DONE);
 		commandList.get(markIndex).add(COMMAND_MARK_TICK);
+		commandList.get(unmarkIndex).add(COMMAND_UNMARK);
 		commandList.get(redoIndex).add(COMMAND_REDO);
-		commandList.get(undoIndex).add(COMMAND_UNDO);		
+		commandList.get(undoIndex).add(COMMAND_UNDO);	
+		commandList.get(helpIndex).add(COMMAND_HELP);
+		commandList.get(helpIndex).add(COMMAND_HELP_QUESTIONMARK);
 	}
 
 	public boolean isThisType(String command, CommandType type, int index){
@@ -135,6 +146,10 @@ public class ParserAlias {
 			return CommandType.MARK;
 		}
 		
+		if( isThisType(command, CommandType.UNMARK, unmarkIndex) ){
+			return CommandType.UNMARK;
+		}
+		
 		if( isThisType(command, CommandType.REDO, redoIndex) ){
 			return CommandType.REDO;
 		}
@@ -143,12 +158,8 @@ public class ParserAlias {
 			return CommandType.UNDO;
 		}
 		
-		if( isThisType(command, CommandType.ADD, addIndex) ){
-			return CommandType.ADD;
-		}
-		
-		if( isThisType(command, CommandType.ADD, addIndex) ){
-			return CommandType.ADD;
+		if( isThisType(command, CommandType.HELP, helpIndex) ){
+			return CommandType.HELP;
 		}
 		
 		return CommandType.UNABLE_TO_DETERMINE;
@@ -157,6 +168,11 @@ public class ParserAlias {
 	public ArrayList<ArrayList<String>> getCommandList(){
 		createCommandList();
 		return commandList;
+	}
+	
+	public TreeMap<CommandType, Integer> getCommandTree(){
+		createCommandTree();
+		return commandTree;
 	}
 	
 	public CommandType getType(String command){
