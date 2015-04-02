@@ -45,7 +45,6 @@ public class Parser {
 		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO};
 
 	private static Logger logger = Logger.getGlobal();
-	private static String errorMessage;
 
 	//returns a command object and it is called by logic
 	public static Command parseCommand(String input) throws ParserException {
@@ -57,10 +56,6 @@ public class Parser {
 		Task task = createTask(commandType, argument);
 		Command command = new Command(task, commandType);
 		return command;
-	}
-
-	public static String getErrorMessage (){
-		return errorMessage;
 	}
 
 	private static Task createTask(CommandType type, String argument) throws ParserException {
