@@ -19,12 +19,15 @@ import javafx.scene.paint.Color;
 
 //@author A0121437N
 public class TaskHBox extends HBox {
+	private static final String PACKAGE_PATH = "itinerary/userinterface/";
+	private static final String COMPLETE_IMAGE_PATH = PACKAGE_PATH + "complete.png";
+	private static final String STAR_IMAGE_PATH = PACKAGE_PATH + "star.png";
 	private static final String DATE_SEPARTATOR = " - ";
 	private static final String DAY_DATE_SEPARATOR = ", ";
 	private static final String DOT_AFTER_ID = ". ";
 	
 	private static final double MIN_SPACER_WIDTH = 10.0;
-	private static final double IMAGE_PANE_WIDTH = 20.0;
+	private static final double MIN_IMAGE_PANE_WIDTH = 25.0;
 	private static final double PADDING_AMOUNT = 8.0;
 	
 	private static final String STYLE_BOLD = "-fx-font-weight: bold";
@@ -32,7 +35,8 @@ public class TaskHBox extends HBox {
 	private static final String TIME_FORMAT = "hh:mm aaa";
 	
 	private static final Color COLOR_OVERDUE = Color.RED;
-	private static final Image starImage = new Image("itinerary/userinterface/star.png");
+	private static final Image starImage = new Image(STAR_IMAGE_PATH);
+	private static final Image completeImage = new Image(COMPLETE_IMAGE_PATH);
 	
 	VBox textContainer = new VBox();
 	HBox upperLayer = new HBox();
@@ -46,8 +50,10 @@ public class TaskHBox extends HBox {
 	Pane spacerPane = new Pane();
 	Label taskCatLabel = new Label();
 	Pane catImageSpacer = new Pane();
-	Pane imagePane = new Pane();
+	Pane priorityPane = new Pane();
 	ImageView starImageView = new ImageView();
+	Pane completePane = new Pane();
+	ImageView completeImageView = new ImageView();
 	
 	Task task;
 	
@@ -60,9 +66,14 @@ public class TaskHBox extends HBox {
 		HBox.setHgrow(spacerPane, Priority.ALWAYS);
 		spacerPane.setMinWidth(MIN_SPACER_WIDTH);
 		catImageSpacer.setMinWidth(MIN_SPACER_WIDTH);
-		imagePane.getChildren().add(starImageView);
-		imagePane.setMinWidth(IMAGE_PANE_WIDTH);
-		getChildren().addAll(textContainer, spacerPane, taskCatLabel, catImageSpacer, imagePane);
+		
+		priorityPane.getChildren().add(starImageView);
+		priorityPane.setMinWidth(MIN_IMAGE_PANE_WIDTH);
+		
+		completePane.getChildren().add(completeImageView);
+		completePane.setMinWidth(MIN_IMAGE_PANE_WIDTH);
+		
+		getChildren().addAll(textContainer, spacerPane, taskCatLabel, catImageSpacer, priorityPane, completePane);
 		
 		// Set padding around HBox for visual appeal
 		setPadding(new Insets(PADDING_AMOUNT));
@@ -99,6 +110,10 @@ public class TaskHBox extends HBox {
 		
 		if (task.isPriority()) {
 			starImageView.setImage(starImage);
+		}
+		
+		if (task.isComplete()) {
+			completeImageView.setImage(completeImage);
 		}
 		
 		upperLayer.getChildren().addAll(taskIdLabel, taskDesLabel);
