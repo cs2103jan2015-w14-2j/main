@@ -12,6 +12,7 @@ import itinerary.storage.FileStorage;
 import itinerary.storage.Storage;
 import itinerary.storage.StorageException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -107,9 +108,13 @@ public class Logic {
 		}
 		if (fileName == null) {
 			return false;
-		} else {
+		}
+		File file = new File(fileName);
+		if (!file.isDirectory() && file.exists()) {
 			setupLogicVariables(fileName);
 			return true;
+		} else {
+			return false;
 		}
 	}
 	

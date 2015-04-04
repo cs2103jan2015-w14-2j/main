@@ -92,6 +92,9 @@ public abstract class Storage implements Closeable{
     // To check if the any file name provided for storage is valid
  	public static boolean isValidFileName (String fileName) {
  		File file = new File (fileName);
+ 		if (file.isDirectory()) {
+ 			return false;
+ 		}
  		try {
  			file.createNewFile();
  		} catch (IOException e) {
