@@ -397,9 +397,9 @@ public class Parser {
 		if (task.getText() != null && task.getText().equals("")) {
 			task.setText(null);
 		}
-			if (task.getCategory() != null &&  task.getCategory().equals("")) {
-				task.setCategory(null);
-			}
+		if (task.getCategory() != null &&  task.getCategory().equals("")) {
+			task.setCategory(null);
+		}
 		return task;
 	}
 
