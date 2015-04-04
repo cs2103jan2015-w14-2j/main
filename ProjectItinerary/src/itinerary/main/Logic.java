@@ -14,6 +14,7 @@ import itinerary.storage.StorageException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -252,7 +253,21 @@ public class Logic {
 	}
 
 	private UserInterfaceContent executeSearch(Command command) {
-		return executeBasicSearch(command.getTask().getText());
+		Task task = command.getTask();
+		String text = task.getText();
+		String category = task.getCategory();
+		Boolean priority = task.isPriority();
+		priority = priority ? true : null;
+		Boolean complete = task.isComplete();
+		Calendar from = null;
+		Calendar to = null;
+		if (task instanceof ScheduleTask) {
+			ScheduleTask sTask = (ScheduleTask) task;
+			from = sTask.getFromDate();
+			to = sTask.getToDate();
+		}
+		SearchTask searchTask = new SearchTask(0, text, category, priority, complete, from, to);
+		return executeAdvancedSearch(searchTask);
 	}
 	
 	public UserInterfaceContent executeBasicSearch (String query) {
