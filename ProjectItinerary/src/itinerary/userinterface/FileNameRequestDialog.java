@@ -57,15 +57,17 @@ public class FileNameRequestDialog extends Stage {
 		return onlyInstance;
 	}
 	
-	public static boolean isDialogShowing () {
+	private static boolean isDialogShowing () {
 		if (onlyInstance == null) {
 			return false;
 		}
 		return ((Stage)onlyInstance).isShowing();
 	}
 	
-	public static void closeDialog () {
-		onlyInstance.close();
+	public static void closeIfShowing () {
+		if (isDialogShowing()) {
+			onlyInstance.close();
+		}
 	}
 	
 	private EventHandler<ActionEvent> enterPressed = new EventHandler<ActionEvent>() {

@@ -61,12 +61,8 @@ public class MainController implements Initializable, SearchResultCallback {
 	private EventHandler<WindowEvent> closeHandler = new EventHandler<WindowEvent> () {
 		@Override
 		public void handle(WindowEvent event) {
-			if (searchStage != null && searchStage.isShowing()) {
-				searchStage.close();
-			}
-			if (FileNameRequestDialog.isDialogShowing()) {
-				FileNameRequestDialog.closeDialog();
-			}
+			SearchStage.closeIfShowing();
+			FileNameRequestDialog.closeIfShowing();
 			logic.exitOperation();
 		}
 	};

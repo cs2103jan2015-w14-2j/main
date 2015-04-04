@@ -10,8 +10,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,89 +22,64 @@ import javafx.scene.control.TextField;
 public class SearchController implements Initializable {
 
 	@FXML
-	Button searchButton;
+	Button searchButton, clearButton;
 	@FXML
-	CheckBox descriptionCheckBox, categoriesCheckBox, priorityCheckBox, dateCheckBox;
+	CheckBox priorityCheckBox, completedCheckBox;
 	@FXML
 	TextField descText, catText;
-	SuggestionBox descSb, catSb;
+	SuggestionBox descBox, catBox;
 	@FXML
 	DatePicker fromDatePicker, toDatePicker;
-	@FXML
-	Button resetButton;
 	
-	ChangeListener<Boolean> onDescCheckChange = new ChangeListener<Boolean>() {
+	private OnEnterPressedListener enterListener = new OnEnterPressedListener() {
 		@Override
-		public void changed(ObservableValue<? extends Boolean> observable,
-				Boolean oldValue, Boolean newValue) {
-			if (!newValue) {
-				descText.setText("");
-			}
-			descText.setDisable(!newValue);
-		}
-	};
-	
-	ChangeListener<Boolean> onCatCheckChange = new ChangeListener<Boolean>() {
-		@Override
-		public void changed(ObservableValue<? extends Boolean> observable,
-				Boolean oldValue, Boolean newValue) {
-			if (!newValue) {
-				catText.setText("");
-			}
-			catText.setDisable(!newValue);
-		}
-	};
-	
-	ChangeListener<Boolean> onDateCheckChange = new ChangeListener<Boolean>() {
-		@Override
-		public void changed(ObservableValue<? extends Boolean> observable,
-				Boolean oldValue, Boolean newValue) {
-			if (!newValue) {
-				fromDatePicker.setValue(null);
-				toDatePicker.setValue(null);
-			}
-			fromDatePicker.setDisable(!newValue);
-			toDatePicker.setDisable(!newValue);
+		public void onEnterPressed() {
+			// do nothing on enter press
 		}
 	};
 		
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		descSb = new SuggestionBox(descText, createSuggestionImplementation(descText));
-		catSb = new SuggestionBox(catText, createSuggestionImplementation(catText));
-		
-		descriptionCheckBox.selectedProperty().addListener(onDescCheckChange);
-		categoriesCheckBox.selectedProperty().addListener(onCatCheckChange);
-		dateCheckBox.selectedProperty().addListener(onDateCheckChange);
+		descBox = new SuggestionBox(descText, enterListener);
+		catBox = new SuggestionBox(catText, enterListener);
 	}
 
 	public void executeSearch () {
-		SearchStage searchStage = (SearchStage) searchButton.getScene().getWindow();		
-		// Get values from all of the entries
-		String description = descText.getText().equals("") ? null :descText.getText() ;
-		String category = catText.getText().equals("") ? null :catText.getText();
-		
-		Boolean searchPriority = priorityCheckBox.isSelected() ? true : null;
-		
-		LocalDate fromLd = fromDatePicker.getValue();
-		LocalDate toLd = toDatePicker.getValue();
-		
-		Calendar from = null, to = null;
-		if (fromLd != null) {
-			from = Calendar.getInstance();
-			from.set(fromLd.getYear(), fromLd.getMonthValue() - 1,
-					fromLd.getDayOfMonth(), 0, 0);
+		SearchStage searchStage = (SearchStage) searchButton.getScene().getWindow();
+		if (isAtLeastOneFilled()) {
+			// Get values from all of the entries
+			String description = getStringToSearch(descText.getText());
+			String category = getStringToSearch(catText.getText());
+			
+			Boolean searchPriority = getBooleanToSearch(priorityCheckBox.isSelected());
+			Boolean searchCompleted = getBooleanToSearch(completedCheckBox.isSelected());
+			
+			Calendar from = getCalendarToSearch(fromDatePicker.getValue());
+			Calendar to = getCalendarToSearch(toDatePicker.getValue());
+			
+			SearchTask searchTask = new SearchTask(0, description, category,
+					searchPriority, searchCompleted, from, to);
+			searchStage.invokeCaller(searchTask);
 		}
-		if (toLd != null) {
-			to = Calendar.getInstance();
-			to.set(toLd.getYear(), toLd.getMonthValue() - 1,
-					toLd.getDayOfMonth(), 23, 59);
-		}
-		
-		SearchTask searchTask = new SearchTask(0, description, category, searchPriority, null, from, to);
-		
-		searchStage.invokeCaller(searchTask);
 		searchStage.close();
+	}
+
+	private Calendar getCalendarToSearch(LocalDate date) {
+		Calendar calendar = null;
+		if (date != null) {
+			calendar = Calendar.getInstance();
+			calendar.set(date.getYear(), date.getMonthValue() - 1,
+					date.getDayOfMonth(), 0, 0);
+		}
+		return calendar;
+	}
+
+	private Boolean getBooleanToSearch(Boolean bool) {
+		return bool ? true : null;
+	}
+
+	private String getStringToSearch(String string) {
+		return string != null && !string.equals("") ? string : null;
 	}
 
 	public void updateDetails(List<Task> tasks) {
@@ -118,28 +91,28 @@ public class SearchController implements Initializable {
 			taskCategories.add(task.getCategory());
 		}
 		
-		descSb.updateSource(taskDescriptions);
-		catSb.updateSource(taskCategories);
+		descBox.updateSource(taskDescriptions);
+		catBox.updateSource(taskCategories);
 	}
 	
-	public void resetFields() {
-		descriptionCheckBox.setSelected(true);
-		categoriesCheckBox.setSelected(true);
-		priorityCheckBox.setSelected(false);
-		dateCheckBox.setSelected(true);
-		
+	public void clearFields() {
 		descText.setText(null);
 		catText.setText(null);
 		fromDatePicker.setValue(null);
 		toDatePicker.setValue(null);
+		
+		priorityCheckBox.setSelected(false);
+		completedCheckBox.setSelected(false);
 	}
 	
-	private static OnEnterPressedListener createSuggestionImplementation (TextField textField) {
-		return new OnEnterPressedListener() {
-			@Override
-			public void onEnterPressed() {
-				// do nothing on enter pressed
-			}
-		};
+	private boolean isAtLeastOneFilled () {
+		String desc = descText.getText();
+		boolean isDescFilled = desc != null && !desc.equals("");
+		String cat = catText.getText();
+		boolean isCatFilled = cat != null  && !cat.equals("");
+		boolean isFromFilled = fromDatePicker.getValue() != null;
+		boolean isToFilled = toDatePicker.getValue() != null;
+		
+		return isDescFilled || isCatFilled || isFromFilled || isToFilled;
 	}
 }

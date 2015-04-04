@@ -6,34 +6,27 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="itinerary.userinterface.SearchController">
+<VBox spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="itinerary.userinterface.SearchController">
    <children>
-      <VBox prefHeight="237.0" prefWidth="189.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Label text="Description" />
+      <TextField fx:id="descText" />
+      <Label text="Category" />
+      <TextField fx:id="catText" />
+      <Label text="Between" />
+      <DatePicker fx:id="fromDatePicker" promptText="mm/dd/yyyy" />
+      <Label text="And" />
+      <DatePicker fx:id="toDatePicker" promptText="mm/dd/yyyy" />
+      <CheckBox fx:id="priorityCheckBox" mnemonicParsing="false" text="Search prioritised tasks only" />
+      <CheckBox fx:id="completedCheckBox" mnemonicParsing="false" text="Search completed tasks only" />
+      <HBox>
          <children>
-            <CheckBox fx:id="descriptionCheckBox" mnemonicParsing="false" selected="true" text="Search task descriptions" />
-            <TextField fx:id="descText" />
-            <CheckBox fx:id="categoriesCheckBox" mnemonicParsing="false" selected="true" text="Search tasks categories" />
-            <TextField fx:id="catText" />
-            <CheckBox fx:id="priorityCheckBox" mnemonicParsing="false" text="Search only tasks with priority" />
-            <CheckBox fx:id="dateCheckBox" mnemonicParsing="false" selected="true" text="Search dates" />
-            <Label text="Between" />
-            <DatePicker fx:id="fromDatePicker" promptText="mm/dd/yyyy" />
-            <Label text="And" />
-            <DatePicker fx:id="toDatePicker" promptText="mm/dd/yyyy" />
-            <HBox>
-               <children>
-                  <Button fx:id="searchButton" mnemonicParsing="false" onAction="#executeSearch" text="Search" />
-                  <Pane minWidth="10.0" />
-                  <Button fx:id="resetButton" mnemonicParsing="false" onAction="#resetFields" text="Reset Fields" />
-               </children>
-            </HBox>
+            <Button fx:id="searchButton" mnemonicParsing="false" onAction="#executeSearch" text="Search" />
+            <Pane minWidth="10.0" />
+            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearFields" text="Clear" />
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </VBox>
+      </HBox>
    </children>
-   <opaqueInsets>
-      <Insets />
-   </opaqueInsets>
-</AnchorPane>
+   <padding>
+      <Insets bottom="15.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+</VBox>
