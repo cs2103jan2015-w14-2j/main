@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 
 //@author A0121437N
 public class UserInterface extends Application {
+	private static final double STAGE_MIN_WIDTH = 504.0;
+	private static final double STAGE_MIN_HEIGHT = 629.0;
+	
 	Logic logic = new Logic();
 	Stage stage;
 	String fileName;
@@ -32,9 +35,7 @@ public class UserInterface extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.stage = stage;
-		double STAGE_MIN_HEIGHT = 629.0;
 		this.stage.setMinHeight(STAGE_MIN_HEIGHT);
-		double STAGE_MIN_WIDTH = 504.0;
 		this.stage.setMinWidth(STAGE_MIN_WIDTH);
 		if (!logic.isFileConfigured()) {
 			FileNameRequestDialog.getInstance(listener, null).show();
