@@ -25,7 +25,7 @@ public class UserInterface extends Application {
 			logic.setupLogicVariables(name);
 			fileName = name;
 			try {
-				openMainApplication(stage);
+				openMainApplication();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -40,11 +40,11 @@ public class UserInterface extends Application {
 		if (!logic.isFileConfigured()) {
 			FileNameRequestDialog.getInstance(listener, null).show();
 		} else {
-			openMainApplication(this.stage);
+			openMainApplication();
 		}
 	}
-	
-	private void openMainApplication (Stage stage) throws Exception {
-		new MainApplication(logic, fileName).start(stage);		
+
+	private void openMainApplication() {
+		new MainStage(logic).show();
 	}
 }
