@@ -32,7 +32,7 @@
                   <Insets right="5.0" />
                </HBox.margin>
             </Hyperlink>
-            <TextField fx:id="basicSearchTextField" onAction="#executeBasicSearch" promptText="Basic Search" />
+            <TextField fx:id="basicSearchTextField" onAction="#executeBasicSearch" promptText="Quick Search" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
