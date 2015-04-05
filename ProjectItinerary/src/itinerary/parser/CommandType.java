@@ -2,6 +2,7 @@ package itinerary.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -43,9 +44,22 @@ public enum CommandType {
 	}
 	
 	public List<String> getCommandAliases () {
-		List<String> copies = new ArrayList<String>(commandAliases.size());
-		Collections.copy(copies, commandAliases);
+		List<String> copies = new ArrayList<String>();
+		for (String alias : commandAliases) {
+			copies.add(alias);
+		}
 		return copies;
+	}
+	
+	public static List<CommandType> getAllTypes () {
+		Comparator<CommandType> alphabeticalComparator = new Comparator<CommandType>() {
+			@Override
+			public int compare(CommandType type1, CommandType type2) {
+				return type1.getCommandName().compareTo(type2.getCommandName());
+			}
+		};
+		Collections.sort(allTypes, alphabeticalComparator);
+		return allTypes;
 	}
 	
 	public static CommandType identifyCommandType (String alias) {

@@ -1,8 +1,15 @@
 package itinerary.userinterface;
 
+import itinerary.parser.CommandType;
+
+import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -13,15 +20,15 @@ public class HelpStage extends Stage{
 	private static final String WINDOW_TITLE = "Help";
 	private static HelpStage onlyInstance;
 	
-	private TableView<String> table = new TableView<String>();
-	TableColumn<String, String> commandColumn = new TableColumn<String, String>(HEADER_COMMAND);
-	TableColumn<String, String> keywordColumn = new TableColumn<String, String>(HEADER_KEYWORD);
+	private TableView<HelpEntry> helpTable = new TableView<HelpEntry>();
+	TableColumn<HelpEntry, String> commandColumn = new TableColumn<HelpEntry, String>(HEADER_COMMAND);
+	TableColumn<HelpEntry, String> aliasColumn = new TableColumn<HelpEntry, String>(HEADER_KEYWORD);
 	
 	private HelpStage () {
 		Pane container = new Pane();
 		setupTable();
 		
-		container.getChildren().add(this.table);
+		container.getChildren().add(this.helpTable);
 		Scene scene = new Scene(container);
 		
 		this.setScene(scene);
@@ -30,9 +37,31 @@ public class HelpStage extends Stage{
 		this.initStyle(StageStyle.UTILITY);
 	}
 	
-	private void setupTable() {		
-		table.getColumns().addAll(commandColumn, keywordColumn);
-		table.setEditable(false);
+	@SuppressWarnings("unchecked")
+	private void setupTable() {
+		List<CommandType> allTypes = CommandType.getAllTypes();
+		commandColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>("commandName"));
+		aliasColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>("commandAlias"));
+		
+		ObservableList<HelpEntry> entries = FXCollections.observableArrayList();
+		for (CommandType type : allTypes) {
+			if (type.getCommandName().equals("")) {
+				continue;
+			}
+			String collated = "";
+			List<String> aliases = type.getCommandAliases();
+			for (int i = 0; i < aliases.size(); i++) {
+				collated += aliases.get(i);
+				if (i + 1 != aliases.size()) {
+					collated += ", ";
+				}
+			}
+			entries.add(new HelpEntry(type.getCommandName(), collated));
+		}
+		
+		helpTable.getColumns().addAll(commandColumn, aliasColumn);
+		helpTable.setItems(entries);
+		helpTable.setEditable(false);
 	}
 
 	public static HelpStage getInstance () {
