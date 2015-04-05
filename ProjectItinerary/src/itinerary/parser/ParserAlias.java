@@ -2,8 +2,6 @@ package itinerary.parser;
 
 import java.util.ArrayList;
 
-import itinerary.main.CommandType;
-
 //@author A0114823M
 public class ParserAlias {
 
@@ -28,7 +26,7 @@ public class ParserAlias {
 	private static final String COMMAND_MARK_FINISH = "finish";
 	private static final String COMMAND_MARK_DONE = "done";
 	private static final String COMMAND_MARK_TICK = "tick";
-	private static final String COMMAND_UNMARK = "Unmark";
+	private static final String COMMAND_UNMARK = "unmark";
 	private static final String COMMAND_REDO = "redo";
 	private static final String COMMAND_UNDO = "undo";
 	private static final String COMMAND_HELP = "help";

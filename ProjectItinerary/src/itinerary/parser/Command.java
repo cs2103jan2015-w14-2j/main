@@ -1,4 +1,6 @@
-package itinerary.main;
+package itinerary.parser;
+
+import itinerary.main.Task;
 
 //@author A0121437N
 public class Command {

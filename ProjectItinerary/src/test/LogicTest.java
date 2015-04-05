@@ -2,13 +2,13 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 import itinerary.history.History;
-import itinerary.main.Command;
-import itinerary.main.CommandType;
 import itinerary.main.Logic;
 import itinerary.main.Task;
-import itinerary.main.UserInterfaceContent;
+import itinerary.parser.Command;
+import itinerary.parser.CommandType;
 import itinerary.storage.Storage;
 import itinerary.storage.StorageStub;
+import itinerary.userinterface.UserInterfaceContent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

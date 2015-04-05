@@ -2,7 +2,6 @@ package itinerary.userinterface;
 
 import itinerary.main.Logic;
 import itinerary.main.Task;
-import itinerary.main.UserInterfaceContent;
 import itinerary.main.Logic.HelpListener;
 import itinerary.search.SearchTask;
 import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;

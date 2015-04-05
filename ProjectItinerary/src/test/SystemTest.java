@@ -7,8 +7,8 @@ import itinerary.main.DeadlineTask;
 import itinerary.main.Logic;
 import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
-import itinerary.main.UserInterfaceContent;
 import itinerary.search.SearchTask;
+import itinerary.userinterface.UserInterfaceContent;
 
 import java.io.File;
 import java.util.Calendar;

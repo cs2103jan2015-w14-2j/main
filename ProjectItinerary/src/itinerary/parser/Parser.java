@@ -1,7 +1,5 @@
 package itinerary.parser;
 
-import itinerary.main.Command;
-import itinerary.main.CommandType;
 import itinerary.main.DeadlineTask;
 import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
@@ -456,9 +454,7 @@ public class Parser {
 	}
 
 	private static CommandType determineCommandType(String command){
-		ParserAlias parserAlias =  new ParserAlias();
-		CommandType commandType =  parserAlias.getType(command);
-		return commandType;
+		return CommandType.identifyCommandType(command);
 	}
 
 	private static CommandType unmarkToMark(CommandType commandType){

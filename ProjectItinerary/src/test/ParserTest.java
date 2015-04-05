@@ -1,6 +1,8 @@
 package test;
 
 import itinerary.main.*;
+import itinerary.parser.Command;
+import itinerary.parser.CommandType;
 import itinerary.parser.Parser;
 import itinerary.parser.ParserException;
 import static org.junit.Assert.*;

@@ -1,9 +1,10 @@
 package test;
 
-import itinerary.main.CommandType;
+import itinerary.parser.CommandType;
 import itinerary.parser.ParserAlias;
 
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;

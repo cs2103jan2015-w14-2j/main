@@ -2,6 +2,8 @@ package itinerary.main;
 
 import itinerary.history.History;
 import itinerary.history.HistoryException;
+import itinerary.parser.Command;
+import itinerary.parser.CommandType;
 import itinerary.parser.Parser;
 import itinerary.parser.ParserException;
 import itinerary.search.Search;
@@ -11,6 +13,7 @@ import itinerary.storage.ConfigStorage;
 import itinerary.storage.FileStorage;
 import itinerary.storage.Storage;
 import itinerary.storage.StorageException;
+import itinerary.userinterface.UserInterfaceContent;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,6 @@
-package itinerary.main;
+package itinerary.userinterface;
+
+import itinerary.main.Task;
 
 import java.util.List;
 
