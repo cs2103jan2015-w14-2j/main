@@ -3,6 +3,7 @@ package itinerary.userinterface;
 import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.main.UserInterfaceContent;
+import itinerary.main.Logic.HelpListener;
 import itinerary.search.SearchTask;
 import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;
 import itinerary.userinterface.SearchStage.SearchResultCallback;
@@ -27,7 +28,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 //@author A0121437N
-public class MainController implements Initializable, SearchResultCallback {
+public class MainController implements Initializable, SearchResultCallback, HelpListener {
 	
 	@FXML
 	private TextField commandTextField;
@@ -63,17 +64,29 @@ public class MainController implements Initializable, SearchResultCallback {
 		public void handle(WindowEvent event) {
 			SearchStage.closeIfShowing();
 			FileNameRequestDialog.closeIfShowing();
+			HelpStage.closeIfShowing();
 			logic.exitOperation();
 		}
 	};
 
+	NameRequestListener nameRequestListener = new NameRequestListener() {
+		@Override
+		public void onFileNameEntered(String name) {
+			logic.saveStorageFileName(name);
+			logic.setupLogicVariables(name);
+			mainStage.setTitle(MainStage.formatTitle(name));
+			setLaunchContent();
+		}
+	};
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+		// Do nothing
 	}
 	
 	public void setUpController (Logic logic, Stage stage) {
 		this.logic = logic;
+		this.logic.addHelpListener(this);
 		setupStageAndListeners(stage);
 		this.mainStage = stage;
 		setLaunchContent();
@@ -162,13 +175,8 @@ public class MainController implements Initializable, SearchResultCallback {
 		FileNameRequestDialog.getInstance(nameRequestListener, current).show();
 	}
 	
-	NameRequestListener nameRequestListener = new NameRequestListener() {
-		@Override
-		public void onFileNameEntered(String name) {
-			logic.saveStorageFileName(name);
-			logic.setupLogicVariables(name);
-			mainStage.setTitle(MainStage.formatTitle(name));
-			setLaunchContent();
-		}
-	};
+	@Override
+	public void onHelpEntered() {
+		HelpStage.getInstance().show();
+	}
 }

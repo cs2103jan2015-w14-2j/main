@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 //@author A0121437N
 public class Logic {
+	private static final String MESSAGE_OPEN_HELP = "Opening help.";
 	private static final String MESSAGE_WELCOME = "Welcome to ITnerary! %1$s is ready for use.";
 	private static final String MESSAGE_DELETE_SUCCESS = "Deleted task %1$s.";
 	private static final String MESSAGE_CLEAR_SUCCESS = "Cleared all tasks.";
@@ -52,6 +53,7 @@ public class Logic {
 	private Storage storage;
 	private History history;
 	private ConfigStorage config;
+	private List<HelpListener> helpListeners = new ArrayList<HelpListener>();
 	
 	/**
 	 * Must call setUpLogicVariables to initialize variables
@@ -147,6 +149,10 @@ public class Logic {
 		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
 	}
 	
+	public void addHelpListener (HelpListener listener) {
+		this.helpListeners.add(listener);
+	}
+	
 	public void exitOperation () {
 		storage.close();
 	}
@@ -169,11 +175,13 @@ public class Logic {
 			return executeRedo();
 		} else if (type == CommandType.UNDO) {
 			return executeUndo();
-		} else {
+		} else if (type == CommandType.HELP) {
+			return executeHelp();
+		}else {
 			return unknownCommand(userInput);
 		}
 	}
-	
+
 	private UserInterfaceContent executeAdd(Command command) {
 		try {
 			storage.addTask(command.getTask());
@@ -321,6 +329,17 @@ public class Logic {
 		}
 		return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
 	}
+	
+	private UserInterfaceContent executeHelp() {
+		notifyHelpListeners();
+		return new UserInterfaceContent(MESSAGE_OPEN_HELP, storage.getAllTasks());
+	}
+	
+	private void notifyHelpListeners () {
+		for (HelpListener listener : this.helpListeners) {
+			listener.onHelpEntered();
+		}
+	}
 
 	private String formatAddSuccess(Task task) {
 		return String.format(MESSAGE_ADD_SUCCESS, task.getText());
@@ -349,5 +368,9 @@ public class Logic {
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+	
+	public interface HelpListener {
+		void onHelpEntered();
 	}
 }
