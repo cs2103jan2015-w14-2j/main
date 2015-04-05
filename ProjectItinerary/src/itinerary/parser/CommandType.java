@@ -8,20 +8,20 @@ import java.util.List;
 
 //@author A0121437N
 public enum CommandType {
-	ADD ("Add", "add", "+"),
-	CLEAR ("Clear", "clear"),
-	DELETE ("Delete", "delete", "-", "del", "remove", "cancel"),
-	DISPLAY ("Display", "display", "show", "list"),
-	EDIT ("Edit", "edit", "change", "update"),
-	SEARCH ("Search", "search", "find"),
-	REDO ("Redo", "redo"),
-	UNDO ("Undo", "undo"),
-	MARK ("Mark", "mark", "complete", "finish", "done"),
-	UNMARK ("Unmark", "unmark"),
-	HELP ("Help", "help", "?"),
+	ADD ("Add a task", "add", "+"),
+	CLEAR ("Clear all tasks", "clear"),
+	DELETE ("Delete a task", "delete", "-", "del", "remove", "cancel"),
+	DISPLAY ("Display all tasks", "display", "show", "list"),
+	EDIT ("Edit a task", "edit", "change", "update"),
+	SEARCH ("Search for tasks", "search", "find"),
+	REDO ("Redo an action", "redo"),
+	UNDO ("Undo an action", "undo"),
+	MARK ("Mark a task as complete", "mark", "complete", "finish", "done"),
+	UNMARK ("Unmark a task as complete", "unmark"),
+	HELP ("Get help", "help", "?"),
 	UNABLE_TO_DETERMINE ("");
 	
-	private final String commandName;
+	private final String commandTitle;
 	private final List<String> commandAliases = new ArrayList<String>();
 	
 	private static final List<CommandType> allTypes;
@@ -32,15 +32,15 @@ public enum CommandType {
 		}
 	}
 	
-	CommandType (String commandName, String... commandAliases) {
-		this.commandName = commandName;
+	CommandType (String commandTitle, String... commandAliases) {
+		this.commandTitle = commandTitle;
 		for (String alias : commandAliases) {
 			this.commandAliases.add(alias);
 		}
 	}
 	
-	public String getCommandName () {
-		return this.commandName;
+	public String getCommandTitle () {
+		return this.commandTitle;
 	}
 	
 	public List<String> getCommandAliases () {
@@ -55,7 +55,7 @@ public enum CommandType {
 		Comparator<CommandType> alphabeticalComparator = new Comparator<CommandType>() {
 			@Override
 			public int compare(CommandType type1, CommandType type2) {
-				return type1.getCommandName().compareTo(type2.getCommandName());
+				return type1.getCommandTitle().compareTo(type2.getCommandTitle());
 			}
 		};
 		Collections.sort(allTypes, alphabeticalComparator);

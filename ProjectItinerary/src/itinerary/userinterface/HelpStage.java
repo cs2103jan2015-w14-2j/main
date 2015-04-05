@@ -45,7 +45,7 @@ public class HelpStage extends Stage{
 		
 		ObservableList<HelpEntry> entries = FXCollections.observableArrayList();
 		for (CommandType type : allTypes) {
-			if (type.getCommandName().equals("")) {
+			if (type.getCommandTitle().equals("")) {
 				continue;
 			}
 			String collated = "";
@@ -56,7 +56,7 @@ public class HelpStage extends Stage{
 					collated += ", ";
 				}
 			}
-			entries.add(new HelpEntry(type.getCommandName(), collated));
+			entries.add(new HelpEntry(type.getCommandTitle(), collated));
 		}
 		
 		helpTable.getColumns().addAll(commandColumn, aliasColumn);
