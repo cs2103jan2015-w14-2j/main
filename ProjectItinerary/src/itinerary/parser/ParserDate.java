@@ -10,34 +10,70 @@ import java.util.List;
 public class ParserDate {
 
 	private static final String ERROR_DATE_FORMAT = "Error! Date format error";
+	private static final String ERROR_INVALID_DATE = "Error! The date does not exist";
+	private static final String ERROR_INVALID_TIME = "Error! The time does not exist";
 	private static final String AFTER_TEN_YEAR = "after 10 years";
+	private static final String STRING_A = "a";
+	private static final String STRING_ONE = "one";
+	private static final String TIME_AM = "am";
+	private static final String TIME_A = "a";
+	private static final String TIME_PM = "pm";
+	private static final String TIME_P = "p";
 	private static final String FUTURE = "future";
-	private static final String CHARACTER_DOT = ".";
-	private static final String CHARACTER_DASH = "-";
-	private static final String CHARACTER_UNDERSCORE = "_";
-	private static final String CHARACTER_SLASH = "/";
+	private static final String STRING_DOT = ".";
+	private static final String STRING_DASH = "-";
+	private static final String STRING_UNDERSCORE = "_";
+	private static final String STRING_SLASH = "/";
+
+	private int[] numOfDaysEachMonth = {0,31,28,31,30,31,30,31,31,30,31,30,31};
 
 	public ParserDate(){ 
 	}
 
 	public Calendar getDate(String dateString) throws ParserException {
 		dateString = changeDateFormat(dateString);
+
 		if(!isValidDate(dateString)){
 			throw new ParserException(ERROR_DATE_FORMAT);
 		}
+		if(!isValidDayOfMonth(dateString)){
+			throw new ParserException(ERROR_INVALID_DATE);
+		}
+		if(!isValidAmPm(dateString)){
+			throw new ParserException(ERROR_INVALID_TIME);
+		}
+		if(!isValidTime(dateString)){
+			throw new ParserException(ERROR_INVALID_TIME);
+		}
+		
 		dateString = switchDateMonth(dateString);
+		dateString = convertAToOne(dateString);
 		return parseDateByNatty(dateString);
+	}
+	
+	public int countAppearance(String dateString, String string){
+		int counter = 0;
+		for(int i=0; i < dateString.length(); i++){
+			if(dateString.charAt(i) == string.charAt(0)){
+				counter++;
+			}
+		}
+		return counter;
 	}
 
 	public String changeDateFormat(String dateString){ 
 		String changedFormat = dateString;
 
-		if(dateString.indexOf(CHARACTER_DASH) != -1){
-			changedFormat = dateString.replaceAll( CHARACTER_DASH, CHARACTER_SLASH);
+		if(countAppearance(dateString, STRING_DASH) > 0){
+			changedFormat = dateString.replaceAll( STRING_DASH, STRING_SLASH);
 			return changedFormat;
 		}
-		if(dateString.indexOf(CHARACTER_UNDERSCORE) != -1){
-			changedFormat = dateString.replaceAll( CHARACTER_UNDERSCORE, CHARACTER_SLASH);
+		if(countAppearance(dateString, STRING_UNDERSCORE) > 0){
+			changedFormat = dateString.replaceAll( STRING_UNDERSCORE, STRING_SLASH);
+			return changedFormat;
+		}
+		if(countAppearance(dateString, STRING_DOT) > 1){
+			changedFormat = dateString.replaceAll( STRING_DOT, STRING_SLASH);
 			return changedFormat;
 		}
 		return dateString;
@@ -45,10 +81,10 @@ public class ParserDate {
 
 	public String switchDateMonth(String dateString){
 
-		if(dateString.indexOf(CHARACTER_SLASH) != -1){
+		if(dateString.indexOf(STRING_SLASH) != -1){
 			String switchedString = "";
 			String[] textsAroundSlash = {};
-			textsAroundSlash = dateString.split(CHARACTER_SLASH);
+			textsAroundSlash = dateString.split(STRING_SLASH);
 
 			try{
 				Integer.parseInt(textsAroundSlash[0]);
@@ -62,7 +98,7 @@ public class ParserDate {
 				textsAroundSlash[0] = textsAroundSlash[1];
 				textsAroundSlash[1] = temp;
 				for(String text: textsAroundSlash){
-					switchedString = switchedString + text + CHARACTER_SLASH;
+					switchedString = switchedString + text + STRING_SLASH;
 				}
 				switchedString = switchedString.substring(0, switchedString.length()-1);
 				return switchedString;
@@ -71,21 +107,19 @@ public class ParserDate {
 		return dateString;
 	}
 
-	public String futureToOneYear(String dateString){
+	public String futureToTenYear(String dateString){
 		if(dateString.equalsIgnoreCase(FUTURE)){
 			dateString = AFTER_TEN_YEAR;
 		}
 		return dateString;
 	}
-	
+
 	public Calendar parseDateByNatty(String dateString) throws ParserException{
-		dateString = futureToOneYear(dateString);
-		System.out.println(dateString);
+		dateString = futureToTenYear(dateString);
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
 		List<DateGroup> dateGroups = dateParser.parse(dateString);
 
 		if (dateGroups.isEmpty()) {
-			System.out.println("problem.....");
 			throw new ParserException(ERROR_DATE_FORMAT);
 		}
 
@@ -97,7 +131,7 @@ public class ParserDate {
 	}
 
 	public boolean isValidDate (String dateString) throws ParserException{				
-		if(dateString.indexOf(CHARACTER_SLASH) != -1){
+		if(dateString.indexOf(STRING_SLASH) != -1){
 			return isValidArguments(dateString);
 		}
 		return true;
@@ -107,17 +141,17 @@ public class ParserDate {
 		int valueExceedDay = 0;
 		int valueWithinMonth = 0;		
 		String[] dateWords = stringToArray(dateString);
-		
+
 		for(int i=0; i < dateWords.length; i++){
-			if(dateWords[i].indexOf(CHARACTER_SLASH) != -1){
+			if(dateWords[i].indexOf(STRING_SLASH) != -1){
 				dateString = dateWords[i];
 			}
 		}
-		String[] textAroundCharacter = dateString.split(CHARACTER_SLASH);
+		String[] textAroundCharacter = dateString.split(STRING_SLASH);
 		if(textAroundCharacter.length > 3){
 			return false;
 		}
-		
+
 		for(String text: textAroundCharacter){			
 			try{
 				Integer.parseInt(text);
@@ -147,6 +181,125 @@ public class ParserDate {
 		return true;
 	}
 
+	public static boolean isLeapYear(int year){
+		if (year % 400 == 0){ 
+			return true;
+		}
+		else if (year % 4 == 0 && year % 100 != 0){ 
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isValidDayOfMonth(String dateString) throws ParserException{
+		String[] dateWords = stringToArray(dateString);
+
+		for(int i=0; i < dateWords.length; i++){
+			if(dateWords[i].indexOf(STRING_SLASH) != -1){
+				dateString = dateWords[i];
+			}
+		}
+
+		String[] textAroundCharacter = dateString.split(STRING_SLASH);
+		int[] dayMonth = {0,0};
+		for(String text: textAroundCharacter){
+			try{
+				Integer.parseInt(text);		
+				int number = Integer.parseInt(text);		
+				number = processYear(number);
+				if(number < 32 && number > 12){
+					dayMonth[1] = number;
+				}
+				if(number <= 12){
+					dayMonth[0] = number;
+				}		
+			}catch(NumberFormatException e){
+			}
+
+			if(dayMonth[1] != 0){
+				int month = dayMonth[0];
+				if(dayMonth[1] > numOfDaysEachMonth[month]){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public int  processYear(int year) throws ParserException{
+		if(year > 32 && year < 100){
+			year = year + 2000;
+		}
+
+		if(year > 100 && year < 1900){
+			throw new ParserException (ERROR_DATE_FORMAT);
+		}
+
+		if(year > 1900){
+			if(isLeapYear(year)){
+				numOfDaysEachMonth[2] = 29;
+			}
+		}
+		return year;
+	}
+	
+	public boolean isValidAmPm(String dateString){
+		String[]dateWords = stringToArray(dateString);
+		for(int i=0; i<dateWords.length; i++){
+			int amIndex = dateWords[i].indexOf(TIME_AM);
+			amIndex = dateWords[i].indexOf(TIME_A);
+			int pmIndex = dateWords[i].indexOf(TIME_PM);
+			pmIndex = dateWords[i].indexOf(TIME_P);
+			
+			String text = "";
+			if(amIndex != -1 || pmIndex != -1){
+				try{
+					if(amIndex != -1){
+						text = dateWords[i].substring(0, amIndex);
+					}
+					if(pmIndex != -1){
+						text = dateWords[i].substring(0, pmIndex);
+					}
+					int time = Integer.parseInt(text);		
+					if(time < 0 || time > 12){
+						return false;
+					}
+				}catch(NumberFormatException e){
+				}
+			}
+		}
+		return true;
+	}
+
+	public boolean isValidTime(String dateString){
+			String[]dateWords = stringToArray(dateString);
+			for(String word: dateWords){			
+				try{
+					int time = Integer.parseInt(word);	
+					if(word.length() != 2 && word.length() != 4 && word.length() != 6 ){
+						return false;
+					}
+					if( time > 2400 ){
+						return false;
+					}
+				}catch(NumberFormatException e){
+				}
+			}
+			return true;
+	}
+	
+	public String convertAToOne(String dateString){
+		String[]dateWords = stringToArray(dateString);
+		String newDateString = "";
+		for(int i=0; i<dateWords.length; i++){
+			if(dateWords[i].equalsIgnoreCase(STRING_A)){
+				dateWords[i] = STRING_ONE;
+			}
+			newDateString = newDateString + dateWords[i] + " ";
+		}System.out.println(newDateString);
+		return newDateString.trim();
+	}
+	
 	private static String[] stringToArray(String input){
 		return input.trim().split("\\s+");
 	}

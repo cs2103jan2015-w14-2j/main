@@ -1,8 +1,6 @@
 package test;
 
 import static org.junit.Assert.*;
-import itinerary.main.*;
-import itinerary.parser.Parser;
 import itinerary.parser.ParserDate;
 import itinerary.parser.ParserException;
 
@@ -65,5 +63,63 @@ public class ParserDateTest {
 		String dateString = "9.30pm";
 		assertNotNull(parserDate.getDate(dateString));
 	}
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfMonth () throws ParserException {
+		parserDate.getDate("2015/4/31");
+	}	
+	
+	@Test
+	public void testValidDayOfMonth () throws ParserException {
+		String dateString = "2012/3/31";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfFeb () throws ParserException {
+		parserDate.getDate("2015/2/29");
+	}	
+
+	@Test
+	public void testValidDayOfFeb () throws ParserException {
+		String dateString = "2012/2/29";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidAm () throws ParserException {
+		parserDate.getDate("2015/1/2 13am");
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidP () throws ParserException {
+		parserDate.getDate("2015/1/2 23p");
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidTime () throws ParserException {
+		parserDate.getDate("2015/1/2 930");
+	}	
+	
+	@Test
+	public void testValidTime () throws ParserException {
+		String dateString = "2012/1/2 0930";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+	
+	@Test
+	public void testAToOne () throws ParserException {
+		assertNotNull(parserDate.getDate("a month"));
+	}	
+	
+	@Test
+	public void testTomorrow () throws ParserException {
+		assertNotNull(parserDate.getDate("tomorrow"));
+	}	
+	
+	@Test
+	public void testFridayNoon () throws ParserException {
+		assertNotNull(parserDate.getDate("Friday noon"));
+	}	
 }
 
