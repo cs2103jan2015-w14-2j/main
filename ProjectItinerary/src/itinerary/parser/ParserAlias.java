@@ -11,6 +11,7 @@ public class ParserAlias {
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_ADD_PLUS = "+";
 	private static final String COMMAND_DELETE = "delete";
+	private static final String COMMAND_DELETE_DEL = "del";
 	private static final String COMMAND_DELETE_MINUS = "-";
 	private static final String COMMAND_DELETE_REMOVE = "remove";
 	private static final String COMMAND_DELETE_CANCEL = "cancel";
@@ -83,6 +84,7 @@ public class ParserAlias {
 		commandList.get(addIndex).add(COMMAND_ADD);
 		commandList.get(addIndex).add(COMMAND_ADD_PLUS);
 		commandList.get(deleteIndex).add(COMMAND_DELETE );
+		commandList.get(deleteIndex).add(COMMAND_DELETE_DEL );
 		commandList.get(deleteIndex).add(COMMAND_DELETE_MINUS);
 		commandList.get(deleteIndex).add(COMMAND_DELETE_REMOVE);
 		commandList.get(deleteIndex).add(COMMAND_DELETE_CANCEL);
