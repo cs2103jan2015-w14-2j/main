@@ -31,6 +31,7 @@ public class Parser {
 	private static final String DELETE_CATEGORY = "del";
 	private static final String ESCAPE_STRING = "+";
 	private static final String COMMAND_ADD_PLUS = "+";
+	private static final String COMMAND_HELP_QUESTIONMARK = "?";
 	private static final Character ESCAPE_CHARACTER = '+';
 
 	private static final String KEYWORD_SCHEDULE_TO = "to";
@@ -78,10 +79,11 @@ public class Parser {
 			return createTaskToUnmark(argument);
 		}	
 		if(type.equals(CommandType.HELP)){
+			return new Task (-1,null,null,null,null);
 		}
 		return null;
 	}
-
+	
 	private static boolean hasDuplicateKeywords(String[] inputWords){
 		for (String keyword : KEYWORDS) {
 			int count = countKeywordOccurrences(inputWords, keyword);
@@ -446,6 +448,10 @@ public class Parser {
 		if(firstWord.equals(COMMAND_ADD_PLUS)){
 			firstWord = "\\" + COMMAND_ADD_PLUS;
 		}
+		if(firstWord.equals(COMMAND_HELP_QUESTIONMARK)){
+			firstWord = "\\" + COMMAND_HELP_QUESTIONMARK;
+		}
+		
 		return input.replaceFirst(firstWord, "").trim();
 	}
 
