@@ -1,7 +1,6 @@
 package itinerary.parser;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 import itinerary.main.CommandType;
 
@@ -35,39 +34,22 @@ public class ParserAlias {
 	private static final String COMMAND_HELP = "help";
 	private static final String COMMAND_HELP_QUESTIONMARK = "?";
 
-	private TreeMap<CommandType, Integer> commandTree = new TreeMap<CommandType, Integer>();
 	private ArrayList<ArrayList<String>> commandList = new  ArrayList<ArrayList<String>>();
-
-	private int addIndex, deleteIndex, editIndex, displayIndex, clearIndex, searchIndex, markIndex, unmarkIndex,
-	                   redoIndex, undoIndex, helpIndex;
-
-	public void createCommandTree(){
-		int i = 0;
-		commandTree.put(CommandType.ADD, i++);
-		commandTree.put(CommandType.CLEAR, i++);
-		commandTree.put(CommandType.DELETE, i++);
-		commandTree.put(CommandType.DISPLAY, i++);
-		commandTree.put(CommandType.EDIT, i++);
-		commandTree.put(CommandType.MARK, i++);
-		commandTree.put(CommandType.UNMARK, i++);
-		commandTree.put(CommandType.REDO, i++);
-		commandTree.put(CommandType.SEARCH, i++);
-		commandTree.put(CommandType.UNDO, i++);			
-		commandTree.put(CommandType.HELP, i++);		
-	}	
+	private int addIndex, deleteIndex, editIndex, displayIndex, clearIndex, searchIndex, 
+	                   markIndex, unmarkIndex, redoIndex, undoIndex, helpIndex;
 
 	public void createIndex(){
-		addIndex = commandTree.get(CommandType.ADD);
-		deleteIndex = commandTree.get(CommandType.DELETE);
-		displayIndex = commandTree.get(CommandType.DISPLAY);
-		editIndex = commandTree.get(CommandType.EDIT);
-		clearIndex = commandTree.get(CommandType.CLEAR);
-		searchIndex = commandTree.get(CommandType.SEARCH);
-		markIndex = commandTree.get(CommandType.MARK);
-		unmarkIndex = commandTree.get(CommandType.UNMARK);
-		redoIndex = commandTree.get(CommandType.REDO);
-		undoIndex = commandTree.get(CommandType.UNDO);
-		helpIndex = commandTree.get(CommandType.HELP);
+		addIndex = 0;
+		deleteIndex = 1;
+		displayIndex = 2;
+		editIndex = 3;
+		clearIndex = 4;
+		searchIndex = 5;
+		markIndex = 6;
+		unmarkIndex = 7;
+		redoIndex = 8;
+		undoIndex = 9;
+		helpIndex = 10;
 	}
 
 	public void initializeCommandList(){
@@ -77,7 +59,6 @@ public class ParserAlias {
 	}
 
 	public void createCommandList (){
-		createCommandTree();
 		createIndex();
 		initializeCommandList();
 
@@ -165,16 +146,6 @@ public class ParserAlias {
 		}
 		
 		return CommandType.UNABLE_TO_DETERMINE;
-	}
-	
-	public ArrayList<ArrayList<String>> getCommandList(){
-		createCommandList();
-		return commandList;
-	}
-	
-	public TreeMap<CommandType, Integer> getCommandTree(){
-		createCommandTree();
-		return commandTree;
 	}
 	
 	public CommandType getType(String command){
