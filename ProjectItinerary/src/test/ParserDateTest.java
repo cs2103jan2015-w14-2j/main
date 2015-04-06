@@ -12,50 +12,21 @@ public class ParserDateTest {
 	ParserDate parserDate = new ParserDate();
 
 	@Test
-	public void testNormal() throws ParserException{
-		String dateString = "3pm 2017/3/4";
+	public void testWithoutTime() throws ParserException{
+		String dateString = "5/8/2009";
 		assertNotNull(parserDate.getDate(dateString));
 	}
 	
 	@Test
-	public void testChangeDateFormat(){
-		String expectedDate = "2015/1/28";
-		String resultDate = parserDate.changeDateFormat("2015-1-28");
-		assertEquals(expectedDate, resultDate);
-	}
-
-	@Test
-	public void testSwitchDateMonth(){
-		String expectedDate = "28/1/2015";
-		String resultDate = parserDate.switchDateMonth("1/28/2015");
-		assertEquals(expectedDate, resultDate);
-	}
-
-	@Test
-	public void testSwitchDateMonthFail(){
-		String expectedDate = "2018/12/5";
-		String resultDate = parserDate.switchDateMonth("2018/12/5");
-		assertEquals(expectedDate, resultDate);
-	}
-
-	@Test (expected = ParserException.class)
-	public void testInvalidMonth () throws ParserException {
-		parserDate.getDate("2018/23/23");
-	}
-
-	@Test (expected = ParserException.class)
-	public void testInvalidDate () throws ParserException {
-		parserDate.getDate("2018/12/32");
+	public void testFuture() throws ParserException{
+		String dateString = "future";
+		assertNotNull(parserDate.getDate(dateString));
 	}
 	
-	@Test (expected = ParserException.class)
-	public void testInvalidYear () throws ParserException {
-		parserDate.getDate("12/12/23");
-	}
-	
-	@Test (expected = ParserException.class)
-	public void testExtraValue () throws ParserException {
-		parserDate.getDate("2015/12/1/2");
+	@Test
+	public void testNormal() throws ParserException{
+		String dateString = "2017/3/4 3pm";
+		assertNotNull(parserDate.getDate(dateString));
 	}
 	
 	@Test 
@@ -64,27 +35,84 @@ public class ParserDateTest {
 		assertNotNull(parserDate.getDate(dateString));
 	}
 	
-	@Test (expected = ParserException.class)
-	public void testInvalidDayOfMonth () throws ParserException {
-		parserDate.getDate("2015/4/31");
-	}	
-	
 	@Test
 	public void testValidDayOfMonth () throws ParserException {
-		String dateString = "2012/3/31";
+		String dateString = "2012/3/31 2pm";
 		assertNotNull(parserDate.getDate(dateString));
-	}	
-	
-	@Test (expected = ParserException.class)
-	public void testInvalidDayOfFeb () throws ParserException {
-		parserDate.getDate("2015/2/29");
 	}	
 
 	@Test
 	public void testValidDayOfFeb () throws ParserException {
-		String dateString = "2012/2/29";
+		String dateString = "2012/2/29 2pm";
 		assertNotNull(parserDate.getDate(dateString));
 	}	
+	
+	@Test
+	public void testValidTime () throws ParserException {
+		String dateString = "2012/1/2 0930";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+	
+	@Test
+	public void testAToOne () throws ParserException {
+		assertNotNull(parserDate.getDate("a month"));
+	}	
+	
+	@Test
+	public void testTomorrow () throws ParserException {
+		assertNotNull(parserDate.getDate("tomorrow night"));
+	}	
+	
+	@Test
+	public void testFridayNoon () throws ParserException {
+		assertNotNull(parserDate.getDate("next Friday noon"));
+	}	
+	
+	@Test
+	public void testFourDigitTime () throws ParserException {
+		assertNotNull(parserDate.getDate("2359"));
+	}	
+	
+	@Test
+	public void testOnlyDayMonth () throws ParserException {
+		assertNotNull(parserDate.getDate("3/8 2pm"));
+	}	
+	
+	@Test
+	public void testChangeDateFormat(){
+		String expectedDate = "2015/1/28 2pm";
+		String resultDate = parserDate.changeDateFormat("2015-1-28 2pm");
+		assertEquals(expectedDate, resultDate);
+	}
+
+	@Test
+	public void testSwitchDateMonth(){
+		String expectedDate = "28/1/2015 2pm";
+		String resultDate = parserDate.switchDateMonth("1/28/2015 2pm");
+		assertEquals(expectedDate, resultDate);
+	}
+	
+	@Test
+	public void testSwitchDateMonthFail(){
+		String expectedDate = "2018/12/5 2pm";
+		String resultDate = parserDate.switchDateMonth("2018/12/5 2pm");
+		assertEquals(expectedDate, resultDate);
+	}
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidMonth () throws ParserException {
+		parserDate.getDate("2018/23/23 3pm");
+	}
+
+	@Test (expected = ParserException.class)
+	public void testInvalidDate () throws ParserException {
+		parserDate.getDate("2018/12/32 3pm");
+	}
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidYear () throws ParserException {
+		parserDate.getDate("12/12/23 3pm");
+	}
 	
 	@Test (expected = ParserException.class)
 	public void testInvalidAm () throws ParserException {
@@ -101,25 +129,14 @@ public class ParserDateTest {
 		parserDate.getDate("2015/1/2 930");
 	}	
 	
-	@Test
-	public void testValidTime () throws ParserException {
-		String dateString = "2012/1/2 0930";
-		assertNotNull(parserDate.getDate(dateString));
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfFeb () throws ParserException {
+		parserDate.getDate("2015/2/29 3pm");
 	}	
 	
-	@Test
-	public void testAToOne () throws ParserException {
-		assertNotNull(parserDate.getDate("a month"));
-	}	
-	
-	@Test
-	public void testTomorrow () throws ParserException {
-		assertNotNull(parserDate.getDate("tomorrow"));
-	}	
-	
-	@Test
-	public void testFridayNoon () throws ParserException {
-		assertNotNull(parserDate.getDate("Friday noon"));
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfMonth () throws ParserException {
+		parserDate.getDate("2015/4/31 3pm");
 	}	
 }
 
