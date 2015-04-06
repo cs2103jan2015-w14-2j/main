@@ -454,6 +454,7 @@ public class Parser {
 	}
 
 	private static CommandType determineCommandType(String command){
+		command = command.toLowerCase();
 		return CommandType.identifyCommandType(command);
 	}
 
