@@ -85,6 +85,7 @@ public class SearchTest {
 	
 	}
 	//tries to query the list with the following search terms category:testcat text:wan pies
+	@Test
 	public void testSearch() throws SearchException{
 		SearchTask task = new SearchTask();
 		String[] field = {"text","category","isPriority"};
@@ -101,6 +102,7 @@ public class SearchTest {
 
 	}
 	//tries to query the list with the following search terms isComplete:true
+	@Test
 	public void testBasicSearch() throws SearchException{
 		Search search = new Search(jsonList);
 		List<Task> testList = search.query("wan pis","text");
@@ -108,6 +110,7 @@ public class SearchTest {
 
 	}
 	//tries to query the list with the following search terms isComplete:true
+	@Test
 	public void testisCompleteSearch() throws SearchException{
 		SearchTask task = new SearchTask();
 		String[] catArray = {"testcat"};
@@ -121,15 +124,9 @@ public class SearchTest {
 		assertEquals("test query",gson.toJson(task2),gson.toJson(testList.get(0)));
 
 	}
-
+	@Test
 	public void testSearchWithDeadline() throws SearchException{
 		SearchTask task = new SearchTask();
-		String[] field = {"deadline"};
-		String[] catArray = {"testcat"};
-		List<String> fields = new ArrayList<String>();
-		fields.addAll(Arrays.asList(field));
-		List<String> catList = new ArrayList<String>(Arrays.asList(catArray));
-		task.setCategoryList(catList);
 		task.setText("Hello Everybody");
 		task.setPriority(true);
 		task.setDeadline(testDeadlineDate);

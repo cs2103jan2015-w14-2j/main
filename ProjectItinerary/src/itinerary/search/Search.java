@@ -112,7 +112,6 @@ public class Search {
 	public <T extends Task> List<T> query(SearchTask task)
 	        throws SearchException {
 		assert task != null;
-		List<String> searchNotField = task.getSearchNotField();
 		BooleanQuery q = new BooleanQuery();
 
 		if (task.isComplete() != null) {
@@ -127,16 +126,7 @@ public class Search {
 			BooleanQuery bQuery = createTextQuery(task);
 			addMustOccur(q, bQuery);
 		}
-		if (task.getCategoryList() != null) {
-			List<String> categoryList = task.getCategoryList();
-			BooleanQuery bQuery = new BooleanQuery();
-			for (int i = 0; i < categoryList.size(); i++) {
-				BooleanQuery cQuery = createCategoryListQuery(categoryList, i);
-				addShouldOccur(bQuery, cQuery);
-			}
-			addMustOccur(q, bQuery);
-
-		}
+		
 		if (task.getCategory() != null) {
 			BooleanQuery bQuery = createCategoryQuery(task);
 			addMustOccur(q, bQuery);
@@ -150,7 +140,6 @@ public class Search {
 		if (task.getToDate() != null && task.getFromDate() != null) {
 			BooleanQuery bQuery = createDateQuery(task.getToDate(),
 			        task.getFromDate());
-			Gson gson = new Gson();
 			addMustOccur(q, bQuery);
 		}
 
@@ -183,15 +172,6 @@ public class Search {
 	private BooleanQuery createTextQuery(SearchTask task) {
 		BooleanQuery bQuery = createQuery(FIELD_TEXT, task.getText());
 		return bQuery;
-	}
-
-	private BooleanQuery createCategoryListQuery(List<String> categoryList, int j) {
-		BooleanQuery cQuery = createQuery(FIELD_CATEGORY, categoryList.get(j));
-		return cQuery;
-	}
-
-	private void addShouldOccur(BooleanQuery bQuery, BooleanQuery cQuery) {
-		bQuery.add(cQuery, BooleanClause.Occur.SHOULD);
 	}
 
 	private void addMustOccur(BooleanQuery q, BooleanQuery bQuery) {
@@ -247,16 +227,6 @@ public class Search {
 		Document d = searcher.doc(docId);
 		hitList.add(d.get(FIELD_JSON));
 		hitTypeList.add(typeList.get(docId));
-	}
-
-	private void displayHits(IndexSearcher searcher, ScoreDoc[] hits)
-	        throws IOException {
-		System.out.println("Found " + hits.length + " hits.");
-		for (int i = 0; i < hits.length; ++i) {
-			int docId = hits[i].doc;
-			Document d = searcher.doc(docId);
-			System.out.println((i + 1) + ". " + d.get(FIELD_TEXT));
-		}
 	}
 
 	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
@@ -336,10 +306,10 @@ public class Search {
 
 	public BooleanQuery createDeadlineQuery(Calendar deadline)
 	        throws SearchException {
-		Gson gson = new Gson();
 		BooleanQuery bQuery = new BooleanQuery();
+		String sDeadline =DateTools.dateToString(deadline.getTime(), Resolution.SECOND);
 		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(
-		        FIELD_DEADLINE, gson.toJson(deadline), gson.toJson(deadline),
+		        FIELD_DEADLINE, sDeadline, sDeadline,
 		        true, true);
 		bQuery.add(rangeDeadlineQ, BooleanClause.Occur.MUST);
 		return bQuery;
