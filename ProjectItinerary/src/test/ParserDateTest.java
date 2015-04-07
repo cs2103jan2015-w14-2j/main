@@ -99,6 +99,11 @@ public class ParserDateTest {
 		assertEquals(expectedDate, resultDate);
 	}
 	
+	@Test
+	public void testWordForMonth () throws ParserException {
+		assertNotNull(parserDate.getDate("3 aug 0635"));
+	}	
+	
 	@Test (expected = ParserException.class)
 	public void testInvalidMonth () throws ParserException {
 		parserDate.getDate("2018/23/23 3pm");

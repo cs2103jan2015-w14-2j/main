@@ -43,6 +43,7 @@ public class ParserDate {
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
 		if(!isValidTime(dateString)){
+			System.out.println("isValidTime");
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
 
@@ -290,7 +291,7 @@ public class ParserDate {
 		for(String word: dateWords){			
 			try{
 				int time = Integer.parseInt(word);	
-				if(word.length() != 2 && word.length() != 4 && word.length() != 6 ){
+				if(word.length() == 3 || word.length() > 4){
 					return false;
 				}
 				if( time > 2400 ){
