@@ -70,7 +70,7 @@ public class ParserDateTest {
 	
 	@Test
 	public void testFourDigitTime () throws ParserException {
-		assertNotNull(parserDate.getDate("2359"));
+		assertNotNull(parserDate.getDate("23:59"));
 	}	
 	
 	@Test
@@ -85,6 +85,13 @@ public class ParserDateTest {
 		assertEquals(expectedDate, resultDate);
 	}
 
+	@Test
+	public void testChangeDotToColon(){
+		String expectedDate = "3 aug 9:30pm";
+		String resultDate = parserDate.changeDotToColon("3 aug 9.30pm");
+		assertEquals(expectedDate, resultDate);
+	}
+	
 	@Test
 	public void testSwitchDateMonth(){
 		String expectedDate = "28/1/2015 2pm";
@@ -101,7 +108,7 @@ public class ParserDateTest {
 	
 	@Test
 	public void testWordForMonth () throws ParserException {
-		assertNotNull(parserDate.getDate("3 aug 0635"));
+		assertNotNull(parserDate.getDate("3 aug 06:35"));
 	}	
 	
 	@Test (expected = ParserException.class)
@@ -130,11 +137,6 @@ public class ParserDateTest {
 	}	
 	
 	@Test (expected = ParserException.class)
-	public void testInvalidTime () throws ParserException {
-		parserDate.getDate("2015/1/2 930");
-	}	
-	
-	@Test (expected = ParserException.class)
 	public void testInvalidDayOfFeb () throws ParserException {
 		parserDate.getDate("2015/2/29 3pm");
 	}	
@@ -142,6 +144,16 @@ public class ParserDateTest {
 	@Test (expected = ParserException.class)
 	public void testInvalidDayOfMonth () throws ParserException {
 		parserDate.getDate("2015/4/31 3pm");
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidYearDot () throws ParserException {
+		parserDate.getDate("2015.4.31 3pm");
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidTimeColon () throws ParserException {
+		parserDate.getDate("2015/4/5 34:21");
 	}	
 }
 
