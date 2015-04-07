@@ -77,6 +77,12 @@ public class ParserDateTest {
 	public void testOnlyDayMonth () throws ParserException {
 		assertNotNull(parserDate.getDate("3/8 2pm"));
 	}	
+		
+	@Test
+	public void testChristmas() throws ParserException{
+		String dateString = "Christmas";
+		assertNotNull(parserDate.getDate(dateString));
+	}
 	
 	@Test
 	public void testChangeDateFormat(){
