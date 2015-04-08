@@ -45,6 +45,10 @@ import java.util.logging.Logger;
 
 
 
+
+
+
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -61,13 +65,20 @@ import java.io.IOException;
 public class Search {
 	private static final int JSON_SECOND = 24;
 	private static final int JSON_MINUTE = 20;
+	private static final String WILDCARD = "*";
+	private static final String QUERY_DELIMITER = " ";
+	private static final String DISPLAY_SEARCH = "Searching for: ";
+	private static final String ERROR_INDEX = "Error searching through index";
+	private static final int SPAN_DISTANCE = 5;
+	private static final int LEVENSHTEIN_0 = 0;
+	private static final int LEVENSHTEIN_DISTANCE = 2;
 	private static final int JSON_HOUROFDAY = 16;
 	private static final int JSON_DATE = 12;
 	private static final int JSON_MONTH = 8;
 	private static final int JSON_YEAR = 4;
 	private static final String JSON_DELIMITER = ",|\"|:|\\{|\\}";
 	private static final int MIN_LENGTH = 2;
-	private static final String LOGGER_IOERROR = "Error searching through index";
+	private static final String LOGGER_IOERROR = ERROR_INDEX;
 	private static final String FIELD_ISPRIORITY = "isPriority";
 	private static final String FIELD_ISCOMPLETE = "isComplete";
 	private static final String FIELD_JSON = "json";
@@ -196,7 +207,7 @@ public class Search {
 	public <T extends Task> List<T> query(String query, String field)
 	        throws SearchException {
 		// The same analyzer should be used for indexing and searching
-		logger.log(Level.INFO, "Searching for: " + query);
+		logger.log(Level.INFO, DISPLAY_SEARCH + query);
 		try {
 
 			BooleanQuery q = new BooleanQuery();
@@ -204,7 +215,7 @@ public class Search {
 			search(q);
 			reader.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error searching through index ()", e);
+			logger.log(Level.SEVERE, ERROR_INDEX, e);
 			throw new SearchException(ERROR_IO);
 		}
 		return JsonConverter.convertJsonList(hitList, hitTypeList);
@@ -233,7 +244,7 @@ public class Search {
 		try {
 			searcher.search(q, collector);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error searching through index ()", e);
+			logger.log(Level.SEVERE, ERROR_INDEX, e);
 			throw new SearchException(ERROR_IO);
 		}
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
@@ -241,7 +252,7 @@ public class Search {
 	}
 
 	private BooleanQuery createQuery(String field, String Query) {
-		String[] splitQuery = Query.split(" ");
+		String[] splitQuery = Query.split(QUERY_DELIMITER);
 		BooleanQuery bQuery = new BooleanQuery();
 		Query wildQ = getWildCardQuery(field, splitQuery);
 		Query fuzzyQ = getFuzzyQuery(field, splitQuery);
@@ -254,7 +265,7 @@ public class Search {
 		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
 		for (int i = 0; i < splitQuery.length; i++) {
 			WildcardQuery wildQuery = new WildcardQuery(new Term(field,
-			        splitQuery[i] + "*"));
+			        splitQuery[i] + WILDCARD));
 			queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(
 			        wildQuery);
 		}
@@ -267,15 +278,15 @@ public class Search {
 		FuzzyQuery fuzzyQuery;
 		for (int i = 0; i < splitQuery.length; i++) {
 			if(notMinLength(splitQuery, i)){
-				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,2);
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,LEVENSHTEIN_DISTANCE);
 			} else {
-				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,0);
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,LEVENSHTEIN_0);
 			}
 			
 			queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(
 			        fuzzyQuery);
 		}
-		SpanNearQuery q = new SpanNearQuery(queryParts, 5, true);
+		SpanNearQuery q = new SpanNearQuery(queryParts, SPAN_DISTANCE, true);
 		return q;
 	}
 
