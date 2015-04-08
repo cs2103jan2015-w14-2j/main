@@ -20,6 +20,7 @@ public class ParserDate {
 	private static final String TIME_PM = "pm";
 	private static final String TIME_P = "p";
 	private static final String FUTURE = "future";
+	private static final String STRING_COLON = ":";
 	private static final String STRING_DOT = ".";
 	private static final String STRING_DASH = "-";
 	private static final String STRING_UNDERSCORE = "_";
@@ -32,6 +33,7 @@ public class ParserDate {
 
 	public Calendar getDate(String dateString) throws ParserException {
 		dateString = changeDateFormat(dateString);
+		dateString = changeDotToColon(dateString);
 
 		if(!isValidDate(dateString)){
 			throw new ParserException(ERROR_DATE_FORMAT);
@@ -43,6 +45,7 @@ public class ParserDate {
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
 		if(!isValidTime(dateString)){
+			System.out.println("isValidTime");
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
 
@@ -52,6 +55,11 @@ public class ParserDate {
 		return parseDateByNatty(dateString);
 	}
 
+	public String changeDotToColon(String dateString){
+		dateString = dateString.replaceAll("\\" + STRING_DOT, STRING_COLON);
+		return dateString;
+	}
+	
 	public int countAppearance(String dateString, String string){
 		int counter = 0;
 		for(int i=0; i < dateString.length(); i++){
@@ -73,10 +81,7 @@ public class ParserDate {
 			changedFormat = dateString.replaceAll( STRING_UNDERSCORE, STRING_SLASH);
 			return changedFormat;
 		}
-		if(countAppearance(dateString, STRING_DOT) > 1){
-			changedFormat = dateString.replaceAll( STRING_DOT, STRING_SLASH);
-			return changedFormat;
-		}
+		
 		return dateString;
 	}
 
@@ -287,17 +292,21 @@ public class ParserDate {
 
 	public boolean isValidTime(String dateString){
 		String[]dateWords = stringToArray(dateString);
-		for(String word: dateWords){			
+		for(String word: dateWords){	
+			int colonIndex = word.indexOf(STRING_COLON);
+			if(colonIndex != -1){
+				word = word.replaceAll("\\" + STRING_COLON, "");
+			}
 			try{
 				int time = Integer.parseInt(word);	
-				if(word.length() != 2 && word.length() != 4 && word.length() != 6 ){
-					return false;
-				}
 				if( time > 2400 ){
 					return false;
 				}
 			}catch(NumberFormatException e){
 			}
+		}
+		if(countAppearance(dateString, STRING_COLON) > 1){
+			return false;
 		}
 		return true;
 	}

@@ -38,24 +38,38 @@ public class JsonStringTaggerTest {
     
     @Rule public ExpectedFailure rule = new ExpectedFailure();
     
+    /**
+     * Tests for avoiding execution on null arrays.
+     * Prevents system from crashing due to thrown NullPointerExceptions.
+     */
     @Test
     public void testCheckStringArray() {
         assertFalse("test for handling null String arrays: ", JsonStringTagger.checkStringArray(null));
     }
     
+    /**
+     * Tests for the behavior of asserting for no null tasks.
+     * Prevents abnormal behavior or data loss when in standard operation.
+     */
     @AssertionFailure
     @Test
-    public void testConvertTasktoTaggedJsonStringNull() throws NullPointerException{
+    public void testConvertTasktoTaggedJsonStringNull() {
         JsonStringTagger.convertTasktoTaggedJsonString(null);
     }
 
+    /**
+     * Tests the ability of the class to convert the different types of Tasks to the intended String format.
+     */
     @Test
     public void testConvertTasktoTaggedJsonString() {
         assertEquals("Task to Tag: ", "1" + delimiter + task1Name + delimiter + task1String, taggedTask1);
         assertEquals("ScheduleTask to Tag: ", "2" + delimiter + task2Name + delimiter + task2String, taggedTask2);
         assertEquals("DeadlineTask to Tag: ", "3" + delimiter + task3Name + delimiter + task3String, taggedTask3);
     }
-
+    
+    /**
+     * Tests the ability for the class to convert back to the different types of Tasks given their String forms.
+     */
     @Test
     public void testConvertTaggedJsonStringtoTask() {
         assertEquals(task1, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask1));
