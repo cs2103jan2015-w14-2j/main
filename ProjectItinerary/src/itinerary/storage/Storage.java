@@ -85,8 +85,8 @@ public abstract class Storage implements Closeable{
     //@author A0121437N
     static Task updateTaskDetails (Task originalTask, Task details) {
     	Task template = originalTask.clone();
-    	template.updateDetails(details);
-    	return template;
+    	Task updated = Task.updateDetails(template, details);
+    	return updated;
     }
     
     // To check if the any file name provided for storage is valid

@@ -1,5 +1,7 @@
 package itinerary.main;
 
+import java.util.Calendar;
+
 //@author A0121437N
 public class Task implements Cloneable {
     private Integer taskId;
@@ -60,27 +62,40 @@ public class Task implements Cloneable {
     }
     
     //@author A0121437N
-    public void updateDetails (Task details) {
+    public static Task updateDetails (Task template, Task details) {
+    	Calendar deadline, to, from;
+    	if (details instanceof DeadlineTask) {
+    		template = new DeadlineTask(template.taskId, template.text, template.category,
+    				template.isPriority, template.isComplete,
+    				((DeadlineTask)details).getDeadline());
+    	} else if (details instanceof ScheduleTask) {
+    		template = new ScheduleTask(template.taskId, template.text, template.category,
+    				template.isPriority, template.isComplete,
+    				((ScheduleTask)details).getFromDate(),
+    				((ScheduleTask)details).getToDate());
+    	}
+    	
     	if (details.text != null) {
-    		this.setText(details.getText());
+    		template.setText(details.getText());
     	}
     	
     	if (details.category != null) {
-    		this.setCategory(details.getCategory());
+    		template.setCategory(details.getCategory());
     	}
     	
-    	if (details.isComplete != null && details.isComplete != this.isComplete) {
-    		this.setComplete(details.isComplete());
+    	if (details.isComplete != null && details.isComplete != template.isComplete) {
+    		template.setComplete(details.isComplete());
     	}
     	
     	if (details.isPriority != null && details.isPriority == true) {
-    		if(this.isPriority){
-    			this.setPriority(false);
+    		if(template.isPriority){
+    			template.setPriority(false);
     		}
     		else{
-    			this.setPriority(true);
+    			template.setPriority(true);
     		}
     	}
+    	return template;
     }
 
     //@author A0121409R

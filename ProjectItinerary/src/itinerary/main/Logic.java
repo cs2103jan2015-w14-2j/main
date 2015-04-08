@@ -274,7 +274,6 @@ public class Logic {
 		String category = task.getCategory();
 		Boolean priority = task.isPriority();
 		priority = priority ? true : null;
-		Boolean complete = task.isComplete();
 		Calendar from = null;
 		Calendar to = null;
 		if (task instanceof ScheduleTask) {
@@ -282,7 +281,7 @@ public class Logic {
 			from = sTask.getFromDate();
 			to = sTask.getToDate();
 		}
-		SearchTask searchTask = new SearchTask(0, text, category, priority, complete, from, to);
+		SearchTask searchTask = new SearchTask(0, text, category, priority, null, from, to);
 		return executeAdvancedSearch(searchTask);
 	}
 	

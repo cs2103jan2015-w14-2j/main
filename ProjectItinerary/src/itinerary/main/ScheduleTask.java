@@ -35,7 +35,7 @@ public class ScheduleTask extends Task implements Cloneable {
         this.toDate = toDate;
     }
 
-    //@author A0121437N
+   /* //@author A0121437N
     @Override
     public void updateDetails(Task details) {
         super.updateDetails(details);
@@ -50,7 +50,7 @@ public class ScheduleTask extends Task implements Cloneable {
                 this.setToDate(scheduleDetails.getToDate());
             }
         }
-    }
+    }*/
 
     //@author A0121409R
     public ScheduleTask clone() {
