@@ -101,6 +101,14 @@ public class JsonIOHandlerTest {
         }
     }
 
+    /**
+     * Tests if JsonIOHandler can correctly read and obtain a Task in String
+     * format from a file whose contents contain GSON-formatted Tasks. Also
+     * tests for correct handling of null Tasks - skip them.
+     * 
+     * @throws Exception
+     *             To detect for new abnormal behavior not expected previously.
+     */
     @Test
     public void testReadJSON() throws Exception {
         assertEquals("", JsonIOHandler.readJSON(null, false));
@@ -119,6 +127,13 @@ public class JsonIOHandlerTest {
                      + "\n", JsonIOHandler.readJSON(testFile, false));
     }
 
+    /**
+     * Tests if JsonIOHandler can correctly obtain a List of Tasks in String format
+     * from the GSON formatted file containing GSON formatted Task objects. Also
+     * tests for the correct handling of null Files - skip them.
+     * 
+     * @throws Exception To detect for new abnormal behavior not expected previously.
+     */
     @Test
     public void testReadJSONFileListString() throws Exception {
 
@@ -143,6 +158,12 @@ public class JsonIOHandlerTest {
         assertEquals(3, testList.size());
     }
 
+    /**
+     * Tests if JsonIOHandler can correctly obtain a Task from a GSON formatted
+     * file. Also tests for the correct handling of null Files - just skip them.
+     * 
+     * @throws IOException To detect for any unaccounted behavior.
+     */
     @Test
     public void testReadJsonFileListTask() throws IOException {
         List<Task> testList = null;
