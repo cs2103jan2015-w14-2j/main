@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 
 
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -58,6 +59,13 @@ import java.io.IOException;
  */
 // @author A0121810Y
 public class Search {
+	private static final int JSON_SECOND = 24;
+	private static final int JSON_MINUTE = 20;
+	private static final int JSON_HOUROFDAY = 16;
+	private static final int JSON_DATE = 12;
+	private static final int JSON_MONTH = 8;
+	private static final int JSON_YEAR = 4;
+	private static final String JSON_DELIMITER = ",|\"|:|\\{|\\}";
 	private static final int MIN_LENGTH = 2;
 	private static final String LOGGER_IOERROR = "Error searching through index";
 	private static final String FIELD_ISPRIORITY = "isPriority";
@@ -364,9 +372,9 @@ public class Search {
 	}
 	private Calendar convertJsonToDate(String obj){
 		Calendar date = Calendar.getInstance();
-		String[] oString = obj.split(",|\"|:|\\{|\\}");
-		date.set(Integer.parseInt(oString[4]),Integer.parseInt(oString[8]),Integer.parseInt(oString[12])
-				,Integer.parseInt(oString[16]),Integer.parseInt(oString[20]),Integer.parseInt(oString[24]));
+		String[] oString = obj.split(JSON_DELIMITER);
+		date.set(Integer.parseInt(oString[JSON_YEAR]),Integer.parseInt(oString[JSON_MONTH]),Integer.parseInt(oString[JSON_DATE])
+				,Integer.parseInt(oString[JSON_HOUROFDAY]),Integer.parseInt(oString[JSON_MINUTE]),Integer.parseInt(oString[JSON_SECOND]));
 		return date;
 	}
 	private void closeWriter(IndexWriter writer) throws IOException {
