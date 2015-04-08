@@ -45,13 +45,11 @@ public class ParserDate {
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
 		if(!isValidTime(dateString)){
-			System.out.println("isValidTime");
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
 
 		dateString = switchDateMonth(dateString);
 		dateString = convertAToOne(dateString);
-		System.out.println(dateString);
 		return parseDateByNatty(dateString);
 	}
 
