@@ -1,10 +1,5 @@
 package itinerary.search;
 
-import static java.time.DayOfWeek.MONDAY;
-import static java.time.DayOfWeek.SUNDAY;
-import static java.time.temporal.TemporalAdjusters.nextOrSame;
-import static java.time.temporal.TemporalAdjusters.previousOrSame;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.DateTools;
@@ -34,21 +29,16 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.search.TermRangeQuery;
 
-import itinerary.main.Constants;
 import itinerary.main.JsonConverter;
 import itinerary.main.Task;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -160,7 +150,6 @@ public class Search {
 	private void search(BooleanQuery q) throws SearchException, IOException {
 		ScoreDoc[] hits = searchQuery(q, searcher);
 		addToHitList(hitList, searcher, hits);
-		displayHits(searcher, hits);
 	}
 
 	private BooleanQuery createDeadlineQuery(SearchTask task)
@@ -336,26 +325,6 @@ public class Search {
 		return bQuery;
 	}
 
-	public BooleanQuery createWeekQuery(Calendar day) throws SearchException {
-		Gson gson = new Gson();
-		Date dayDate = day.getTime();
-		List<Date> weekRange = getDatesForThisWeek(dayDate);
-		Calendar fromDate = dateToCalendar(weekRange.get(0));
-		Calendar toDate = dateToCalendar(weekRange.get(1));
-		BooleanQuery bQuery = new BooleanQuery();
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(
-		        FIELD_DEADLINE, gson.toJson(fromDate), gson.toJson(toDate),
-		        true, true);
-		bQuery.add(rangeDeadlineQ, BooleanClause.Occur.MUST);
-		return bQuery;
-	}
-
-	private Calendar dateToCalendar(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		return cal;
-	}
-
 	private void createIndex(Directory index, IndexWriterConfig config)
 	        throws SearchException {
 		try {
@@ -420,18 +389,5 @@ public class Search {
 		return fromDate;
 	}
 
-	private List<Date> getDatesForThisWeek(Date date) {
-		List<Date> dates = new ArrayList<Date>();
 
-		LocalDate today = date.toInstant().atZone(ZoneId.systemDefault())
-		        .toLocalDate();
-		LocalDate monday = today.with(previousOrSame(MONDAY));
-		LocalDate sunday = today.with(nextOrSame(SUNDAY));
-		dates.add(Date.from(monday.atStartOfDay(ZoneId.systemDefault())
-		        .toInstant()));
-		dates.add(Date.from(sunday.atStartOfDay(ZoneId.systemDefault())
-		        .toInstant()));
-		return dates;
-
-	}
 }

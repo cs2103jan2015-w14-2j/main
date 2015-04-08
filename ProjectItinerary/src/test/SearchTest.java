@@ -139,6 +139,7 @@ public class SearchTest {
 	public void testSearchWithSchedule() throws SearchException{
 		SearchTask task = new SearchTask();
 		task.setToDate(testToDate);
+		task.setComplete(true);
 		task.setFromDate(testFromDate);
 		Search search = new Search(jsonList);
 		List<Task> testList = search.query(task);
