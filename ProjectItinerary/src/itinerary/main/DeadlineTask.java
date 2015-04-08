@@ -24,7 +24,7 @@ public class DeadlineTask extends Task implements Cloneable {
         this.deadline = deadline;
     }
 
-    //@author A0121437N
+    /*//@author A0121437N
     @Override
     public void updateDetails(Task details) {
         super.updateDetails(details);
@@ -34,7 +34,7 @@ public class DeadlineTask extends Task implements Cloneable {
                 this.setDeadline(deadlineDetails.getDeadline());
             }
         }
-    }
+    }*/
 
     //@author A0121409R
     public DeadlineTask clone() {

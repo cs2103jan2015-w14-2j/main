@@ -40,12 +40,6 @@ public class SearchTask extends Task implements Cloneable {
         this.toDate = toDate;
     }
 
-    //@author A0121437N
-    @Override
-    public void updateDetails(Task details) {
-        ;//SearchTask does not require updating
-    }
-
     //@author A0121409R
     public SearchTask clone() {
         // Note the String objects might not be deep copied.
