@@ -1,7 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import itinerary.history.History;
+import itinerary.history.StateHistory;
 import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.parser.Command;
@@ -33,7 +33,7 @@ public class LogicTest {
 	@BeforeClass
 	public static void setUpTest() {
 		Storage storage = new StorageStub();
-		History history = new History(storage.getAllTasks());
+		StateHistory history = new StateHistory(storage.getAllTasks());
 		logic = new Logic("", storage, history);
 	}
 	
@@ -206,7 +206,7 @@ public class LogicTest {
 	@Test
 	public void testUndoNothing () {
 		Storage storage = new StorageStub();
-		History history = new History(storage.getAllTasks());
+		StateHistory history = new StateHistory(storage.getAllTasks());
 		Logic logic = new Logic("", storage, history);
 		UserInterfaceContent content = logic.executeUserInput("undo");
 		assertEquals("nothing to undo", content.getConsoleMessage());

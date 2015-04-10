@@ -1,7 +1,8 @@
 package itinerary.main;
 
-import itinerary.history.History;
-import itinerary.history.HistoryException;
+import itinerary.history.HistoryBoundException;
+import itinerary.history.InputHistory;
+import itinerary.history.StateHistory;
 import itinerary.parser.Command;
 import itinerary.parser.CommandType;
 import itinerary.parser.Parser;
@@ -26,6 +27,8 @@ import java.util.logging.Logger;
 
 //@author A0121437N
 public class Logic {
+	private static final String MESSAGE_REDO_NOTHING = "You do not have anything to redo.";
+	private static final String MESSAGE_UNDO_NOTHING = "You do not have anything to undo.";
 	private static final String MESSAGE_OPEN_HELP = "Opening help.";
 	private static final String MESSAGE_WELCOME = "Welcome to ITnerary! %1$s is ready for use.";
 	private static final String MESSAGE_DELETE_SUCCESS = "Deleted task %1$s.";
@@ -54,7 +57,8 @@ public class Logic {
 	
 	private String fileName;
 	private Storage storage;
-	private History history;
+	private StateHistory stateHistory;
+	private InputHistory inputHistory = new InputHistory();
 	private ConfigStorage config;
 	private List<HelpListener> helpListeners = new ArrayList<HelpListener>();
 	
@@ -82,17 +86,18 @@ public class Logic {
 	 * 
 	 * @param filename the filename that will be printed after initial launch
 	 * @param storage the storage object which will be referenced
-	 * @param history the history object which will be referenced
+	 * @param stateHistory the history object which will be referenced
 	 */
-	public Logic (String filename, Storage storage, History history) {
+	public Logic (String filename, Storage storage, StateHistory stateHistory) {
 		this.fileName = filename;
 		this.storage = storage;
-		this.history = history;
+		this.stateHistory = stateHistory;
 	}
 
 	public UserInterfaceContent executeUserInput (String userInput) {
 		logger.log(Level.INFO, "executing user input: " + userInput);
 		Command userCommand;
+		inputHistory.add(userInput);
 		try {
 			userCommand = Parser.parseCommand(userInput);
 		} catch (ParserException e) {
@@ -143,7 +148,7 @@ public class Logic {
 	public void setupLogicVariables (String fileName) {
 		this.fileName = fileName;
 		storage = new FileStorage(this.fileName);
-		history = new History(storage.getAllTasks());
+		stateHistory = new StateHistory(storage.getAllTasks());
 	}
 	
 	public UserInterfaceContent initialLaunch () {
@@ -215,7 +220,6 @@ public class Logic {
 			logger.log(Level.WARNING, "Unsuccessful delete", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
-		
 		updateHistory();
 		
 		int deleteTaskId = command.getTask().getTaskId();
@@ -234,7 +238,6 @@ public class Logic {
 			logger.log(Level.WARNING, "Unsuccessful edit", e);
 			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
 		}
-		
 		updateHistory();
 		
 		int editTaskId = command.getTask().getTaskId();
@@ -244,25 +247,27 @@ public class Logic {
 
 	private void updateHistory() {
 		List<Task> newState = storage.getAllTasks();
-		history.addNewState(newState);
+		stateHistory.add(newState);
 	}
 
 	private UserInterfaceContent executeRedo() {
 		List<Task> nextState;
 		try {
-			nextState = history.redo();
-		} catch (HistoryException e) {
-			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+			nextState = stateHistory.getNext();
+		} catch (HistoryBoundException e1) {
+			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
 		}
 		try {
 			storage.clearAll();
 			storage.refillAll(nextState);
-		} catch (StorageException storageException) {
+		} catch (StorageException e) {
 			try {
-				history.undo();
-			} catch (HistoryException historyException) {
-				logger.log(Level.WARNING, "Error in trying to return to original state", historyException);
+				stateHistory.getPrevious();
+			} catch (HistoryBoundException e1) {
+				// This should not result in any exception
+				e1.printStackTrace();
 			}
+			logger.log(Level.WARNING, "Error in trying to refill new state", e);
 			return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
 		}
 		return new UserInterfaceContent(MESSAGE_REDO_SUCCESS, storage.getAllTasks());
@@ -314,19 +319,21 @@ public class Logic {
 	private UserInterfaceContent executeUndo() {
 		List<Task> previousState;
 		try {
-			previousState = history.undo();
-		} catch (HistoryException e) {
-			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+			previousState = stateHistory.getPrevious();
+		} catch (HistoryBoundException e1) {
+			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
 		}
 		try {
 			storage.clearAll();
 			storage.refillAll(previousState);
-		} catch (StorageException storageException) {
+		} catch (StorageException e) {
 			try {
-				history.redo();
-			} catch (HistoryException historyException) {
-				logger.log(Level.WARNING, "Error in trying to return to original state", historyException);
+				stateHistory.getNext();
+			} catch (HistoryBoundException e1) {
+				// This should not result in any exception
+				e1.printStackTrace();
 			}
+			logger.log(Level.WARNING, "Error in trying to refill new state", e);
 			return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
 		}
 		return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
@@ -370,6 +377,22 @@ public class Logic {
 	private UserInterfaceContent unknownCommand(String userInput) {
 		String consoleMessage = formatInvalidCommand(userInput);
 		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+
+	public String getPreviousInput () {
+		try {
+			return inputHistory.getPrevious();
+		} catch (HistoryBoundException e) {
+			return null;
+		}
+	}
+	
+	public String getNextInput () {
+		try {
+			return inputHistory.getNext();
+		} catch (HistoryBoundException e) {
+			return null;
+		}
 	}
 	
 	public interface HelpListener {
