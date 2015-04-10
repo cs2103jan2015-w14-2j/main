@@ -1,10 +1,5 @@
 package itinerary.search;
 
-import static java.time.DayOfWeek.MONDAY;
-import static java.time.DayOfWeek.SUNDAY;
-import static java.time.temporal.TemporalAdjusters.nextOrSame;
-import static java.time.temporal.TemporalAdjusters.previousOrSame;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.DateTools;
@@ -34,23 +29,23 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.search.TermRangeQuery;
 
-import itinerary.main.Constants;
 import itinerary.main.JsonConverter;
 import itinerary.main.Task;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+
+
+
 
 
 
@@ -68,8 +63,22 @@ import java.io.IOException;
  */
 // @author A0121810Y
 public class Search {
+	private static final int JSON_SECOND = 24;
+	private static final int JSON_MINUTE = 20;
+	private static final String WILDCARD = "*";
+	private static final String QUERY_DELIMITER = " ";
+	private static final String DISPLAY_SEARCH = "Searching for: ";
+	private static final String ERROR_INDEX = "Error searching through index";
+	private static final int SPAN_DISTANCE = 5;
+	private static final int LEVENSHTEIN_0 = 0;
+	private static final int LEVENSHTEIN_DISTANCE = 2;
+	private static final int JSON_HOUROFDAY = 16;
+	private static final int JSON_DATE = 12;
+	private static final int JSON_MONTH = 8;
+	private static final int JSON_YEAR = 4;
+	private static final String JSON_DELIMITER = ",|\"|:|\\{|\\}";
 	private static final int MIN_LENGTH = 2;
-	private static final String LOGGER_IOERROR = "Error searching through index";
+	private static final String LOGGER_IOERROR = ERROR_INDEX;
 	private static final String FIELD_ISPRIORITY = "isPriority";
 	private static final String FIELD_ISCOMPLETE = "isComplete";
 	private static final String FIELD_JSON = "json";
@@ -112,7 +121,6 @@ public class Search {
 	public <T extends Task> List<T> query(SearchTask task)
 	        throws SearchException {
 		assert task != null;
-		List<String> searchNotField = task.getSearchNotField();
 		BooleanQuery q = new BooleanQuery();
 
 		if (task.isComplete() != null) {
@@ -127,16 +135,7 @@ public class Search {
 			BooleanQuery bQuery = createTextQuery(task);
 			addMustOccur(q, bQuery);
 		}
-		if (task.getCategoryList() != null) {
-			List<String> categoryList = task.getCategoryList();
-			BooleanQuery bQuery = new BooleanQuery();
-			for (int i = 0; i < categoryList.size(); i++) {
-				BooleanQuery cQuery = createCategoryListQuery(categoryList, i);
-				addShouldOccur(bQuery, cQuery);
-			}
-			addMustOccur(q, bQuery);
-
-		}
+		
 		if (task.getCategory() != null) {
 			BooleanQuery bQuery = createCategoryQuery(task);
 			addMustOccur(q, bQuery);
@@ -150,7 +149,6 @@ public class Search {
 		if (task.getToDate() != null && task.getFromDate() != null) {
 			BooleanQuery bQuery = createDateQuery(task.getToDate(),
 			        task.getFromDate());
-			Gson gson = new Gson();
 			addMustOccur(q, bQuery);
 		}
 
@@ -171,7 +169,6 @@ public class Search {
 	private void search(BooleanQuery q) throws SearchException, IOException {
 		ScoreDoc[] hits = searchQuery(q, searcher);
 		addToHitList(hitList, searcher, hits);
-		displayHits(searcher, hits);
 	}
 
 	private BooleanQuery createDeadlineQuery(SearchTask task)
@@ -183,15 +180,6 @@ public class Search {
 	private BooleanQuery createTextQuery(SearchTask task) {
 		BooleanQuery bQuery = createQuery(FIELD_TEXT, task.getText());
 		return bQuery;
-	}
-
-	private BooleanQuery createCategoryListQuery(List<String> categoryList, int j) {
-		BooleanQuery cQuery = createQuery(FIELD_CATEGORY, categoryList.get(j));
-		return cQuery;
-	}
-
-	private void addShouldOccur(BooleanQuery bQuery, BooleanQuery cQuery) {
-		bQuery.add(cQuery, BooleanClause.Occur.SHOULD);
 	}
 
 	private void addMustOccur(BooleanQuery q, BooleanQuery bQuery) {
@@ -219,7 +207,7 @@ public class Search {
 	public <T extends Task> List<T> query(String query, String field)
 	        throws SearchException {
 		// The same analyzer should be used for indexing and searching
-		logger.log(Level.INFO, "Searching for: " + query);
+		logger.log(Level.INFO, DISPLAY_SEARCH + query);
 		try {
 
 			BooleanQuery q = new BooleanQuery();
@@ -227,7 +215,7 @@ public class Search {
 			search(q);
 			reader.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error searching through index ()", e);
+			logger.log(Level.SEVERE, ERROR_INDEX, e);
 			throw new SearchException(ERROR_IO);
 		}
 		return JsonConverter.convertJsonList(hitList, hitTypeList);
@@ -249,16 +237,6 @@ public class Search {
 		hitTypeList.add(typeList.get(docId));
 	}
 
-	private void displayHits(IndexSearcher searcher, ScoreDoc[] hits)
-	        throws IOException {
-		System.out.println("Found " + hits.length + " hits.");
-		for (int i = 0; i < hits.length; ++i) {
-			int docId = hits[i].doc;
-			Document d = searcher.doc(docId);
-			System.out.println((i + 1) + ". " + d.get(FIELD_TEXT));
-		}
-	}
-
 	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
 	        throws SearchException {
 		int numHits = 10;
@@ -266,7 +244,7 @@ public class Search {
 		try {
 			searcher.search(q, collector);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Error searching through index ()", e);
+			logger.log(Level.SEVERE, ERROR_INDEX, e);
 			throw new SearchException(ERROR_IO);
 		}
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
@@ -274,7 +252,7 @@ public class Search {
 	}
 
 	private BooleanQuery createQuery(String field, String Query) {
-		String[] splitQuery = Query.split(" ");
+		String[] splitQuery = Query.split(QUERY_DELIMITER);
 		BooleanQuery bQuery = new BooleanQuery();
 		Query wildQ = getWildCardQuery(field, splitQuery);
 		Query fuzzyQ = getFuzzyQuery(field, splitQuery);
@@ -287,7 +265,7 @@ public class Search {
 		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
 		for (int i = 0; i < splitQuery.length; i++) {
 			WildcardQuery wildQuery = new WildcardQuery(new Term(field,
-			        splitQuery[i] + "*"));
+			        splitQuery[i] + WILDCARD));
 			queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(
 			        wildQuery);
 		}
@@ -300,15 +278,15 @@ public class Search {
 		FuzzyQuery fuzzyQuery;
 		for (int i = 0; i < splitQuery.length; i++) {
 			if(notMinLength(splitQuery, i)){
-				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,2);
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,LEVENSHTEIN_DISTANCE);
 			} else {
-				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,0);
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,LEVENSHTEIN_0);
 			}
 			
 			queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(
 			        fuzzyQuery);
 		}
-		SpanNearQuery q = new SpanNearQuery(queryParts, 5, true);
+		SpanNearQuery q = new SpanNearQuery(queryParts, SPAN_DISTANCE, true);
 		return q;
 	}
 
@@ -336,10 +314,10 @@ public class Search {
 
 	public BooleanQuery createDeadlineQuery(Calendar deadline)
 	        throws SearchException {
-		Gson gson = new Gson();
 		BooleanQuery bQuery = new BooleanQuery();
+		String sDeadline =DateTools.dateToString(deadline.getTime(), Resolution.SECOND);
 		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(
-		        FIELD_DEADLINE, gson.toJson(deadline), gson.toJson(deadline),
+		        FIELD_DEADLINE, sDeadline, sDeadline,
 		        true, true);
 		bQuery.add(rangeDeadlineQ, BooleanClause.Occur.MUST);
 		return bQuery;
@@ -364,26 +342,6 @@ public class Search {
 		bQuery.add(rangeScheduleQ, BooleanClause.Occur.SHOULD);
 		bQuery.add(rangeFromScheduleQ, BooleanClause.Occur.MUST_NOT);
 		return bQuery;
-	}
-
-	public BooleanQuery createWeekQuery(Calendar day) throws SearchException {
-		Gson gson = new Gson();
-		Date dayDate = day.getTime();
-		List<Date> weekRange = getDatesForThisWeek(dayDate);
-		Calendar fromDate = dateToCalendar(weekRange.get(0));
-		Calendar toDate = dateToCalendar(weekRange.get(1));
-		BooleanQuery bQuery = new BooleanQuery();
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(
-		        FIELD_DEADLINE, gson.toJson(fromDate), gson.toJson(toDate),
-		        true, true);
-		bQuery.add(rangeDeadlineQ, BooleanClause.Occur.MUST);
-		return bQuery;
-	}
-
-	private Calendar dateToCalendar(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		return cal;
 	}
 
 	private void createIndex(Directory index, IndexWriterConfig config)
@@ -425,9 +383,9 @@ public class Search {
 	}
 	private Calendar convertJsonToDate(String obj){
 		Calendar date = Calendar.getInstance();
-		String[] oString = obj.split(",|\"|:|\\{|\\}");
-		date.set(Integer.parseInt(oString[4]),Integer.parseInt(oString[8]),Integer.parseInt(oString[12])
-				,Integer.parseInt(oString[16]),Integer.parseInt(oString[20]),Integer.parseInt(oString[24]));
+		String[] oString = obj.split(JSON_DELIMITER);
+		date.set(Integer.parseInt(oString[JSON_YEAR]),Integer.parseInt(oString[JSON_MONTH]),Integer.parseInt(oString[JSON_DATE])
+				,Integer.parseInt(oString[JSON_HOUROFDAY]),Integer.parseInt(oString[JSON_MINUTE]),Integer.parseInt(oString[JSON_SECOND]));
 		return date;
 	}
 	private void closeWriter(IndexWriter writer) throws IOException {
@@ -450,18 +408,5 @@ public class Search {
 		return fromDate;
 	}
 
-	private List<Date> getDatesForThisWeek(Date date) {
-		List<Date> dates = new ArrayList<Date>();
 
-		LocalDate today = date.toInstant().atZone(ZoneId.systemDefault())
-		        .toLocalDate();
-		LocalDate monday = today.with(previousOrSame(MONDAY));
-		LocalDate sunday = today.with(nextOrSame(SUNDAY));
-		dates.add(Date.from(monday.atStartOfDay(ZoneId.systemDefault())
-		        .toInstant()));
-		dates.add(Date.from(sunday.atStartOfDay(ZoneId.systemDefault())
-		        .toInstant()));
-		return dates;
-
-	}
 }

@@ -44,7 +44,12 @@ public class Parser {
 
 	private static Logger logger = Logger.getGlobal();
 
-	//returns a command object and it is called by logic
+    /**
+    * Called by logic when language processing is needed
+    *
+    * @param  input   The sentence input by user
+    * @return             Command object obtained from the input
+    */
 	public static Command parseCommand(String input) throws ParserException {
 		assert input != null;
 		String firstWord = extractFirstWord(input);
@@ -57,6 +62,13 @@ public class Parser {
 		return command;
 	}
 
+    /**
+    * Create a task object according to the CommandType and details of input
+    *
+    * @param  type   		The first word of user input
+    * @param  argument  The remaining words of user input
+    * @return             		 A task object obtained from argument
+    */
 	private static Task createTask(CommandType type, String argument) throws ParserException {
 		if(type.equals(CommandType.ADD)){
 			return createTaskToAdd(argument);
@@ -92,7 +104,7 @@ public class Parser {
 		return false;
 	}
 
-	public static String replaceKeywordInContent(String argument){
+	private static String replaceKeywordInContent(String argument){
 		if (argument.length() == 0){
 			return argument;
 		}
@@ -123,6 +135,15 @@ public class Parser {
 		return word;
 	}
 
+	 /**
+	    * Interpreting user input and divide the input into different parts 
+	    * according to the keywords
+	    * 
+	    * Also determines the type of task
+	    *
+	    * @param  argument   The input without the first word
+	    * @return                     A task with some attributes determined
+	    */
 	private static Task extractContent(String argument) throws ParserException {
 		String[] argumentWords = stringToArray(argument);
 

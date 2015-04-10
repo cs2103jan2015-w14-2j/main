@@ -123,7 +123,7 @@ public class ParserDateTest {
 	}
 
 	@Test (expected = ParserException.class)
-	public void testInvalidDate () throws ParserException {
+	public void testInvalidDay () throws ParserException {
 		parserDate.getDate("2018/12/32 3pm");
 	}
 	
@@ -148,8 +148,13 @@ public class ParserDateTest {
 	}	
 	
 	@Test (expected = ParserException.class)
-	public void testInvalidDayOfMonth () throws ParserException {
+	public void testInvalidDayOfMonthWithYear () throws ParserException {
 		parserDate.getDate("2015/4/31 3pm");
+	}	
+	
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfMonth () throws ParserException {
+		parserDate.getDate("31/4 3pm");
 	}	
 	
 	@Test (expected = ParserException.class)

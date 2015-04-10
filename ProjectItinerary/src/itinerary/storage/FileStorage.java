@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //@author A0121409R
 /**
@@ -283,11 +285,11 @@ public class FileStorage extends Storage {
     public void close() {
         if (tempFile.exists()) {
             if (!currFile.delete()) {
-                System.out.println("Old file not deleted.");
+                Logger.getGlobal().log(Level.WARNING, "Old file not deleted.");
             }
             
             if (!tempFile.renameTo(currFile)) {
-                System.out.println("System cannot rename the file.");
+                Logger.getGlobal().log(Level.WARNING, "System unable to replace old file.");
             }
             
             File tempFile = new File(TEMP_FILENAME);

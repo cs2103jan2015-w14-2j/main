@@ -178,6 +178,17 @@ public class SystemTest {
 	}
 	
 	@Test
+	public void testEditRemoveCat () {
+		this.logic.executeUserInput("add CS cat srudy");
+		UserInterfaceContent result = this.logic.executeUserInput("edit 1 edited cat del");
+		
+		Task expectedTask = new Task(1, "edited", "", false, false);
+		int size = result.getAllTasks().size();
+		assertEquals(1, size);
+		assertEquals(expectedTask, result.getAllTasks().get(size-1));
+	}
+	
+	@Test
 	public void testEnd () {
 		Logic logic1 = new Logic(FILE_NAME);
 		UserInterfaceContent first = logic1.executeUserInput("add first task cat dog");
@@ -228,6 +239,30 @@ public class SystemTest {
 	@Test
 	public void testInvalidCommand () {
 		UserInterfaceContent result = this.logic.executeUserInput("invalid");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidDayOfMonth () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 31/4/2015");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidAm () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 13am");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidTime () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 24:01");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidYear () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 12/12/23 3pm");
 		assertEquals(0, result.getAllTasks().size());
 	}
 	
