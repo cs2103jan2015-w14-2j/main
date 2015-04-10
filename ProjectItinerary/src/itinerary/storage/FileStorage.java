@@ -1,14 +1,18 @@
 package itinerary.storage;
 
+import itinerary.main.DeadlineTask;
+import itinerary.main.ScheduleTask;
 import itinerary.main.Task;
-import itinerary.main.TaskSorter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 //@author A0121409R
 /**
@@ -134,7 +138,6 @@ public class FileStorage extends Storage {
      * Sorts listTask. Super inefficient.
      */
     private void sortList() {
-        
         this.listTask = TaskSorter.sort(this.listTask);
     }
 
@@ -297,4 +300,158 @@ public class FileStorage extends Storage {
         }
     }
 
+    private static class TaskSorter {
+    	private static final Comparator<Task> byComplete = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        int returnVal = 0;
+		        //Check against Completeness.
+		        if (o1.isComplete() && !o2.isComplete()) { //o1 is greater.
+		            returnVal = 1;
+		        } else if (!o1.isComplete() && o2.isComplete()) { //o2 is greater.
+		            returnVal = -1;
+		        }
+		        return returnVal;
+			}
+		};
+		
+		private static final Comparator<Task> byDates = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        int returnVal = 0;
+
+		        String classType1 = o1.getClass().getSimpleName();
+		        String classType2 = o2.getClass().getSimpleName();
+
+		        String deadlineTaskClassName = DeadlineTask.class.getSimpleName();
+		        String scheduleTaskClassName = ScheduleTask.class.getSimpleName();
+
+		        // o1 and o2 are of the same class type.
+		        // Check against their Calendar arguments
+		        if (classType1.equals(deadlineTaskClassName)
+		            && classType2.equals(deadlineTaskClassName)) {
+		            // o1 == DeadlineTask
+		            // o2 == DeadlineTask
+		            if (((DeadlineTask) o1).getDeadline()
+		                                   .before(((DeadlineTask) o2).getDeadline())) {
+		                // o1 has the earlier Deadline.
+		            	// o1 is greater.
+		                returnVal = -1;
+		            } else if (((DeadlineTask) o2).getDeadline()
+		                                          .before(((DeadlineTask) o1).getDeadline())) {
+		                // o2 has the earlier Deadline.
+		            	// o2 is greater.
+		                returnVal = 1;
+		            } else {
+		                // o1 and o2 have the exact same Deadlines.
+		                return 0;
+		            }
+		        } else if (classType1.equals(scheduleTaskClassName)
+		                   && classType2.equals(scheduleTaskClassName)) {
+		            // o1 == ScheduleTask
+		            // o2 == ScheduleTask
+		            if (((ScheduleTask) o1).getToDate()
+		                                   .before(((ScheduleTask) o2).getToDate())) {
+		                // o1 has the earlier ToDate.
+		                // o1 is greater.
+		                returnVal = -1;
+		            } else if (((ScheduleTask) o2).getToDate()
+		                                          .before(((ScheduleTask) o1).getToDate())) {
+		                // o2 has the earlier ToDate.
+		                // o2 is greater.
+		                returnVal = 1;
+		            } else {
+		                // o1 and o2 have the exact same ToDates.
+		                return 0;
+		            }
+		        } else {
+		            // o1 and o2 are regular Tasks.
+		            return 0;
+		        }
+		        return returnVal;
+			}
+		};
+		
+		private static final Comparator<Task> byDescription = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        return o1.getText().compareTo(o2.getText());
+			}
+		};
+		
+		private static final Comparator<Task> byPriority = new Comparator<Task>() {
+			@Override
+		    public int compare(Task o1, Task o2) {
+		        int returnVal = 0;
+		        //Check against Priority.
+		        if (o1.isPriority() == true && o2.isPriority() == false) { //o1 is greater.
+		            returnVal = -1;
+		        } else if (o2.isPriority() == true && o1.isPriority() == false) { //o2 is greater.
+		            returnVal = 1;
+		        } else {
+		            returnVal = 0;
+		        }		        
+		        return returnVal;
+		    }
+		};
+		
+		private static final Comparator<Task> byType = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        String classType1 = o1.getClass().getSimpleName();
+		        String classType2 = o2.getClass().getSimpleName();
+
+		        String taskClassName = Task.class.getSimpleName();
+		        String deadlineTaskClassName = DeadlineTask.class.getSimpleName();
+		        String scheduleTaskClassName = ScheduleTask.class.getSimpleName();
+
+		        int returnVal = 0;
+
+		        if (!classType1.equals(classType2)) { // o1 and o2 are not of the same class type.
+		            if (classType1.equals(deadlineTaskClassName)
+		                && !classType2.equals(deadlineTaskClassName)) {
+		                // o1 == DeadlineTask
+		                // o2 == ScheduleTask || Task
+
+		                // o1 is greater.
+		                returnVal = -1;
+		            } else if (classType2.equals(deadlineTaskClassName)
+		                       && !classType1.equals(deadlineTaskClassName)) {
+		                // o1 == ScheduleTask || Task
+		                // o2 == DeadlineTask
+
+		                // o2 is greater.
+		                returnVal = 1;
+		            } else if (classType1.equals(scheduleTaskClassName)
+		                       && classType2.equals(taskClassName)) {
+		                // o1 == ScheduleTask
+		                // o2 == Task
+
+		                // o1 is greater.
+		                returnVal = -1;
+		            } else {
+		                // o1 == Task
+		                // o2 == ScheduleTask
+
+		                // o2 is greater.
+		                returnVal = 1;
+		            }
+		        } else {
+		            returnVal = 0;
+		        }
+
+		        return returnVal;
+			}
+		};
+		
+		public static List<Task> sort(List<Task> tasks) {
+			Collections.sort(tasks, byDescription);
+			Collections.sort(tasks, byType);
+			Collections.sort(tasks, byDates);
+			Collections.sort(tasks, byPriority);
+			Collections.sort(tasks, byComplete);
+			
+			return tasks;
+		}
+    }
 }
