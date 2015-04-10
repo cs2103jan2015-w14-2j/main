@@ -77,12 +77,15 @@ public class MainController implements Initializable, SearchResultCallback, Help
 			KeyCode code = event.getCode();
 			if (code == KeyCode.UP || code == KeyCode.DOWN) {
 				String input = null;
-				if (code == KeyCode.UP) {
-					// TODO up pressed
-					input = logic.getPreviousInput();
-				} else if (code == KeyCode.DOWN) {
-					// TODO down pressed
-					input = logic.getNextInput();
+				switch (code) {
+					case UP :
+						input = logic.getPreviousInput();
+						break;
+					case DOWN :
+						input = logic.getNextInput();
+						break;
+					default :
+						break;
 				}
 				if (input != null) {
 					commandTextField.setText(input);
@@ -132,9 +135,11 @@ public class MainController implements Initializable, SearchResultCallback, Help
 	public void commandEntered () {
 		// adding things to the console
 		String command = commandTextField.getText();
-		UserInterfaceContent result = logic.executeUserInput(command);
-		updateContent(result);
-		commandTextField.setText("");
+		if (command != null && !command.equals("")) {
+			UserInterfaceContent result = logic.executeUserInput(command);
+			updateContent(result);
+			commandTextField.setText("");
+		}
 	}
 
 	private void updateContent(UserInterfaceContent content) {
