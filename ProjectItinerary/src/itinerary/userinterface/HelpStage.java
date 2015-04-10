@@ -17,7 +17,7 @@ import javafx.stage.StageStyle;
 //@author A0121437N
 public class HelpStage extends Stage{
 	private static final String HEADER_COMMAND = "Command";
-	private static final String HEADER_KEYWORD = "Keywords";
+	private static final String HEADER_KEYWORD = "Keyword(s)";
 	private static final String WINDOW_TITLE = "Help";
 	private static final double WINDOW_MIN_WIDTH = 350.0;
 	private static HelpStage onlyInstance;
