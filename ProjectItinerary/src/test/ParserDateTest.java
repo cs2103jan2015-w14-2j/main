@@ -123,7 +123,7 @@ public class ParserDateTest {
 	}
 
 	@Test (expected = ParserException.class)
-	public void testInvalidDate () throws ParserException {
+	public void testInvalidDay () throws ParserException {
 		parserDate.getDate("2018/12/32 3pm");
 	}
 	

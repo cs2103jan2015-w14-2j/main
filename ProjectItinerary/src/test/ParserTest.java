@@ -153,6 +153,7 @@ public class ParserTest {
 		assertNotNull(scheduleTask.getToDate());
 	}
 	
+	@Test
 	public void testSearch () throws ParserException {
 		Command command = Parser.parseCommand("search pri");
 		assertEquals(command.getType(), CommandType.SEARCH);
