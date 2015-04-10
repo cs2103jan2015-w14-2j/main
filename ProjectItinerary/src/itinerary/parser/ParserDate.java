@@ -60,12 +60,12 @@ public class ParserDate {
 		return parseDateByNatty(dateString);
 	}
 
-	public String changeDotToColon(String dateString){
+	private String changeDotToColon(String dateString){
 		dateString = dateString.replaceAll("\\" + STRING_DOT, STRING_COLON);
 		return dateString;
 	}
 	
-	public int countAppearance(String dateString, String string){
+	private int countAppearance(String dateString, String string){
 		int counter = 0;
 		for(int i=0; i < dateString.length(); i++){
 			if(dateString.charAt(i) == string.charAt(0)){
@@ -75,7 +75,7 @@ public class ParserDate {
 		return counter;
 	}
 
-	public String changeDateFormat(String dateString){ 
+	private String changeDateFormat(String dateString){ 
 		String changedFormat = dateString;
 
 		if(countAppearance(dateString, STRING_DASH) > 0){
@@ -90,7 +90,7 @@ public class ParserDate {
 		return dateString;
 	}
 
-	public String switchDateMonth(String dateString){
+	private String switchDateMonth(String dateString){
 		String[] dateWords = stringToArray(dateString);
 
 		String date = "";
@@ -129,7 +129,7 @@ public class ParserDate {
 		return dateString;
 	}
 
-	public String futureToTenYear(String dateString){
+	private String futureToTenYear(String dateString){
 		if(dateString.equalsIgnoreCase(FUTURE)){
 			dateString = AFTER_TEN_YEAR;
 		}
@@ -144,7 +144,7 @@ public class ParserDate {
 	    * @return                        A calendar object which reflects the date and/or time
 	    * 										from dateString
 	    */
-	public Calendar parseDateByNatty(String dateString) throws ParserException{
+	private Calendar parseDateByNatty(String dateString) throws ParserException{
 		dateString = futureToTenYear(dateString);
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
 		List<DateGroup> dateGroups = dateParser.parse(dateString);
@@ -160,14 +160,14 @@ public class ParserDate {
 		return calendar;
 	}
 
-	public boolean isValidDate (String dateString) throws ParserException{				
+	private boolean isValidDate (String dateString) throws ParserException{				
 		if(countAppearance(dateString, STRING_SLASH) == 2 ){
 			return isValidArguments(dateString);
 		}
 		return true;
 	}
 
-	public boolean isValidArguments (String dateString) throws ParserException{
+	private boolean isValidArguments (String dateString) throws ParserException{
 		int valueExceedDay = 0;
 		int valueWithinMonth = 0;		
 		String[] dateWords = stringToArray(dateString);
@@ -201,7 +201,7 @@ public class ParserDate {
 		return isValidValues(valueExceedDay, valueWithinMonth);
 	}
 
-	public boolean isValidValues (int valueExceedDay, int valueWithinMonth){
+	private boolean isValidValues (int valueExceedDay, int valueWithinMonth){
 		if(valueExceedDay >= 2 || valueExceedDay == 0){
 			return false;
 		}
@@ -211,7 +211,7 @@ public class ParserDate {
 		return true;
 	}
 
-	public static boolean isLeapYear(int year){
+	private static boolean isLeapYear(int year){
 		if (year % 400 == 0){ 
 			return true;
 		}
@@ -221,7 +221,7 @@ public class ParserDate {
 		return false;
 	}
 
-	public boolean isValidDayOfMonth(String dateString) throws ParserException{
+	private boolean isValidDayOfMonth(String dateString) throws ParserException{
 		String[] dateWords = stringToArray(dateString);
 
 		for(int i=0; i < dateWords.length; i++){
@@ -259,7 +259,7 @@ public class ParserDate {
 		return true;
 	}
 
-	public int  processYear(int year) throws ParserException{
+	private int  processYear(int year) throws ParserException{
 		if(year > 32 && year < 100){
 			year = year + 2000;
 		}
@@ -276,7 +276,7 @@ public class ParserDate {
 		return year;
 	}
 
-	public boolean isValidAmPm(String dateString){
+	private boolean isValidAmPm(String dateString){
 		String[]dateWords = stringToArray(dateString);
 		for(int i=0; i<dateWords.length; i++){
 			int amIndex = dateWords[i].indexOf(TIME_AM);
@@ -304,7 +304,7 @@ public class ParserDate {
 		return true;
 	}
 
-	public boolean isValidTime(String dateString){
+	private boolean isValidTime(String dateString){
 		String[]dateWords = stringToArray(dateString);
 		for(String word: dateWords){	
 			int colonIndex = word.indexOf(STRING_COLON);
@@ -325,7 +325,7 @@ public class ParserDate {
 		return true;
 	}
 
-	public String convertAToOne(String dateString){
+	private String convertAToOne(String dateString){
 		String[]dateWords = stringToArray(dateString);
 		String newDateString = "";
 		for(int i=0; i<dateWords.length; i++){

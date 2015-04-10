@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+//@author A0114823M
 public class ParserTest {
 	
 	//Corner test case when there exists duplicate key word
