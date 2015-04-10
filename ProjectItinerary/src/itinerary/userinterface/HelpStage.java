@@ -42,8 +42,8 @@ public class HelpStage extends Stage{
 	@SuppressWarnings("unchecked")
 	private void setupTable() {
 		List<CommandType> allTypes = CommandType.getAllTypes();
-		commandColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>("commandName"));
-		aliasColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>("commandAlias"));
+		commandColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>(HelpEntry.COMMAND_NAME_VARIABLE));
+		aliasColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>(HelpEntry.COMMAND_ALIAS_VARIABLE));
 		
 		ObservableList<HelpEntry> entries = FXCollections.observableArrayList();
 		for (CommandType type : allTypes) {

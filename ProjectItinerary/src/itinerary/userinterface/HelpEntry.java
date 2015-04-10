@@ -4,6 +4,8 @@ import javafx.beans.property.SimpleStringProperty;
 
 //@author A0121437N
 public class HelpEntry {
+	public static final String COMMAND_NAME_VARIABLE = "commandName";
+	public static final String COMMAND_ALIAS_VARIABLE = "commandAlias";
 	private final SimpleStringProperty commandName;
 	private final SimpleStringProperty commandAlias;
 	
