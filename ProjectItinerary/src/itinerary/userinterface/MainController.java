@@ -71,7 +71,7 @@ public class MainController implements Initializable, SearchResultCallback, Help
 		}
 	};
 	
-	private EventHandler<KeyEvent> upDownHanlder = new EventHandler<KeyEvent>() {
+	private EventHandler<KeyEvent> upDownHandler = new EventHandler<KeyEvent>() {
 		@Override
 		public void handle(KeyEvent event) {
 			KeyCode code = event.getCode();
@@ -129,7 +129,7 @@ public class MainController implements Initializable, SearchResultCallback, Help
 
 	private void setupStageAndListeners(Stage stage) {
 		stage.setOnCloseRequest(closeHandler);
-		commandTextField.addEventHandler(KeyEvent.KEY_PRESSED, upDownHanlder);
+		commandTextField.addEventHandler(KeyEvent.KEY_PRESSED, upDownHandler);
 	}
 	
 	public void commandEntered () {
