@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+//@author A0121437N
 public class MainStage extends Stage {
 
 	private static final String WINDOW_TITLE = "ITnerary - %1$s";

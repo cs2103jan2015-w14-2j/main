@@ -12,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+//@author A0121437N
 public class FileNameRequestDialog extends Stage {
 	
 	private static final String LABEL_TEXT = "Preferred file name or path below";

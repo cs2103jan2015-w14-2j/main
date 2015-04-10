@@ -2,6 +2,7 @@ package itinerary.userinterface;
 
 import javafx.beans.property.SimpleStringProperty;
 
+//@author A0121437N
 public class HelpEntry {
 	private final SimpleStringProperty commandName;
 	private final SimpleStringProperty commandAlias;

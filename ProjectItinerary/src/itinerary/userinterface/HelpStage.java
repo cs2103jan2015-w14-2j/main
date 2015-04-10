@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+//@author A0121437N
 public class HelpStage extends Stage{
 	private static final String HEADER_COMMAND = "Command";
 	private static final String HEADER_KEYWORD = "Keyword";
