@@ -31,6 +31,13 @@ public class ParserDate {
 	public ParserDate(){ 
 	}
 
+	 /**
+	    * Called by Parser when a DeadlineTask or a ScheduleTask is created
+	    *
+	    * @param  dateString   The input which Parser interpret as date or time
+	    * @return                        A calendar object which reflects the date and/or time
+	    * 										from dateString
+	    */
 	public Calendar getDate(String dateString) throws ParserException {
 		dateString = changeDateFormat(dateString);
 		dateString = changeDotToColon(dateString);
@@ -129,6 +136,14 @@ public class ParserDate {
 		return dateString;
 	}
 
+	 /**
+	    * Called by getDate(String dateString) every time
+	    *
+	    * @param  dateString   The string after checking invalid format and/or
+	    * 										change format when necessary
+	    * @return                        A calendar object which reflects the date and/or time
+	    * 										from dateString
+	    */
 	public Calendar parseDateByNatty(String dateString) throws ParserException{
 		dateString = futureToTenYear(dateString);
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
@@ -215,7 +230,8 @@ public class ParserDate {
 			}
 		}
 
-		if(countAppearance(dateString, STRING_SLASH) == 2){
+		if(countAppearance(dateString, STRING_SLASH) == 2 || 
+			countAppearance(dateString, STRING_SLASH) == 1	){
 			String[] textAroundCharacter = dateString.split(STRING_SLASH);
 			int[] dayMonth = {0,0};
 			for(String text: textAroundCharacter){

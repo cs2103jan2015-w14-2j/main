@@ -178,10 +178,11 @@ public class ParserTest {
 
 	@Test
 	public void testReplaceKeywordInContent () throws ParserException {
-		String expectedString = "Take a look at this cat, I bought it from a pet shop by the road";
-		String inputString = "Take a look at this +cat, I bought it +from a pet shop +by the road";
-		String resultString = Parser. replaceKeywordInContent(inputString);
-		assertEquals(expectedString, resultString);
+		String inputString = "add Take a look at this +cat, I bought it +from a pet shop +by the road cat +cat meow";
+		Command command = Parser. parseCommand(inputString);
+		Task task = command.getTask();
+		assertEquals(task.getText(), "Take a look at this cat, I bought it from a pet shop by the road");
+		assertEquals(task.getCategory(), "cat meow");
 	}
 	
     @Test
