@@ -10,6 +10,9 @@ public class HistoryBoundException extends Exception {
 	private static final long serialVersionUID = 1L;
 	private BoundType boundType;
 	
+	/**
+	 * Used to identify the reason behind the exception.
+	 */
 	public enum BoundType {
 		UPPER_BOUND,
 		LOWER_BOUND,
