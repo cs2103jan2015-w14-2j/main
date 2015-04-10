@@ -1,7 +1,5 @@
 package itinerary.main;
 
-import java.util.Calendar;
-
 //@author A0121437N
 public class Task implements Cloneable {
     private Integer taskId;
@@ -10,7 +8,6 @@ public class Task implements Cloneable {
     private Boolean isPriority;
     private Boolean isComplete;
 
-    //@author generated
     public Task(Integer taskId, String text, String category,
                 Boolean isPriority, Boolean isComplete) {
         super();
@@ -61,9 +58,7 @@ public class Task implements Cloneable {
         this.isComplete = isComplete;
     }
     
-    //@author A0121437N
     public static Task updateDetails (Task template, Task details) {
-    	Calendar deadline, to, from;
     	if (details instanceof DeadlineTask) {
     		template = new DeadlineTask(template.taskId, template.text, template.category,
     				template.isPriority, template.isComplete,
@@ -73,20 +68,16 @@ public class Task implements Cloneable {
     				template.isPriority, template.isComplete,
     				((ScheduleTask)details).getFromDate(),
     				((ScheduleTask)details).getToDate());
-    	}
-    	
+    	}    	
     	if (details.text != null) {
     		template.setText(details.getText());
-    	}
-    	
+    	}    	
     	if (details.category != null) {
     		template.setCategory(details.getCategory());
-    	}
-    	
+    	}    	
     	if (details.isComplete != null && details.isComplete != template.isComplete) {
     		template.setComplete(details.isComplete());
-    	}
-    	
+    	}    	
     	if (details.isPriority != null && details.isPriority == true) {
     		if(template.isPriority){
     			template.setPriority(false);
@@ -107,7 +98,6 @@ public class Task implements Cloneable {
     }
     
     public Boolean hasNoText() {
-
         if (this.text == null || this.text.isEmpty()) {
             return true;
         }
@@ -115,7 +105,6 @@ public class Task implements Cloneable {
     }
 
     public Boolean hasNoCategory() {
-
         if (this.category == null || this.category.isEmpty()) {
             return true;
         }
@@ -129,28 +118,22 @@ public class Task implements Cloneable {
         if (object == null) {
             return false;
         }
-        
         if (!(object instanceof Task)) {
             return false;
         }
-
         Task task = (Task) object;
 		if (task.getTaskId() != this.taskId) {
             return false;
         }
-
         if (!task.getText().equals(this.text)) {
             return false;
         }
-
         if (task.getCategory() != null && !task.getCategory().equals(this.category)) {
             return false;
         }
-
         if (task.isPriority() != this.isPriority) {
             return false;
         }
-
         if (task.isComplete() != this.isComplete) {
             return false;
         }
