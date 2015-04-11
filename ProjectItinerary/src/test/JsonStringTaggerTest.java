@@ -59,6 +59,9 @@ public class JsonStringTaggerTest {
 
     /**
      * Tests the ability of the class to convert the different types of Tasks to the intended String format.
+     * If this fails, this means the format of the String was changed. The format is supposed to be:
+     * "TaskID""SPLIT""Type of Task""SPLIT""Gson representation of the Task object""Newline character"
+     * where "Type of Task" ::=  Task | ScheduleTask | DeadlineTask
      */
     @Test
     public void testConvertTasktoTaggedJsonString() {
@@ -68,7 +71,11 @@ public class JsonStringTaggerTest {
     }
     
     /**
-     * Tests the ability for the class to convert back to the different types of Tasks given their String forms.
+     * Tests the ability for the class to convert back to the different types of Tasks given their 
+     * intended String forms.
+     * If this fails, this means the format of the String was changed. The format is supposed to be:
+     * "TaskID""SPLIT""Type of Task""SPLIT""Gson representation of the Task object""Newline character"
+     * where "Type of Task" ::=  Task | ScheduleTask | DeadlineTask
      */
     @Test
     public void testConvertTaggedJsonStringtoTask() {

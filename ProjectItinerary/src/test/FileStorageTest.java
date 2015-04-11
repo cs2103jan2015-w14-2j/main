@@ -105,7 +105,16 @@ public class FileStorageTest {
         testFile.delete();
         fileStorage = new FileStorage(testFile);
     }
-
+    
+    /**
+     * Tests if FileStorage is able to correctly assert that given Tasks
+     * should not be null. They should not be null so as to prevent 
+     * data integrity issues. If the Task given is null, an Assertion 
+     * Failure should be activated.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @AssertionFailure
     @Test
     public void testAddTaskNull() throws StorageException {
@@ -113,6 +122,14 @@ public class FileStorageTest {
         fileStorage.addTask(invalidTask1);
     }
 
+    /**
+     * Tests if FileStorage is able to correctly add Tasks into a List.
+     * Accounts for Auto-Sorting behavior of the class.
+     * If this fails, it's likely that the sorting order has been changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testAddTask() throws StorageException {
 
@@ -125,6 +142,14 @@ public class FileStorageTest {
                      fileStorage.currentListTaskString(false));
     }
 
+    /**
+     * Tests if FileStorage is able to assert that given Tasks should not be
+     * null. They should not be null so as to prevent data integrity issues.
+     * If the Task given is null, an Assertion Failure should be activated.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @AssertionFailure
     @Test
     public void testEditTaskNull() throws StorageException {
@@ -133,6 +158,13 @@ public class FileStorageTest {
         fileStorage.editTask(invalidTask1);
     }
 
+    /**
+     * Tests if FileStorage is able to handle an incorrectly formatted given Task 
+     * for editing. If this fails, it's likely that the error-handling mechanism 
+     * within editTask() has been changed.
+     * 
+     * @throws StorageException To indicate an incorrectly formatted Task was given.
+     */
     @Test(expected = StorageException.class)
     public void testEditTaskInvalid() throws StorageException {
 
@@ -141,6 +173,14 @@ public class FileStorageTest {
 
     }
 
+    /**
+     * Tests if FileStorage is able to correctly replace the Task in the List it has 
+     * that represents the state of the system. If this fails, it's likely that the 
+     * error-handling mechanism within editTask() has been changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testEditTask() throws StorageException {
 
@@ -151,6 +191,14 @@ public class FileStorageTest {
                         fileStorage.currentListTaskString(false));
     }
 
+    /**
+     * Tests if FileStorage is able to assert that a given Task should not be 
+     * null. They should not be null so as to prevent data integrity issues.
+     * If the Task given is null, an Assertion Failure should be activated.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @AssertionFailure
     @Test
     public void testDeleteTaskNull() throws StorageException {
@@ -158,12 +206,28 @@ public class FileStorageTest {
         fileStorage.deleteTask(invalidTask1);
     }
 
+    /**
+     * Tests if FileStorage is able to handle an incorrectly formatted Task for 
+     * deletion. This particular tests for the deletion of a non-existent Task 
+     * within the List. If this fails, it's likely that the error-handling mechanism 
+     * within deleteTask() was changed.
+     * 
+     * @throws StorageException To indicate that a invalid Task was given.
+     */
     @Test(expected = StorageException.class)
     public void testDeleteTaskInvalid() throws StorageException {
 
         fileStorage.deleteTask(invalidTask2);
     }
 
+    /**
+     * Tests if FileStorage can correctly delete the given Task in the List
+     * that it has representing the current state of the system. If this fails, 
+     * it's likely that the behavior of deleteTask() has been changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testDeleteTask() throws StorageException {
 
@@ -174,6 +238,14 @@ public class FileStorageTest {
         assertEquals("", fileStorage.currentListTaskString(false));
     }
 
+    /**
+     * Tests if FileStorage is able to correctly return a copy of the List it has
+     * representing the state of the system. If this fails, it's likely due to a 
+     * change in the clone() or the equals() methods in the Task objects.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testGetAllTasks() throws StorageException {
 
@@ -189,6 +261,13 @@ public class FileStorageTest {
         }
     }
 
+    /**
+     * Tests if FileStorage can correctly clear out the system state. This shoudln't fail,
+     * unless the behavior of clearAll() was changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testClearAll() throws StorageException {
 
@@ -201,6 +280,13 @@ public class FileStorageTest {
         assertEquals("", fileStorage.currentListTaskString(false));
     }
 
+    /**
+     * Tests if FileStorage can correctly assert that the List given to refill the state of the 
+     * system with should not be null.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @AssertionFailure
     @Test
     public void testRefillAllNull() throws StorageException {
@@ -208,6 +294,12 @@ public class FileStorageTest {
         fileStorage.refillAll(null);
     }
 
+    /**
+     * Tests if FileStorage can correctly restore the state of the system with a given List.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testRefillAll() throws StorageException {
 
@@ -218,6 +310,14 @@ public class FileStorageTest {
                      fileStorage.currentListTaskString(false));
     }
 
+    /**
+     * Tests if FileStorage can correctly return a deep copy of the current state of the 
+     * system. If this fails, it's likely due to a 
+     * change in the clone() or the equals() methods in the Task objects.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testDuplicateCurrentListTask() throws StorageException {
 
@@ -236,6 +336,13 @@ public class FileStorageTest {
 
     }
 
+    /**
+     * Tests if FileStorage can return a List containing all currently active category
+     * tags for all the Tasks in the system state.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
     @Test
     public void testGetAllCategories() throws StorageException {
 

@@ -11,8 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 //@author A0121409R
 /**
@@ -300,6 +299,9 @@ public class FileStorage extends Storage {
         }
     }
 
+    /**
+     * The sub-class which helps to sort the Tasks in ITnerary afetr every command. 
+     */
     private static class TaskSorter {
     	private static final Comparator<Task> byComplete = new Comparator<Task>() {
 			@Override

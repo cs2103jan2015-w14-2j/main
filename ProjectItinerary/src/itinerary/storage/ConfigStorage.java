@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+//@author A0121437N
 public class ConfigStorage {
 	private File configFile;
 	
