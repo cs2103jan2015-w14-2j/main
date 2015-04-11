@@ -6,14 +6,19 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.google.gson.Gson;
-
+//@author A0121810Y
+/**
+ * A searchTask contains all fields that a deadlineTask,ScheduleTask and a Task have.
+ * Any non-null field in SearchTask is searched with the value of the field as the parameters when a Search.query() is run on it.
+ *
+ */
 public class SearchTask extends Task implements Cloneable {
 	private Calendar fromDate;
     private Calendar toDate;
     private Calendar deadline;
     private List<String> categoryList;
     private List<String> searchNotField;
-    //@author generated
+
     public SearchTask() {
         super(null,null,null, null, null);
     }
