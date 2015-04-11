@@ -147,11 +147,6 @@ public class Search {
 			addMustOccur(q, bQuery);
 
 		}
-
-		if (task.getDeadline() != null) {
-			BooleanQuery bQuery = createDeadlineQuery(task);
-			addMustOccur(q, bQuery);
-		}
 		if (task.getToDate() != null && task.getFromDate() != null) {
 			BooleanQuery bQuery = createDateQuery(task.getToDate(),
 			        task.getFromDate());
@@ -189,12 +184,6 @@ public class Search {
 	private void search(BooleanQuery q) throws SearchException, IOException {
 		ScoreDoc[] hits = searchQuery(q, searcher);
 		addToHitList(hitList, searcher, hits);
-	}
-
-	private BooleanQuery createDeadlineQuery(SearchTask task)
-	        throws SearchException {
-		BooleanQuery bQuery = createDeadlineQuery(task.getDeadline());
-		return bQuery;
 	}
 
 	private BooleanQuery createTextQuery(SearchTask task) {
@@ -401,17 +390,6 @@ public class Search {
 
 	private String setTrueOrFalse(boolean setTrue) {
 		return setTrue ? "true" : "false";
-	}
-
-	public BooleanQuery createDeadlineQuery(Calendar deadline)
-	        throws SearchException {
-		BooleanQuery bQuery = new BooleanQuery();
-		String sDeadline = DateTools.dateToString(deadline.getTime(),
-		        Resolution.SECOND);
-		TermRangeQuery rangeDeadlineQ = TermRangeQuery.newStringRange(
-		        FIELD_DEADLINE, sDeadline, sDeadline, true, true);
-		bQuery.add(rangeDeadlineQ, BooleanClause.Occur.MUST);
-		return bQuery;
 	}
 
 	/**
