@@ -237,7 +237,7 @@ public class SystemTest {
 	 */
 	@Test
 	public void testEditRemoveCat () {
-		this.logic.executeUserInput("add CS cat srudy");
+		this.logic.executeUserInput("add CS cat study");
 		UserInterfaceContent result = this.logic.executeUserInput("edit 1 edited cat del");
 		
 		Task expectedTask = new Task(1, "edited", "", false, false);
@@ -316,24 +316,40 @@ public class SystemTest {
 		assertEquals(0, result.getAllTasks().size());
 	}
 	
+	/**
+	 * A boundary test case where the day of a month is invalid.
+	 * After the task is added, the all tasks list should has length 0.
+	 */
 	@Test
 	public void testInvalidDayOfMonth () {
 		UserInterfaceContent result = this.logic.executeUserInput("add CS by 31/4/2015");
 		assertEquals(0, result.getAllTasks().size());
 	}
 	
+	/**
+	 * A boundary test case where the number before "am" is > 12.
+	 * After the task is added, the all tasks list should has length 0.
+	 */
 	@Test
 	public void testInvalidAm () {
 		UserInterfaceContent result = this.logic.executeUserInput("add CS by 13am");
 		assertEquals(0, result.getAllTasks().size());
 	}
 	
+	/**
+	 * A boundary test case where the time of format HH:MM is larger than 24:00.
+	 * After the task is added, the all tasks list should has length 0.
+	 */
 	@Test
 	public void testInvalidTime () {
 		UserInterfaceContent result = this.logic.executeUserInput("add CS by 24:01");
 		assertEquals(0, result.getAllTasks().size());
 	}
 	
+	/**
+	 * A boundary test case where the year is invalid.
+	 * After the task is added, the all tasks list should has length 0.
+	 */
 	@Test
 	public void testInvalidYear () {
 		UserInterfaceContent result = this.logic.executeUserInput("add CS by 12/12/23 3pm");
