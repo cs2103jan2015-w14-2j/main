@@ -17,12 +17,15 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -67,6 +70,31 @@ public class MainController implements Initializable, SearchResultCallback, Help
 			logic.exitOperation();
 		}
 	};
+	
+	private EventHandler<KeyEvent> upDownHandler = new EventHandler<KeyEvent>() {
+		@Override
+		public void handle(KeyEvent event) {
+			KeyCode code = event.getCode();
+			if (code == KeyCode.UP || code == KeyCode.DOWN) {
+				String input = null;
+				switch (code) {
+					case UP :
+						input = logic.getPreviousInput();
+						break;
+					case DOWN :
+						input = logic.getNextInput();
+						break;
+					default :
+						break;
+				}
+				if (input != null) {
+					commandTextField.setText(input);
+				} else {
+					commandTextField.setText("");
+				}
+			}
+		}
+	};
 
 	NameRequestListener nameRequestListener = new NameRequestListener() {
 		@Override
@@ -101,14 +129,17 @@ public class MainController implements Initializable, SearchResultCallback, Help
 
 	private void setupStageAndListeners(Stage stage) {
 		stage.setOnCloseRequest(closeHandler);
+		commandTextField.addEventHandler(KeyEvent.KEY_PRESSED, upDownHandler);
 	}
 	
 	public void commandEntered () {
 		// adding things to the console
 		String command = commandTextField.getText();
-		UserInterfaceContent result = logic.executeUserInput(command);
-		updateContent(result);
-		commandTextField.setText("");
+		if (command != null && !command.equals("")) {
+			UserInterfaceContent result = logic.executeUserInput(command);
+			updateContent(result);
+			commandTextField.setText("");
+		}
 	}
 
 	private void updateContent(UserInterfaceContent content) {

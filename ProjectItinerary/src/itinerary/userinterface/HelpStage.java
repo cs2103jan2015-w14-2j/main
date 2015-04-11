@@ -14,10 +14,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+//@author A0121437N
 public class HelpStage extends Stage{
 	private static final String HEADER_COMMAND = "Command";
-	private static final String HEADER_KEYWORD = "Keyword";
+	private static final String HEADER_KEYWORD = "Keyword(s)";
 	private static final String WINDOW_TITLE = "Help";
+	private static final double WINDOW_MIN_WIDTH = 350.0;
 	private static HelpStage onlyInstance;
 	
 	private TableView<HelpEntry> helpTable = new TableView<HelpEntry>();
@@ -40,8 +42,8 @@ public class HelpStage extends Stage{
 	@SuppressWarnings("unchecked")
 	private void setupTable() {
 		List<CommandType> allTypes = CommandType.getAllTypes();
-		commandColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>("commandName"));
-		aliasColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>("commandAlias"));
+		commandColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>(HelpEntry.COMMAND_NAME_VARIABLE));
+		aliasColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>(HelpEntry.COMMAND_ALIAS_VARIABLE));
 		
 		ObservableList<HelpEntry> entries = FXCollections.observableArrayList();
 		for (CommandType type : allTypes) {
@@ -62,6 +64,7 @@ public class HelpStage extends Stage{
 		helpTable.getColumns().addAll(commandColumn, aliasColumn);
 		helpTable.setItems(entries);
 		helpTable.setEditable(false);
+		helpTable.setMinWidth(WINDOW_MIN_WIDTH);
 	}
 
 	public static HelpStage getInstance () {

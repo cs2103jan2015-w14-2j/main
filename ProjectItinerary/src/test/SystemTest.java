@@ -36,12 +36,10 @@ public class SystemTest {
 	public void clear () {
 		this.logic.executeUserInput("clear");
 	}
-
+	
 	/**
-	 * TODO Add Javadoc comments to all test cases!
-	 * What?
-	 * What is expected?
-	 * Why? For weird conditions
+	 * Tests adding a task normally.
+	 * A Task object matching the input should be in the list of all tasks.
 	 */
 	@Test
 	public void testAddNormal() {
@@ -51,7 +49,11 @@ public class SystemTest {
 		assertEquals(1, size);
 		assertEquals(expectedTask, result.getAllTasks().get(size-1));
 	}
-
+	
+	/**
+	 * A boundary test case where nothing is input after the add command.
+	 * The all tasks list should be empty since the command is invalid.
+	 */
 	@Test
 	public void testAddNothing() {
 		UserInterfaceContent result = this.logic.executeUserInput("add       ");
@@ -59,6 +61,10 @@ public class SystemTest {
 		assertEquals(0, size);
 	}
 	
+	/**
+	 * A boundary test case where no description is input after the add command.
+	 * The all tasks list should be empty since the command is invalid.
+	 */
 	@Test
 	public void testAddNothingWithPri() {
 		UserInterfaceContent result = this.logic.executeUserInput("add pri");
@@ -66,6 +72,10 @@ public class SystemTest {
 		assertEquals(0, size);
 	}
 	
+	/**
+	 * Tests adding a task normally but with a deadline.
+	 * A DeadlineTask object matching the input should be in the list of all tasks.
+	 */
 	@Test
 	public void testAddDeadline() {
 		UserInterfaceContent result = this.logic.executeUserInput("add deadline task by today pri");
@@ -80,6 +90,10 @@ public class SystemTest {
 		assertTrue(task.isPriority());
 	}
 	
+	/**
+	 * Tests adding a task normally but with a schedule.
+	 * A ScheduleTask object matching the input should be in the list of all tasks.
+	 */
 	@Test
 	public void testAddSchedule() {
 		UserInterfaceContent result = this.logic.executeUserInput("add schedule task from today to tomorrow cat sched");
@@ -100,6 +114,10 @@ public class SystemTest {
 		assertEquals("sched", task.getCategory());
 	}
 	
+	/**
+	 * A boundary test case where the date input is invalid.
+	 * The all tasks list should be empty since the command is invalid.
+	 */
 	@Test
 	public void testAddInvalidDate () {
 		UserInterfaceContent result = this.logic.executeUserInput("add first task by INVALIDDATE");
@@ -107,6 +125,10 @@ public class SystemTest {
 		assertEquals(0, size);
 	}
 	
+	/**
+	 * A boundary test case where the date input empty.
+	 * The all tasks list should be empty since the command is invalid.
+	 */
 	@Test
 	public void testAddEmptyDate () {
 		UserInterfaceContent result = this.logic.executeUserInput("add first task from now to");
@@ -114,6 +136,11 @@ public class SystemTest {
 		assertEquals(0, size);
 	}
 	
+	/**
+	 * Tests deleting a task normally after a task is added.
+	 * After the task is added, the all tasks list should be length 1.
+	 * After the task is deleted, the all tasks list should be length 0.
+	 */
 	@Test
 	public void testDeleteValid () {
 		UserInterfaceContent first = this.logic.executeUserInput("add first task");
@@ -123,6 +150,11 @@ public class SystemTest {
 		assertEquals(0, second.getAllTasks().size());
 	}
 	
+	/**
+	 * A boundary test case where the task id provided is negative.
+	 * After the task is added, the all tasks list should be length 1.
+	 * After the unsuccessful deletion, the all tasks list should still be length 1.
+	 */
 	@Test
 	public void testDeleteInvalidNeg () {
 		UserInterfaceContent first = this.logic.executeUserInput("add first task");
@@ -132,6 +164,11 @@ public class SystemTest {
 		assertEquals(1, second.getAllTasks().size());
 	}
 	
+	/**
+	 * A boundary test case where the task id provided is greater than the number of tasks.
+	 * After the task is added, the all tasks list should be length 1.
+	 * After the unsuccessful deletion, the all tasks list should still be length 1.
+	 */
 	@Test
 	public void testDeleteInvalidPos () {
 		UserInterfaceContent first = this.logic.executeUserInput("add first task");
@@ -141,6 +178,12 @@ public class SystemTest {
 		assertEquals(1, second.getAllTasks().size());
 	}
 	
+	/**
+	 * Tests undoing and redoing a command normally.
+	 * After the add command, the all tasks list should be length 1
+	 * After the undo command, the all tasks list should be length 0
+	 * After the redo command, the all tasks list should be length 1
+	 */
 	@Test
 	public void testUndoRedoNormal () {
 		UserInterfaceContent first = this.logic.executeUserInput("add first task");
@@ -153,6 +196,10 @@ public class SystemTest {
 		assertEquals(1, third.getAllTasks().size());
 	}
 	
+	/**
+	 * Tests undoing and redoing when no command was given intially.
+	 * The all tasks list should be always be of length 0
+	 */
 	@Test
 	public void testUndoRedoNothing () {
 		UserInterfaceContent second = this.logic.executeUserInput("undo");
@@ -162,6 +209,12 @@ public class SystemTest {
 		assertEquals(0, third.getAllTasks().size());
 	}
 	
+	/**
+	 * Tests editing a task.
+	 * After the add command, the task in the task list should match the input
+	 * After the edit command, the task in the task list should have fields edited
+	 * to match the input of the edit command.
+	 */
 	@Test
 	public void testEditNormal () {
 		UserInterfaceContent first = this.logic.executeUserInput("add first task cat dog");
@@ -177,6 +230,27 @@ public class SystemTest {
 		assertEquals(expectedTask2, second.getAllTasks().get(size2-1));
 	}
 	
+	/**
+	 * Tests the removal of categories.
+	 * After the add command, the task in the task list should match the input
+	 * After the edit command, the task in the list should no longer have a category
+	 */
+	@Test
+	public void testEditRemoveCat () {
+		this.logic.executeUserInput("add CS cat srudy");
+		UserInterfaceContent result = this.logic.executeUserInput("edit 1 edited cat del");
+		
+		Task expectedTask = new Task(1, "edited", "", false, false);
+		int size = result.getAllTasks().size();
+		assertEquals(1, size);
+		assertEquals(expectedTask, result.getAllTasks().get(size-1));
+	}
+	
+	/**
+	 * Tests if the system can end and start up regularly.
+	 * After the first exitOperation is called, the details should be saved to disk
+	 * After the second logic is created, its contents should match the first logic. 
+	 */
 	@Test
 	public void testEnd () {
 		Logic logic1 = new Logic(FILE_NAME);
@@ -196,6 +270,12 @@ public class SystemTest {
 		logic2.exitOperation();
 	}
 	
+	/**
+	 * Tests searching for a task.
+	 * After the first search command, the displayable list should length 3
+	 * After the second search command, the displayable list should length 0
+	 * to match the input of the edit command.
+	 */
 	@Test
 	public void testSearchFound () {
 		this.logic.executeUserInput("add first task");
@@ -209,6 +289,11 @@ public class SystemTest {
 		assertEquals(1, result2.getDisplayableTasks().size());
 	}
 	
+	/**
+	 * Tests unsuccessfully searching for a task.
+	 * After the search command, the displayable list should length 0
+	 * to match the input of the edit command.
+	 */
 	@Test
 	public void testSearchNotFound () {
 		this.logic.executeUserInput("add first task");
@@ -228,6 +313,30 @@ public class SystemTest {
 	@Test
 	public void testInvalidCommand () {
 		UserInterfaceContent result = this.logic.executeUserInput("invalid");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidDayOfMonth () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 31/4/2015");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidAm () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 13am");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidTime () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 24:01");
+		assertEquals(0, result.getAllTasks().size());
+	}
+	
+	@Test
+	public void testInvalidYear () {
+		UserInterfaceContent result = this.logic.executeUserInput("add CS by 12/12/23 3pm");
 		assertEquals(0, result.getAllTasks().size());
 	}
 	

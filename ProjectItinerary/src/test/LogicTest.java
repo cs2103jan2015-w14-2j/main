@@ -1,7 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import itinerary.history.History;
+import itinerary.history.StateHistory;
 import itinerary.main.Logic;
 import itinerary.main.Task;
 import itinerary.parser.Command;
@@ -12,6 +12,7 @@ import itinerary.userinterface.UserInterfaceContent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +34,7 @@ public class LogicTest {
 	@BeforeClass
 	public static void setUpTest() {
 		Storage storage = new StorageStub();
-		History history = new History(storage.getAllTasks());
+		StateHistory history = new StateHistory(storage.getAllTasks());
 		logic = new Logic("", storage, history);
 	}
 	
@@ -167,21 +168,6 @@ public class LogicTest {
 		assertEquals(0, content.getDisplayableTasks().size());
 	}
 	
-	/* This is a boundary case for when there is something input
-	 * by the user which is invalid */
-	@Test
-	public void testInvalidFilled () {
-		UserInterfaceContent content = logic.executeUserInput("invalid");
-		assertEquals("invalid command: \"invalid\"", content.getConsoleMessage());
-	}
-	
-	/* This is a boundary case for when there is nothing input by the user */
-	@Test
-	public void testInvalidEmpty () {
-		UserInterfaceContent content = logic.executeUserInput("");
-		assertEquals("invalid command: \"\"", content.getConsoleMessage());
-	}
-	
 	@Test
 	public void testUndo () {
 		UserInterfaceContent content = logic.executeUserInput("undo");
@@ -198,18 +184,19 @@ public class LogicTest {
 	/* This is a boundary case for when there is nothing to redo */
 	@Test
 	public void testRedoNothing () {
+		List<Task> initial = logic.executeUserInput("display").getAllTasks();
 		UserInterfaceContent content = logic.executeUserInput("redo");
-		assertEquals("nothing to redo", content.getConsoleMessage());
+		assertEquals(initial, content.getAllTasks());
 	}
 	
 	/* This is a boundary case for when there is nothing to undo */
 	@Test
 	public void testUndoNothing () {
 		Storage storage = new StorageStub();
-		History history = new History(storage.getAllTasks());
+		StateHistory history = new StateHistory(storage.getAllTasks());
 		Logic logic = new Logic("", storage, history);
 		UserInterfaceContent content = logic.executeUserInput("undo");
-		assertEquals("nothing to undo", content.getConsoleMessage());
+		assertEquals(storage.getAllTasks(), content.getAllTasks());
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

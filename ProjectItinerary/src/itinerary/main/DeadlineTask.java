@@ -8,7 +8,6 @@ import com.google.gson.Gson;
 public class DeadlineTask extends Task implements Cloneable {
     private Calendar deadline;
 
-    //@author generated
     public DeadlineTask(Integer taskId, String text, String category,
                         Boolean isPriority, Boolean isComplete,
                         Calendar deadline) {
@@ -23,18 +22,6 @@ public class DeadlineTask extends Task implements Cloneable {
     public void setDeadline(Calendar deadline) {
         this.deadline = deadline;
     }
-
-    /*//@author A0121437N
-    @Override
-    public void updateDetails(Task details) {
-        super.updateDetails(details);
-        if (details instanceof DeadlineTask) {
-            DeadlineTask deadlineDetails = (DeadlineTask) details;
-            if (deadlineDetails.getDeadline() != null) {
-                this.setDeadline(deadlineDetails.getDeadline());
-            }
-        }
-    }*/
 
     //@author A0121409R
     public DeadlineTask clone() {

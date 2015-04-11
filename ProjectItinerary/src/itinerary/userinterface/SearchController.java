@@ -19,6 +19,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
+//@author A0121437N
 public class SearchController implements Initializable {
 
 	@FXML
