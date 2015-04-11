@@ -44,12 +44,13 @@ public class Parser {
 
 	private static Logger logger = Logger.getGlobal();
 
-    /**
-    * Called by logic when language processing is needed
-    *
-    * @param  input   The sentence input by user
-    * @return             Command object obtained from the input
-    */
+	/**
+	 * Called by logic when language processing is needed
+	 *
+	 * @param  input   The sentence input by user
+	 * @throws ParserException  If the user input format is invalid
+	 * @return             Command object obtained from the input
+	 */
 	public static Command parseCommand(String input) throws ParserException {
 		assert input != null;
 		String firstWord = extractFirstWord(input);
@@ -57,18 +58,31 @@ public class Parser {
 		checkArgumentValidity(argument);
 		CommandType commandType = determineCommandType(firstWord);
 		Task task = createTask(commandType, argument);
-		commandType = unmarkToMark(commandType);
+		commandType = convertUnmarkToMark(commandType);
 		Command command = new Command(task, commandType);
 		return command;
 	}
 
-    /**
-    * Create a task object according to the CommandType and details of input
-    *
-    * @param  type   		The first word of user input
-    * @param  argument  The remaining words of user input
-    * @return             		 A task object obtained from argument
-    */
+	/**
+	 * Create a CommandType object according to the first word of user input
+	 *
+	 * @param  command   The first word of user input
+	 * @exception ParserException  If the commandType in invalid
+	 * @return             		 A CommandType object obtained from command
+	 */
+	private static CommandType determineCommandType(String command){
+		command = command.toLowerCase();
+		return CommandType.identifyCommandType(command);
+	}
+
+	/**
+	 * Create a task object according to the CommandType and details of input
+	 *
+	 * @param  type   		The first word of user input
+	 * @param  argument  The remaining words of user input
+	 * @exception ParserException  If the details of the task cannot be recognized
+	 * @return             		 A task object obtained from argument
+	 */
 	private static Task createTask(CommandType type, String argument) throws ParserException {
 		if(type.equals(CommandType.ADD)){
 			return createTaskToAdd(argument);
@@ -93,9 +107,9 @@ public class Parser {
 		}
 		return null;
 	}
-	
+
 	private static boolean hasDuplicateKeywords(String[] inputWords){
-		for (String keyword : KEYWORDS) {
+		for (String keyword: KEYWORDS) {
 			int count = countKeywordOccurrences(inputWords, keyword);
 			if (count > 1) {
 				return true;
@@ -110,8 +124,9 @@ public class Parser {
 		}
 
 		String resultString = "";
-		String[] words = stringToArray(argument);
-		for(int i=0; i < words.length; i++){
+		String[] words = convertStringToArray(argument);
+
+		for(int i = 0; i < words.length; i++){
 			String stringAfterFirstChar = words[i].substring(1);
 			String letterString = removeNonLetterChar(stringAfterFirstChar);
 			if(words[i].charAt(0) == ESCAPE_CHARACTER && identifyKeyword(letterString) > -1){
@@ -135,21 +150,22 @@ public class Parser {
 		return word;
 	}
 
-	 /**
-	    * Interpreting user input and divide the input into different parts 
-	    * according to the keywords
-	    * 
-	    * Also determines the type of task
-	    *
-	    * @param  argument   The input without the first word
-	    * @return                     A task with some attributes determined
-	    */
+	/**
+	 * Interpreting user input and divide the input into different parts 
+	 * according to the keywords
+	 * Also determines the type of task
+	 *
+	 * @param  argument   The input without the first word
+	 * @exception ParserException  If unable to extract the contents
+	 * @return                     A task with some attributes determined
+	 */
 	private static Task extractContent(String argument) throws ParserException {
-		String[] argumentWords = stringToArray(argument);
+		String[] argumentWords = convertStringToArray(argument);
 
 		String description = extractDescription(argument);
 		String category = extractCategory(argument);
-		boolean priority = extractPriority(argument);
+		boolean isPriority = hasPriority(argument);
+		boolean isComplete = false;
 
 		if(category != null){
 			if(category.equals(ESCAPE_STRING + DELETE_CATEGORY)){
@@ -157,10 +173,9 @@ public class Parser {
 			}
 		}
 
-
 		if (isDeadline(argumentWords)) {
 			Calendar deadline = extractDeadline(argument);
-			return new DeadlineTask(-1, description, category, priority, false, deadline);
+			return new DeadlineTask(-1, description, category, isPriority, isComplete, deadline);
 		} else if (isSchedule(argumentWords)) {
 			Calendar fromDate = extractFromDate(argument);
 			Calendar toDate = extractToDate(argument);
@@ -170,14 +185,14 @@ public class Parser {
 				toDate = fromDate;
 				fromDate = tempDate;
 			}
-			return new ScheduleTask(-1, description, category, priority, false, fromDate, toDate);
+			return new ScheduleTask(-1, description, category, isPriority, isComplete, fromDate, toDate);
 		} else {
-			return new Task(-1, description, category, priority, false);
+			return new Task(-1, description, category, isPriority, isComplete);
 		}
 	}
 
 	private static void checkArgumentValidity(String argument) throws ParserException {
-		String[] words = stringToArray(argument);
+		String[] words = convertStringToArray(argument);
 		logger.log(Level.INFO, LOGGER_CHECK_ARGUMENT_VALIDITY);
 
 		if (hasDuplicateKeywords(words)) {
@@ -224,24 +239,32 @@ public class Parser {
 		return parseDateFromText(deadlineString);
 	}
 
+	/**
+	 * Interpreting dateString from the user input
+	 * Creates an instance of ParserDate class and parse date and time
+	 *
+	 * @param  argument   The input after keyword "from" and "to" or "by"
+	 * @exception ParserException  If unable to parse the date and time
+	 * @return                     A Calendar object which represents the date and time
+	 */
 	private static Calendar parseDateFromText(String dateString) throws ParserException {
 		ParserDate parserDate = new ParserDate();
 		Calendar calendar = parserDate.getDate(dateString);
 		return calendar;
 	}
 
-	private static boolean extractPriority(String arg) {
-		String[] words = stringToArray(arg);
+	private static boolean hasPriority(String arg) {
+		String[] words = convertStringToArray(arg);
 		return containsKeyword(words, KEYWORDS[0]);
 	}
 
-	private static boolean extractComplete(String arg) {
-		String[] words = stringToArray(arg);
+	private static boolean hasComplete(String arg) {
+		String[] words = convertStringToArray(arg);
 		return containsKeyword(words, KEYWORDS[5]);
 	}
 
 	private static String extractAfterKeyword(String arg, String keyword, String error) throws ParserException{
-		String[] words = stringToArray(arg);
+		String[] words = convertStringToArray(arg);
 		String[] textsAroundKeyword = {};
 		String textAfterKeyword = "";
 		int keywordIndex = 0;
@@ -250,7 +273,7 @@ public class Parser {
 			return null;
 		}
 
-		for(int i=0; i < words.length; i++){
+		for(int i = 0; i < words.length; i++){
 			if(words[i].equals(keyword)){
 				keywordIndex = i;
 			}
@@ -269,16 +292,18 @@ public class Parser {
 			textsAroundKeyword = arg.split(" " + keyword + " ");	
 			textAfterKeyword = textsAroundKeyword[1].trim();
 		}
+
 		if(words[0].equals(keyword)){
 			textsAroundKeyword = arg.split(keyword + " ");	
 			textAfterKeyword = textsAroundKeyword[1].trim();		
 		}
-		words = stringToArray(textAfterKeyword);
+		words = convertStringToArray(textAfterKeyword);
 		String textNeeded = removeExtraWords(words, textAfterKeyword);
 
 		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(DELETE_CATEGORY)){
 			return textNeeded;
 		}
+
 		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(ESCAPE_STRING + DELETE_CATEGORY)){
 			return textNeeded;
 		}
@@ -315,7 +340,7 @@ public class Parser {
 
 	private static int countKeywordOccurrences(String[] words, String keyword) {
 		int count = 0;
-		for (String word : words) {
+		for (String word: words) {
 			if (word.equals(keyword)) {
 				count++;
 			}
@@ -324,7 +349,7 @@ public class Parser {
 	}
 
 	private static String extractDescription(String arg) {
-		String[] words = stringToArray(arg);
+		String[] words = convertStringToArray(arg);
 		String description = removeExtraWords(words, arg);
 		return  replaceKeywordInContent(description).trim();
 	}
@@ -371,14 +396,15 @@ public class Parser {
 
 	private static Task createTaskToDelete(String argument) throws ParserException {
 		assert argument != null;
-		String[] arguments = stringToArray(argument);
+		String[] arguments = convertStringToArray(argument);
 		int id = identifyTargetId(arguments);
 		return new Task (id, null, null, null, null);
 	}
 
 	private static Task createTaskToEdit(String input) throws ParserException {
 		assert input != null;
-		int taskId = identifyTargetId(stringToArray(input));
+
+		int taskId = identifyTargetId(convertStringToArray(input));
 		String textAfterIndex= removeFirstWord(input);
 
 		if(textAfterIndex.length() == 0){
@@ -392,14 +418,14 @@ public class Parser {
 		}
 
 		String category = extractCategory(textAfterIndex);
-		if(category!=null){
+		if(category != null){
 			if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
 				category = category.substring(1, category.length());
-			}
-			else if(category.equals(DELETE_CATEGORY)){
+			}else if(category.equals(DELETE_CATEGORY)){
 				category = "";
 			}
 		}
+
 		task.setCategory(category);
 		return task;
 	}
@@ -408,9 +434,9 @@ public class Parser {
 		if(input.equals("") || input == null){
 			throw new ParserException(ERROR_NO_DESCRIPTION_FOR_SEARCH);
 		}
-			
+
 		Task task = extractContent(input);
-		boolean isCompleted = extractComplete(input);
+		boolean isCompleted = hasComplete(input);
 
 		if(isCompleted){
 			task.setComplete(true);
@@ -425,17 +451,19 @@ public class Parser {
 	}
 
 	private static Task createTaskToMark(String argument) throws ParserException {
-		assert argument != null;
-		String[] arguments = stringToArray(argument);
+		assert argument != null;	
+		String[] arguments = convertStringToArray(argument);
 		int id = identifyTargetId(arguments);
-		return new Task (id, null, null, null, true);
+		boolean isComplete = true;
+		return new Task (id, null, null, null, isComplete);
 	}
 
 	private static Task createTaskToUnmark(String argument) throws ParserException {
 		assert argument != null;
-		String[] arguments = stringToArray(argument);
+		String[] arguments = convertStringToArray(argument);		
 		int id = identifyTargetId(arguments);
-		return new Task (id, null, null, null, false);
+		boolean isComplete = false;
+		return new Task (id, null, null, null, isComplete);
 	}
 
 	private static int identifyTargetId(String[] arguments) throws ParserException {
@@ -452,13 +480,13 @@ public class Parser {
 		}
 	}
 
-	private static String[] stringToArray(String input){
+	private static String[] convertStringToArray(String input){
 		return input.trim().split("\\s+");
 	}
 
 	private static String extractFirstWord (String input) {
 		assert input != null;
-		return stringToArray(input)[0];
+		return convertStringToArray(input)[0];
 	}
 
 	private static String removeFirstWord (String input) {
@@ -470,16 +498,11 @@ public class Parser {
 		if(firstWord.equals(COMMAND_HELP_QUESTIONMARK)){
 			firstWord = "\\" + COMMAND_HELP_QUESTIONMARK;
 		}
-		
+
 		return input.replaceFirst(firstWord, "").trim();
 	}
 
-	private static CommandType determineCommandType(String command){
-		command = command.toLowerCase();
-		return CommandType.identifyCommandType(command);
-	}
-
-	private static CommandType unmarkToMark(CommandType commandType){
+	private static CommandType convertUnmarkToMark(CommandType commandType){
 		if(commandType.equals(CommandType.UNMARK)){
 			commandType = CommandType.MARK;
 		}

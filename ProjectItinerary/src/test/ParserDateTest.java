@@ -1,13 +1,14 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import itinerary.parser.ParserDate;
 import itinerary.parser.ParserException;
 
-import org.junit.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import org.junit.Test;
 
 //@author A0114823M
 public class ParserDateTest {
@@ -95,9 +96,9 @@ public class ParserDateTest {
 
 	@Test
 	public void testChangeDateFormat() throws NoSuchMethodException, SecurityException,
-																			IllegalAccessException, IllegalArgumentException,
-																			InvocationTargetException, ClassNotFoundException, 
-																			InstantiationException{		
+	IllegalAccessException, IllegalArgumentException,
+	InvocationTargetException, ClassNotFoundException, 
+	InstantiationException{		
 		String input = "2015-1-28 2pm";	
 		String expected = "2015/1/28 2pm";
 		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
@@ -112,9 +113,9 @@ public class ParserDateTest {
 
 	@Test
 	public void testChangeDotToColon() throws ClassNotFoundException, InstantiationException, 
-																			IllegalAccessException, NoSuchMethodException, 
-																			SecurityException, IllegalArgumentException, 
-																			InvocationTargetException{
+	IllegalAccessException, NoSuchMethodException, 
+	SecurityException, IllegalArgumentException, 
+	InvocationTargetException{
 		String input = "3 aug 9.30pm";	
 		String expected =  "3 aug 9:30pm";
 		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
@@ -129,9 +130,9 @@ public class ParserDateTest {
 
 	@Test
 	public void testSwitchDateMonth() throws ClassNotFoundException, InstantiationException, 
-																			IllegalAccessException, NoSuchMethodException, 
-																			SecurityException, IllegalArgumentException, 
-																			InvocationTargetException{
+	IllegalAccessException, NoSuchMethodException, 
+	SecurityException, IllegalArgumentException, 
+	InvocationTargetException{
 		String input = "1/28/2015 2pm";	
 		String expected =  "28/1/2015 2pm";
 		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
@@ -146,9 +147,9 @@ public class ParserDateTest {
 
 	@Test
 	public void testSwitchDateMonthFail() throws ClassNotFoundException, InstantiationException, 
-																				IllegalAccessException, NoSuchMethodException, 
-																				SecurityException, IllegalArgumentException, 
-																				InvocationTargetException{		
+	IllegalAccessException, NoSuchMethodException, 
+	SecurityException, IllegalArgumentException, 
+	InvocationTargetException{		
 		String input = "2018/12/5 2pm";	
 		String expected =  "2018/12/5 2pm";
 		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
@@ -166,51 +167,61 @@ public class ParserDateTest {
 		assertNotNull(parserDate.getDate("3 aug 06:35"));
 	}	
 
+	/* This is a boundary case for when the month is >12*/
 	@Test (expected = ParserException.class)
 	public void testInvalidMonth () throws ParserException {
 		parserDate.getDate("2018/23/23 3pm");
 	}
 
+	/* This is a boundary case for when the day is > 32*/
 	@Test (expected = ParserException.class)
 	public void testInvalidDay () throws ParserException {
 		parserDate.getDate("2018/12/32 3pm");
 	}
 
+	/* This is a boundary case for when the year is invalid */
 	@Test (expected = ParserException.class)
 	public void testInvalidYear () throws ParserException {
 		parserDate.getDate("12/12/23 3pm");
 	}
 
+	/* This is a boundary case for when the number before am is >12 */
 	@Test (expected = ParserException.class)
 	public void testInvalidAm () throws ParserException {
 		parserDate.getDate("2015/1/2 13am");
 	}	
 
+	/* This is a boundary case for when the number before p is >12 */
 	@Test (expected = ParserException.class)
 	public void testInvalidP () throws ParserException {
 		parserDate.getDate("2015/1/2 23p");
 	}	
 
+	/* This is a boundary case for when there is 29th for February for non-leap year */
 	@Test (expected = ParserException.class)
 	public void testInvalidDayOfFeb () throws ParserException {
 		parserDate.getDate("2015/2/29 3pm");
 	}	
 
+	/* This is a boundary case for when the day is > maximum day of that month */
 	@Test (expected = ParserException.class)
 	public void testInvalidDayOfMonthWithYear () throws ParserException {
 		parserDate.getDate("2015/4/31 3pm");
 	}	
 
+	/* This is a boundary case for when the day is > maximum day of that month */
 	@Test (expected = ParserException.class)
 	public void testInvalidDayOfMonth () throws ParserException {
 		parserDate.getDate("31/4 3pm");
 	}	
 
+	/* This is a boundary case for when YYYY DD MM is input with dot */
 	@Test (expected = ParserException.class)
 	public void testInvalidYearDot () throws ParserException {
 		parserDate.getDate("2015.4.31 3pm");
 	}	
 
+	/* This is a boundary case for when HH:MM is beyond 24:00 */
 	@Test (expected = ParserException.class)
 	public void testInvalidTimeColon () throws ParserException {
 		parserDate.getDate("2015/4/5 34:21");

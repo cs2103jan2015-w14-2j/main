@@ -1,10 +1,10 @@
 package itinerary.parser;
 
-import com.joestelmach.natty.*;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.joestelmach.natty.DateGroup;
 
 //@author A0114823M
 public class ParserDate {
@@ -13,13 +13,13 @@ public class ParserDate {
 	private static final String ERROR_INVALID_DATE = "Error! The date does not exist";
 	private static final String ERROR_INVALID_TIME = "Error! The time does not exist";
 	private static final String AFTER_TEN_YEAR = "after 10 years";
-	private static final String STRING_A = "a";
-	private static final String STRING_ONE = "one";
 	private static final String TIME_AM = "am";
 	private static final String TIME_A = "a";
 	private static final String TIME_PM = "pm";
 	private static final String TIME_P = "p";
 	private static final String FUTURE = "future";
+	private static final String STRING_A = "a";
+	private static final String STRING_ONE = "one";
 	private static final String STRING_COLON = ":";
 	private static final String STRING_DOT = ".";
 	private static final String STRING_DASH = "-";
@@ -31,13 +31,15 @@ public class ParserDate {
 	public ParserDate(){ 
 	}
 
-	 /**
-	    * Called by Parser when a DeadlineTask or a ScheduleTask is created
-	    *
-	    * @param  dateString   The input which Parser interpret as date or time
-	    * @return                        A calendar object which reflects the date and/or time
-	    * 										from dateString
-	    */
+	/**
+	 * Called by Parser when a DeadlineTask or a ScheduleTask is created
+	 *
+	 * @param  dateString   The input which Parser interpret as date or time
+	 * @throws ParserException  If the input format is invalid or
+	 * 												the date and time does not exist
+	 * @return                       A calendar object which reflects the date and/or time
+	 * 										from dateString
+	 */
 	public Calendar getDate(String dateString) throws ParserException {
 		dateString = changeDateFormat(dateString);
 		dateString = changeDotToColon(dateString);
@@ -64,10 +66,10 @@ public class ParserDate {
 		dateString = dateString.replaceAll("\\" + STRING_DOT, STRING_COLON);
 		return dateString;
 	}
-	
+
 	private int countAppearance(String dateString, String string){
 		int counter = 0;
-		for(int i=0; i < dateString.length(); i++){
+		for(int i = 0; i < dateString.length(); i++){
 			if(dateString.charAt(i) == string.charAt(0)){
 				counter++;
 			}
@@ -86,15 +88,15 @@ public class ParserDate {
 			changedFormat = dateString.replaceAll( STRING_UNDERSCORE, STRING_SLASH);
 			return changedFormat;
 		}
-		
+
 		return dateString;
 	}
 
 	private String switchDateMonth(String dateString){
-		String[] dateWords = stringToArray(dateString);
+		String[] dateWords = convertStringToArray(dateString);
 
 		String date = "";
-		for(int i=0; i < dateWords.length; i++){
+		for(int i = 0; i < dateWords.length; i++){
 			if(dateWords[i].indexOf(STRING_SLASH) != -1){
 				date = dateWords[i];
 				break;
@@ -129,23 +131,24 @@ public class ParserDate {
 		return dateString;
 	}
 
-	private String futureToTenYear(String dateString){
+	private String convertFutureToTenYear(String dateString){
 		if(dateString.equalsIgnoreCase(FUTURE)){
 			dateString = AFTER_TEN_YEAR;
 		}
 		return dateString;
 	}
 
-	 /**
-	    * Called by getDate(String dateString) every time
-	    *
-	    * @param  dateString   The string after checking invalid format and/or
-	    * 										change format when necessary
-	    * @return                        A calendar object which reflects the date and/or time
-	    * 										from dateString
-	    */
+	/**
+	 * Every dateString will be passed to this method and parsed by Natty
+	 *
+	 * @param  dateString   The string after checking invalid format and/or
+	 * 										change format when necessary
+	 * @throws ParserException  If Natty is unable to parse the dateString
+	 * @return                        A calendar object which reflects the date and/or time
+	 * 										from dateString
+	 */
 	private Calendar parseDateByNatty(String dateString) throws ParserException{
-		dateString = futureToTenYear(dateString);
+		dateString = convertFutureToTenYear(dateString);
 		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
 		List<DateGroup> dateGroups = dateParser.parse(dateString);
 
@@ -170,9 +173,9 @@ public class ParserDate {
 	private boolean isValidArguments (String dateString) throws ParserException{
 		int valueExceedDay = 0;
 		int valueWithinMonth = 0;		
-		String[] dateWords = stringToArray(dateString);
+		String[] dateWords = convertStringToArray(dateString);
 
-		for(int i=0; i < dateWords.length; i++){
+		for(int i = 0; i < dateWords.length; i++){
 			if(dateWords[i].indexOf(STRING_SLASH) != -1){
 				dateString = dateWords[i];
 			}
@@ -222,16 +225,16 @@ public class ParserDate {
 	}
 
 	private boolean isValidDayOfMonth(String dateString) throws ParserException{
-		String[] dateWords = stringToArray(dateString);
+		String[] dateWords = convertStringToArray(dateString);
 
-		for(int i=0; i < dateWords.length; i++){
+		for(int i = 0; i < dateWords.length; i++){
 			if(dateWords[i].indexOf(STRING_SLASH) != -1){
 				dateString = dateWords[i];
 			}
 		}
 
 		if(countAppearance(dateString, STRING_SLASH) == 2 || 
-			countAppearance(dateString, STRING_SLASH) == 1	){
+				countAppearance(dateString, STRING_SLASH) == 1	){
 			String[] textAroundCharacter = dateString.split(STRING_SLASH);
 			int[] dayMonth = {0,0};
 			for(String text: textAroundCharacter){
@@ -277,8 +280,8 @@ public class ParserDate {
 	}
 
 	private boolean isValidAmPm(String dateString){
-		String[]dateWords = stringToArray(dateString);
-		for(int i=0; i<dateWords.length; i++){
+		String[]dateWords = convertStringToArray(dateString);
+		for(int i = 0; i<dateWords.length; i++){
 			int amIndex = dateWords[i].indexOf(TIME_AM);
 			amIndex = dateWords[i].indexOf(TIME_A);
 			int pmIndex = dateWords[i].indexOf(TIME_PM);
@@ -305,7 +308,7 @@ public class ParserDate {
 	}
 
 	private boolean isValidTime(String dateString){
-		String[]dateWords = stringToArray(dateString);
+		String[]dateWords = convertStringToArray(dateString);
 		for(String word: dateWords){	
 			int colonIndex = word.indexOf(STRING_COLON);
 			if(colonIndex != -1){
@@ -326,9 +329,9 @@ public class ParserDate {
 	}
 
 	private String convertAToOne(String dateString){
-		String[]dateWords = stringToArray(dateString);
+		String[]dateWords = convertStringToArray(dateString);
 		String newDateString = "";
-		for(int i=0; i<dateWords.length; i++){
+		for(int i = 0; i<dateWords.length; i++){
 			if(dateWords[i].equalsIgnoreCase(STRING_A)){
 				dateWords[i] = STRING_ONE;
 			}
@@ -337,7 +340,7 @@ public class ParserDate {
 		return newDateString.trim();
 	}
 
-	private static String[] stringToArray(String input){
+	private static String[] convertStringToArray(String input){
 		return input.trim().split("\\s+");
 	}
 }
