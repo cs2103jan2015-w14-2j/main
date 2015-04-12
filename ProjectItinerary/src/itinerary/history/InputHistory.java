@@ -10,6 +10,9 @@ public class InputHistory extends AbstractHistory<String> {
 		current = new HistoryNode(latest, null);
 	}
 	
+	/**
+	 * Adds a String to the end of the History and an additional value which is null
+	 */
 	@Override
 	public void add (String t) {
 		latest = new HistoryNode(latest, t);
