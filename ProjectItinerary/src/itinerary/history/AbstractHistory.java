@@ -7,10 +7,20 @@ public abstract class AbstractHistory <T> {
 	
 	protected HistoryNode current;
 	
+	/**
+	 * Adds a value to the history
+	 * @param t the value to be added
+	 */
 	public void add (T t) {
 		current = new HistoryNode(current, t);
 	}
 	
+	/**
+	 * Gets the previous value in the history while simultaneously
+	 * setting the current pointer to that value
+	 * @return The previous value
+	 * @throws HistoryBoundException if at the beginning of history or history is empty
+	 */
 	public T getPrevious () throws HistoryBoundException {
 		if (current == null) {
 			throw new HistoryBoundException(BoundType.EMPTY);
@@ -23,6 +33,12 @@ public abstract class AbstractHistory <T> {
 		return current.getValue();
 	}
 	
+	/**
+	 * Gets the next value in the history while simultaneously
+	 * setting the current pointer to that value
+	 * @return The next value
+	 * @throws HistoryBoundException if at the end of history or history is empty
+	 */
 	public T getNext () throws HistoryBoundException {
 		if (current == null) {
 			throw new HistoryBoundException(BoundType.EMPTY);
