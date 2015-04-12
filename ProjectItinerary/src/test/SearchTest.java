@@ -101,10 +101,11 @@ public class SearchTest {
 		jsonList.add(advancedTask);
 	
 	}
+	@Test
 	public void testSearchMultiple() throws SearchException{
 		SearchTask task = new SearchTask();
 		task.setCategory("advanced category");
-		task.setText("Basic Text");
+		task.setText("Basic Task");
 		Search search = new Search(jsonList);
 		List<Task> testList = search.query(task);
 		assertEquals("test query",gson.toJson(advancedTask),gson.toJson(testList.get(0)));

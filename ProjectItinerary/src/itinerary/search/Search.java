@@ -517,7 +517,6 @@ public class Search {
 			logger.log(Level.SEVERE, DATE_EPOCH_ERROR, e);
 			throw new SearchException(ERROR_IO);
 		}
-		assert (fromDate.getTime().toString().equals(date.toString()));
 		return fromDate;
 	}
 
