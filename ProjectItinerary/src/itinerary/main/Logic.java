@@ -109,6 +109,7 @@ public class Logic {
 	/**
 	 * A method to check if config file with storage file name is found.
 	 * If found, it will initialize all required objects.
+	 * 
 	 * @return True if config file was found, false otherwise
 	 */
 	public boolean isFileConfigured () {
@@ -133,6 +134,7 @@ public class Logic {
 	
 	/**
 	 * Saves the string provided to configStorage.
+	 * 
 	 * @param fileName The filename to be saved
 	 */
 	public void saveStorageFileName (String fileName) {
@@ -146,6 +148,7 @@ public class Logic {
 	/**
 	 * Gets the current file name from configStorage, returns null if
 	 * there isn't a current file name 
+	 * 
 	 * @return The current file name
 	 */
 	public String getCurrentFileName () {
@@ -159,6 +162,7 @@ public class Logic {
 	/**
 	 * Sets up the variables in Logic to the given file name.
 	 * Must be called before executing anything if default constructor was used.
+	 * 
 	 * @param fileName The file name to set variables to align with.
 	 */
 	public void setupLogicVariables (String fileName) {
@@ -169,6 +173,7 @@ public class Logic {
 	
 	/**
 	 * Gets the initial data and message to be displayed
+	 * 
 	 * @return The content to be displayed
 	 */
 	public UserInterfaceContent initialLaunch () {
@@ -179,6 +184,7 @@ public class Logic {
 	
 	/**
 	 * Adds a listener that will execute when the user enters a help command
+	 * 
 	 * @param listener The listener that is to be executed.
 	 */
 	public void addHelpListener (HelpListener listener) {
@@ -319,6 +325,7 @@ public class Logic {
 	
 	/**
 	 * Executes a basic search which only searches through task descriptions
+	 * 
 	 * @param query The string to be searched
 	 * @return The content that result from the search
 	 */
@@ -337,6 +344,7 @@ public class Logic {
 	
 	/**
 	 * Executes an advanced search which searches through pre-defined parameters
+	 * 
 	 * @param task Container for the parameters to be searched
 	 * @return The content that result from the search
 	 */
