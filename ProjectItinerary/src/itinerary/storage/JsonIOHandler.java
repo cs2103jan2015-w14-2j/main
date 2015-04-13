@@ -16,6 +16,8 @@ import java.util.List;
 public class JsonIOHandler {
     
     static File defaultFile = new File("default");
+    
+    public static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
 
     /**
      * Writes/Appends a given Task object into the given File object in a JSON
@@ -41,7 +43,7 @@ public class JsonIOHandler {
         if (task != null) {
             String taskString = JsonStringTagger.convertTasktoTaggedJsonString(task);
             writer.write(taskString.getBytes());
-            writer.write(System.getProperty("line.separator").getBytes());
+            writer.write(NEWLINE_SEPARATOR.getBytes());
         }
         writer.close();
     }
@@ -99,7 +101,7 @@ public class JsonIOHandler {
                 } else {
                     sb.append(stringArray[2]);
                 }
-                sb.append("\n");
+                sb.append(NEWLINE_SEPARATOR);
             }
             bufferedReader.close();
         } catch (NullPointerException e) {

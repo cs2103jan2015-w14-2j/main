@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 
 //@author A0121409R
 public class JsonIOHandlerTest {
+    
+    static final String NEWLINE_SEPARATOR = JsonIOHandler.NEWLINE_SEPARATOR;
 
     static Gson gson = new Gson();
 
@@ -119,12 +121,16 @@ public class JsonIOHandlerTest {
         assertEquals("", JsonIOHandler.readJSON(testFile, false));
         wipe();
         JsonIOHandler.writeJSONList(testFile, listError);
-        assertEquals(task1String + "\n" + task2String + "\n" + task3String
-                     + "\n", JsonIOHandler.readJSON(testFile, false));
+        assertEquals(task1String + NEWLINE_SEPARATOR + task2String
+                             + NEWLINE_SEPARATOR + task3String
+                             + NEWLINE_SEPARATOR,
+                     JsonIOHandler.readJSON(testFile, false));
         wipe();
         JsonIOHandler.writeJSONList(testFile, taskList);
-        assertEquals(task1String + "\n" + task2String + "\n" + task3String
-                     + "\n", JsonIOHandler.readJSON(testFile, false));
+        assertEquals(task1String + NEWLINE_SEPARATOR + task2String
+                             + NEWLINE_SEPARATOR + task3String
+                             + NEWLINE_SEPARATOR,
+                     JsonIOHandler.readJSON(testFile, false));
     }
 
     /**

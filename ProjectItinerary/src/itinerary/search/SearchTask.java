@@ -3,104 +3,92 @@ package itinerary.search;
 import itinerary.main.Task;
 
 import java.util.Calendar;
-import java.util.List;
 
 import com.google.gson.Gson;
+
 //@author A0121810Y
 /**
- * A searchTask contains all fields that a deadlineTask,ScheduleTask and a Task have.
- * Any non-null field in SearchTask is searched with the value of the field as the parameters when a Search.query() is run on it.
+ * A searchTask contains all fields that a deadlineTask,ScheduleTask and a Task
+ * have. Any non-null field in SearchTask is searched with the value of the
+ * field as the parameters when a Search.query() is run on it.
  *
  */
 public class SearchTask extends Task implements Cloneable {
 	private Calendar fromDate;
-    private Calendar toDate;
-    private Calendar deadline;
-    private List<String> categoryList;
-    private List<String> searchNotField;
+	private Calendar toDate;
+	private Calendar deadline;
 
-    public SearchTask() {
-        super(null,null,null, null, null);
-    }
-    public SearchTask(Integer taskId, String text, String category,
-                        Boolean isPriority, Boolean isComplete,
-                        Calendar fromDate, Calendar toDate) {
-        super(taskId, text, category, isPriority, isComplete);
-        this.fromDate = fromDate;
-        this.toDate = toDate;
-    }
+	public SearchTask() {
+		super(null, null, null, null, null);
+	}
 
-    public Calendar getFromDate() {
-        return fromDate;
-    }
-    public void setFromDate(Calendar fromDate) {
-        this.fromDate = fromDate;
-    }
+	public SearchTask(Integer taskId, String text, String category,
+	        Boolean isPriority, Boolean isComplete, Calendar fromDate,
+	        Calendar toDate) {
+		super(taskId, text, category, isPriority, isComplete);
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+	}
 
-    public Calendar getToDate() {
-        return toDate;
-    }
+	public Calendar getFromDate() {
+		return fromDate;
+	}
 
-    public void setToDate(Calendar toDate) {
-        this.toDate = toDate;
-    }
+	public void setFromDate(Calendar fromDate) {
+		this.fromDate = fromDate;
+	}
 
-    //@author A0121409R
-    public SearchTask clone() {
-        // Note the String objects might not be deep copied.
-        return new SearchTask(this.getTaskId(), this.getText(),
-                                this.getCategory(), this.isPriority(),
-                                this.isComplete(), this.getFromDate(),
-                                this.getToDate());
-    }
+	public Calendar getToDate() {
+		return toDate;
+	}
 
-    @Override
-    public boolean equals(Object searchTask) {
-        // Overrides Object equals() method
-        if (!super.equals(searchTask)) {
-            return false;
-        }
+	public void setToDate(Calendar toDate) {
+		this.toDate = toDate;
+	}
 
-        if (!(searchTask instanceof SearchTask)) {
-            return false;
-        }
+	// @author A0121409R
+	public SearchTask clone() {
+		// Note the String objects might not be deep copied.
+		return new SearchTask(this.getTaskId(), this.getText(),
+		        this.getCategory(), this.isPriority(), this.isComplete(),
+		        this.getFromDate(), this.getToDate());
+	}
 
-        Gson gson = new Gson();
+	@Override
+	public boolean equals(Object searchTask) {
+		// Overrides Object equals() method
+		if (!super.equals(searchTask)) {
+			return false;
+		}
 
-        String fromDate1 =
-                           gson.toJson(((SearchTask) searchTask).getFromDate());
-        String fromDate2 = gson.toJson(this.fromDate);
+		if (!(searchTask instanceof SearchTask)) {
+			return false;
+		}
 
-        if (!fromDate1.equals(fromDate2)) {
-            return false;
-        }
+		Gson gson = new Gson();
 
-        String toDate1 =
-                         gson.toJson(((SearchTask) searchTask).getFromDate());
-        String toDate2 = gson.toJson(this.toDate);
+		String fromDate1 = gson.toJson(((SearchTask) searchTask).getFromDate());
+		String fromDate2 = gson.toJson(this.fromDate);
 
-        if (!toDate1.equals(toDate2)) {
-            return false;
-        }
+		if (!fromDate1.equals(fromDate2)) {
+			return false;
+		}
 
-        return true;
-    }
-	public List<String> getCategoryList() {
-	    return categoryList;
-    }
-	public void setCategoryList(List<String> categoryList) {
-	    this.categoryList = categoryList;
-    }
-	public List<String> getSearchNotField() {
-	    return searchNotField;
-    }
-	public void setSearchNotField(List<String> searchNotField) {
-	    this.searchNotField = searchNotField;
-    }
+		String toDate1 = gson.toJson(((SearchTask) searchTask).getFromDate());
+		String toDate2 = gson.toJson(this.toDate);
+
+		if (!toDate1.equals(toDate2)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	public Calendar getDeadline() {
-	    return deadline;
-    }
+		return deadline;
+	}
+
 	public void setDeadline(Calendar deadline) {
-	    this.deadline = deadline;
-    }
+		this.deadline = deadline;
+	}
 }
