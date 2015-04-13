@@ -84,7 +84,7 @@ public class SuggestionBox {
 			boolean isEscapePressed = event.getCode() == KeyCode.ESCAPE;
 			
 			// The currently selected suggestion
-			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
+			String suggestion = suggestionListView.getSelectionModel().getSelectedItem();
 			if (isFromListView && isEnterPressed) {
 				if (suggestion != null) {
 					selectSuggestion(suggestion);
@@ -101,7 +101,7 @@ public class SuggestionBox {
 	private EventHandler<MouseEvent> mousePressHandler = new EventHandler<MouseEvent>() {
 		@Override
 		public void handle(MouseEvent event) {
-			String suggestion = (String) suggestionListView.getSelectionModel().getSelectedItem();
+			String suggestion = suggestionListView.getSelectionModel().getSelectedItem();
 			selectSuggestion(suggestion);
 		}
 	};

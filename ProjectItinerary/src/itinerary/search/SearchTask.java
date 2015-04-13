@@ -47,6 +47,7 @@ public class SearchTask extends Task implements Cloneable {
 	}
 
 	// @author A0121409R
+	@Override
 	public SearchTask clone() {
 		// Note the String objects might not be deep copied.
 		return new SearchTask(this.getTaskId(), this.getText(),

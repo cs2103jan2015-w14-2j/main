@@ -34,7 +34,8 @@ public class ScheduleTask extends Task implements Cloneable {
     }
 
     //@author A0121409R
-    public ScheduleTask clone() {
+    @Override
+	public ScheduleTask clone() {
         // Note the String objects might not be deep copied.
         return new ScheduleTask(this.getTaskId(), this.getText(),
                                 this.getCategory(), this.isPriority(),

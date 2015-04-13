@@ -24,7 +24,8 @@ public class DeadlineTask extends Task implements Cloneable {
     }
 
     //@author A0121409R
-    public DeadlineTask clone() {
+    @Override
+	public DeadlineTask clone() {
         // Note the String objects might not be deep copied.
         return new DeadlineTask(this.getTaskId(), this.getText(),
                                 this.getCategory(), this.isPriority(),

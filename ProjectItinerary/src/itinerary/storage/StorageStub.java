@@ -19,7 +19,8 @@ public class StorageStub extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public void addTask(Task task) throws StorageException {
+    @Override
+	public void addTask(Task task) throws StorageException {
     	Task taskClone = task.clone();
     	tasks.add(taskClone);
     	updateIds();
@@ -29,7 +30,8 @@ public class StorageStub extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public void editTask(Task task) throws StorageException {
+    @Override
+	public void editTask(Task task) throws StorageException {
     	int taskIndex = task.getTaskId() - 1;
     	if (taskIndex < 0 || taskIndex >= tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
@@ -44,7 +46,8 @@ public class StorageStub extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public void deleteTask(Task task) throws StorageException {
+    @Override
+	public void deleteTask(Task task) throws StorageException {
     	int taskId = task.getTaskId();
     	if (taskId < 1 || taskId > tasks.size()) {
     		throw new StorageException(ERROR_INVALID_ID);
@@ -57,7 +60,8 @@ public class StorageStub extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public List<Task> getAllTasks() {
+    @Override
+	public List<Task> getAllTasks() {
     	ArrayList<Task> tempTasks = new ArrayList<Task>();
     	for (Task task : tasks) {
     		tempTasks.add(task.clone());
@@ -69,7 +73,8 @@ public class StorageStub extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public void clearAll() throws StorageException {
+    @Override
+	public void clearAll() throws StorageException {
     	tasks.clear();
     }
 
@@ -77,7 +82,8 @@ public class StorageStub extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
-    public void refillAll(List<Task> tasks) throws StorageException {
+    @Override
+	public void refillAll(List<Task> tasks) throws StorageException {
     	this.tasks = tasks;
     	updateIds();
     }
@@ -88,7 +94,8 @@ public class StorageStub extends Storage {
     	}
     }
     
-    public void close() {
+    @Override
+	public void close() {
         //Do nothing
     }
 

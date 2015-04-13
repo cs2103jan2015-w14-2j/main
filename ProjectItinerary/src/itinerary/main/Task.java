@@ -90,7 +90,8 @@ public class Task implements Cloneable {
     }
 
     //@author A0121409R
-    public Task clone() {
+    @Override
+	public Task clone() {
         // Note the String objects might not be deep copied.
         return new Task(this.getTaskId(), this.getText(),
                         this.getCategory(), this.isPriority(),

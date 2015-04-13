@@ -70,7 +70,8 @@ public abstract class Storage implements Closeable{
     /**
      * Replaces the old file with the new tempFile.
      */
-    public abstract void close();
+    @Override
+	public abstract void close();
 
     /**
      * Called by editTask to overwrite originalTask's non-null variables in

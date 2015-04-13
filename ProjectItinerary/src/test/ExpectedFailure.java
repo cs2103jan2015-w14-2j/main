@@ -15,7 +15,8 @@ import org.junit.runners.model.Statement;
  *    @AssertionFailure.
  */
 public class ExpectedFailure implements TestRule {
-    public Statement apply(Statement base, Description description) {
+    @Override
+	public Statement apply(Statement base, Description description) {
         return statement(base, description);
     }
 

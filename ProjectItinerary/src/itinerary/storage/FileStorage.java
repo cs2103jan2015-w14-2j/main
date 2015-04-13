@@ -166,7 +166,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#addLine(itinerary.main.Command)
      */
-    public void addTask(Task task) throws StorageException {
+    @Override
+	public void addTask(Task task) throws StorageException {
         
         assert task != null;
         
@@ -193,7 +194,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#editLine(itinerary.main.Command)
      */
-    public void editTask(Task task) throws StorageException {
+    @Override
+	public void editTask(Task task) throws StorageException {
         
         assert task != null;
 
@@ -218,7 +220,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
      */
-    public void deleteTask(Task task) throws StorageException {
+    @Override
+	public void deleteTask(Task task) throws StorageException {
         
         assert task != null;
         
@@ -237,7 +240,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
      */
-    public List<Task> getAllTasks() {
+    @Override
+	public List<Task> getAllTasks() {
         return duplicateCurrentListTask(true);
     }
     
@@ -245,7 +249,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
      */
-    public void clearAll() throws StorageException {
+    @Override
+	public void clearAll() throws StorageException {
         listTask.clear();
 
         writeToFile();
@@ -255,7 +260,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
      */
-    public void refillAll(List<Task> tasks) throws StorageException {
+    @Override
+	public void refillAll(List<Task> tasks) throws StorageException {
         
         assert tasks != null;
         
@@ -284,7 +290,8 @@ public class FileStorage extends Storage {
      * (non-Javadoc)
      * @see itinerary.main.Storage#close(itinerary.main.Command)
      */
-    public void close() {
+    @Override
+	public void close() {
         if (tempFile.exists()) {
             if (!currFile.delete()) {
                 Logger.getGlobal().log(Level.WARNING, "Old file not deleted.");
