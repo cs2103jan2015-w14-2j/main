@@ -46,12 +46,6 @@ public class ParserDateTest {
 	}	
 
 	@Test
-	public void testValidDayOfMonth () throws ParserException {
-		String dateString = "3/31 2pm";
-		assertNotNull(parserDate.getDate(dateString));
-	}	
-
-	@Test
 	public void testValidDayOfFeb () throws ParserException {
 		String dateString = "2012/2/29 2pm";
 		assertNotNull(parserDate.getDate(dateString));
@@ -184,18 +178,6 @@ public class ParserDateTest {
 	public void testInvalidYear () throws ParserException {
 		parserDate.getDate("12/12/23 3pm");
 	}
-
-	/* This is a boundary case for when the number before am is >12 */
-	@Test (expected = ParserException.class)
-	public void testInvalidAm () throws ParserException {
-		parserDate.getDate("2015/1/2 13am");
-	}	
-
-	/* This is a boundary case for when the number before p is >12 */
-	@Test (expected = ParserException.class)
-	public void testInvalidP () throws ParserException {
-		parserDate.getDate("2015/1/2 23p");
-	}	
 
 	/* This is a boundary case for when there is 29th for February for non-leap year */
 	@Test (expected = ParserException.class)
