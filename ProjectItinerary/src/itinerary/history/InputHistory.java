@@ -12,6 +12,8 @@ public class InputHistory extends AbstractHistory<String> {
 	
 	/**
 	 * Adds a String to the end of the History and an additional value which is null
+	 * 
+	 * @param t The String to be added
 	 */
 	@Override
 	public void add (String t) {

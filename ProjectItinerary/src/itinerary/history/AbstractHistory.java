@@ -9,6 +9,7 @@ public abstract class AbstractHistory <T> {
 	
 	/**
 	 * Adds a value to the history
+	 * 
 	 * @param t the value to be added
 	 */
 	public void add (T t) {
@@ -18,6 +19,7 @@ public abstract class AbstractHistory <T> {
 	/**
 	 * Gets the previous value in the history while simultaneously
 	 * setting the current pointer to that value
+	 * 
 	 * @return The previous value
 	 * @throws HistoryBoundException if at the beginning of history or history is empty
 	 */
@@ -36,6 +38,7 @@ public abstract class AbstractHistory <T> {
 	/**
 	 * Gets the next value in the history while simultaneously
 	 * setting the current pointer to that value
+	 * 
 	 * @return The next value
 	 * @throws HistoryBoundException if at the end of history or history is empty
 	 */

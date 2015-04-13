@@ -106,8 +106,12 @@ public class Logic {
 		return determineActions(userCommand, userInput);
 	}
 	
-	// returns true if config file with storage file name is found, false otherwise
-	// if true, isConfigured will initialize all required objects
+	/**
+	 * A method to check if config file with storage file name is found.
+	 * If found, it will initialize all required objects.
+	 * 
+	 * @return True if config file was found, false otherwise
+	 */
 	public boolean isFileConfigured () {
 		String fileName = null;
 		try {
@@ -128,6 +132,11 @@ public class Logic {
 		}
 	}
 	
+	/**
+	 * Saves the string provided to configStorage.
+	 * 
+	 * @param fileName The filename to be saved
+	 */
 	public void saveStorageFileName (String fileName) {
 		try {
 			config.setStorageFileName(fileName);
@@ -136,7 +145,12 @@ public class Logic {
 		}
 	}
 	
-	// returns null if the current filename is null
+	/**
+	 * Gets the current file name from configStorage, returns null if
+	 * there isn't a current file name 
+	 * 
+	 * @return The current file name
+	 */
 	public String getCurrentFileName () {
 		try {
 			return config.getStorageFileName();
@@ -145,22 +159,41 @@ public class Logic {
 		}
 	}
 	
+	/**
+	 * Sets up the variables in Logic to the given file name.
+	 * Must be called before executing anything if default constructor was used.
+	 * 
+	 * @param fileName The file name to set variables to align with.
+	 */
 	public void setupLogicVariables (String fileName) {
 		this.fileName = fileName;
 		storage = new FileStorage(this.fileName);
 		stateHistory = new StateHistory(storage.getAllTasks());
 	}
 	
+	/**
+	 * Gets the initial data and message to be displayed
+	 * 
+	 * @return The content to be displayed
+	 */
 	public UserInterfaceContent initialLaunch () {
 		UserInterfaceContent displayContent = executeDisplay();
 		String welcomeMessage = formatWelcomeMessage();
 		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
 	}
 	
+	/**
+	 * Adds a listener that will execute when the user enters a help command
+	 * 
+	 * @param listener The listener that is to be executed.
+	 */
 	public void addHelpListener (HelpListener listener) {
 		this.helpListeners.add(listener);
 	}
 	
+	/**
+	 * To be run when the user exits the program.
+	 */
 	public void exitOperation () {
 		storage.close();
 	}
@@ -290,6 +323,12 @@ public class Logic {
 		return executeAdvancedSearch(searchTask);
 	}
 	
+	/**
+	 * Executes a basic search which only searches through task descriptions
+	 * 
+	 * @param query The string to be searched
+	 * @return The content that result from the search
+	 */
 	public UserInterfaceContent executeBasicSearch (String query) {
 		List<Task> searchList= new ArrayList<Task>();
 		List<Task> allTasks = storage.getAllTasks();
@@ -303,6 +342,12 @@ public class Logic {
 		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
 	}
 	
+	/**
+	 * Executes an advanced search which searches through pre-defined parameters
+	 * 
+	 * @param task Container for the parameters to be searched
+	 * @return The content that result from the search
+	 */
 	public UserInterfaceContent executeAdvancedSearch (SearchTask task) {
 		List<Task> searchList= new ArrayList<Task>();
 		List<Task> allTasks = storage.getAllTasks();

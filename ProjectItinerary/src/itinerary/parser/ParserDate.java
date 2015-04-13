@@ -13,10 +13,6 @@ public class ParserDate {
 	private static final String ERROR_INVALID_DATE = "Error! The date does not exist";
 	private static final String ERROR_INVALID_TIME = "Error! The time does not exist";
 	private static final String AFTER_TEN_YEAR = "after 10 years";
-	private static final String TIME_AM = "am";
-	private static final String TIME_A = "a";
-	private static final String TIME_PM = "pm";
-	private static final String TIME_P = "p";
 	private static final String FUTURE = "future";
 	private static final String STRING_A = "a";
 	private static final String STRING_ONE = "one";
@@ -50,9 +46,7 @@ public class ParserDate {
 		if(!isValidDayOfMonth(dateString)){
 			throw new ParserException(ERROR_INVALID_DATE);
 		}
-		if(!isValidAmPm(dateString)){
-			throw new ParserException(ERROR_INVALID_TIME);
-		}
+
 		if(!isValidTime(dateString)){
 			throw new ParserException(ERROR_INVALID_TIME);
 		}
@@ -109,23 +103,25 @@ public class ParserDate {
 			String[] textsAroundSlash = {};
 			textsAroundSlash = date.split(STRING_SLASH);
 
-			try{
-				Integer.parseInt(textsAroundSlash[0]);
-			}catch(NumberFormatException e){
-				return dateString;
-			}
-
-			int firstNumber = Integer.parseInt(textsAroundSlash[0]);
-			if(firstNumber < 32){
-				String temp = textsAroundSlash[0];
-				textsAroundSlash[0] = textsAroundSlash[1];
-				textsAroundSlash[1] = temp;
-				for(String text: textsAroundSlash){
-					switchedDate = switchedDate + text + STRING_SLASH;
+			if(textsAroundSlash.length  > 1){
+				try{
+					Integer.parseInt(textsAroundSlash[0]);
+				}catch(NumberFormatException e){
+					return dateString;
 				}
-				switchedDate = switchedDate.substring(0, switchedDate.length()-1);
-				switchedString = dateString.replaceAll(date, switchedDate);
-				return switchedString;
+
+				int firstNumber = Integer.parseInt(textsAroundSlash[0]);
+				if(firstNumber < 32){
+					String temp = textsAroundSlash[0];
+					textsAroundSlash[0] = textsAroundSlash[1];
+					textsAroundSlash[1] = temp;
+					for(String text: textsAroundSlash){
+						switchedDate = switchedDate + text + STRING_SLASH;
+					}
+					switchedDate = switchedDate.substring(0, switchedDate.length()-1);
+					switchedString = dateString.replaceAll(date, switchedDate);
+					return switchedString;
+				}
 			}
 		}
 		return dateString;
@@ -217,8 +213,7 @@ public class ParserDate {
 	private static boolean isLeapYear(int year){
 		if (year % 400 == 0){ 
 			return true;
-		}
-		else if (year % 4 == 0 && year % 100 != 0){ 
+		}else if (year % 4 == 0 && year % 100 != 0){ 
 			return true;
 		}
 		return false;
@@ -236,25 +231,34 @@ public class ParserDate {
 		if(countAppearance(dateString, STRING_SLASH) == 2 || 
 				countAppearance(dateString, STRING_SLASH) == 1	){
 			String[] textAroundCharacter = dateString.split(STRING_SLASH);
-			int[] dayMonth = {0,0};
+
+			try{
+				Integer.parseInt(textAroundCharacter[1]);
+				if(Integer.parseInt(textAroundCharacter[1]) >= 13){
+					return false;
+				}
+			}catch(NumberFormatException e){
+			}
+
+			int[] monthDay = {0,0};
 			for(String text: textAroundCharacter){
 				try{
 					Integer.parseInt(text);		
 					int number = Integer.parseInt(text);		
 					number = processYear(number);
 					if(number < 32 && number > 12){
-						dayMonth[1] = number;
+						monthDay[1] = number;
 					}
 					if(number <= 12){
-						dayMonth[0] = number;
+						monthDay[0] = number;
 					}		
 				}catch(NumberFormatException e){
 				}
 			}
 
-			if(dayMonth[1] != 0){
-				int month = dayMonth[0];
-				if(dayMonth[1] > numOfDaysEachMonth[month]){
+			if(monthDay[1] != 0){
+				int month = monthDay[0];
+				if(monthDay[1] > numOfDaysEachMonth[month]){
 					return false;
 				}
 			}
@@ -263,12 +267,8 @@ public class ParserDate {
 	}
 
 	private int  processYear(int year) throws ParserException{
-		if(year > 32 && year < 100){
-			year = year + 2000;
-		}
-
-		if(year > 100 && year < 1900){
-			throw new ParserException (ERROR_DATE_FORMAT );
+		if(year > 31 && year < 1900){
+			throw new ParserException (ERROR_INVALID_DATE );
 		}
 
 		if(year > 1900){
@@ -278,35 +278,7 @@ public class ParserDate {
 		}
 		return year;
 	}
-
-	private boolean isValidAmPm(String dateString){
-		String[]dateWords = convertStringToArray(dateString);
-		for(int i = 0; i<dateWords.length; i++){
-			int amIndex = dateWords[i].indexOf(TIME_AM);
-			amIndex = dateWords[i].indexOf(TIME_A);
-			int pmIndex = dateWords[i].indexOf(TIME_PM);
-			pmIndex = dateWords[i].indexOf(TIME_P);
-
-			String text = "";
-			if(amIndex != -1 || pmIndex != -1){
-				try{
-					if(amIndex != -1){
-						text = dateWords[i].substring(0, amIndex);
-					}
-					if(pmIndex != -1){
-						text = dateWords[i].substring(0, pmIndex);
-					}
-					int time = Integer.parseInt(text);		
-					if(time < 0 || time > 12){
-						return false;
-					}
-				}catch(NumberFormatException e){
-				}
-			}
-		}
-		return true;
-	}
-
+	
 	private boolean isValidTime(String dateString){
 		String[]dateWords = convertStringToArray(dateString);
 		for(String word: dateWords){	

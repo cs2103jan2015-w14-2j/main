@@ -327,16 +327,6 @@ public class SystemTest {
 	}
 	
 	/**
-	 * A boundary test case where the number before "am" is > 12.
-	 * After the task is added, the all tasks list should has length 0.
-	 */
-	@Test
-	public void testInvalidAm () {
-		UserInterfaceContent result = this.logic.executeUserInput("add CS by 13am");
-		assertEquals(0, result.getAllTasks().size());
-	}
-	
-	/**
 	 * A boundary test case where the time of format HH:MM is larger than 24:00.
 	 * After the task is added, the all tasks list should has length 0.
 	 */
