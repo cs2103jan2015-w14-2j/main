@@ -6,20 +6,10 @@ import itinerary.search.Search;
 import itinerary.search.SearchException;
 import itinerary.search.SearchTask;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-
-
-
-
-
-
-
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
