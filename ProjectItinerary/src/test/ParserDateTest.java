@@ -90,9 +90,9 @@ public class ParserDateTest {
 
 	@Test
 	public void testChangeDateFormat() throws NoSuchMethodException, SecurityException,
-	IllegalAccessException, IllegalArgumentException,
-	InvocationTargetException, ClassNotFoundException, 
-	InstantiationException{		
+	                                                                        IllegalAccessException, IllegalArgumentException,
+	                                                                         InvocationTargetException, ClassNotFoundException, 
+	                                                                        InstantiationException{		
 		String input = "2015-1-28 2pm";	
 		String expected = "2015/1/28 2pm";
 		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
@@ -107,9 +107,9 @@ public class ParserDateTest {
 
 	@Test
 	public void testChangeDotToColon() throws ClassNotFoundException, InstantiationException, 
-	IllegalAccessException, NoSuchMethodException, 
-	SecurityException, IllegalArgumentException, 
-	InvocationTargetException{
+	                                                                        IllegalAccessException, NoSuchMethodException, 
+	                                                                         SecurityException, IllegalArgumentException, 
+	                                                                          InvocationTargetException{
 		String input = "3 aug 9.30pm";	
 		String expected =  "3 aug 9:30pm";
 		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
