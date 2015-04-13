@@ -232,12 +232,14 @@ public class ParserDate {
 				countAppearance(dateString, STRING_SLASH) == 1	){
 			String[] textAroundCharacter = dateString.split(STRING_SLASH);
 
-			try{
-				Integer.parseInt(textAroundCharacter[1]);
-				if(Integer.parseInt(textAroundCharacter[1]) >= 13){
-					return false;
+			if(textAroundCharacter.length != 0){
+				try{
+					Integer.parseInt(textAroundCharacter[1]);
+					if(Integer.parseInt(textAroundCharacter[1]) >= 13){
+						return false;
+					}
+				}catch(NumberFormatException e){
 				}
-			}catch(NumberFormatException e){
 			}
 
 			int[] monthDay = {0,0};
@@ -278,7 +280,7 @@ public class ParserDate {
 		}
 		return year;
 	}
-	
+
 	private boolean isValidTime(String dateString){
 		String[]dateWords = convertStringToArray(dateString);
 		for(String word: dateWords){	
