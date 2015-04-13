@@ -28,7 +28,7 @@ public class ParserDate {
 	}
 
 	/**
-	 * Called by Parser when a DeadlineTask or a ScheduleTask is created
+	 * Called by Parser when a DeadlineTask or a ScheduleTask is to be created
 	 *
 	 * @param  dateString   The input which Parser interpret as date or time
 	 * @throws ParserException  If the input format is invalid or
@@ -232,7 +232,7 @@ public class ParserDate {
 				countAppearance(dateString, STRING_SLASH) == 1	){
 			String[] textAroundCharacter = dateString.split(STRING_SLASH);
 
-			if(textAroundCharacter.length != 0){
+			if(textAroundCharacter.length  > 1){
 				try{
 					Integer.parseInt(textAroundCharacter[1]);
 					if(Integer.parseInt(textAroundCharacter[1]) >= 13){
