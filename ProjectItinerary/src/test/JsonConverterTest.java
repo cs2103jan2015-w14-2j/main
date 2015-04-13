@@ -1,12 +1,12 @@
 package test;
 
-import itinerary.main.*;
+import static org.junit.Assert.assertEquals;
+import itinerary.main.JsonConverter;
+import itinerary.main.ScheduleTask;
 
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;

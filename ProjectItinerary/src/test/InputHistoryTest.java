@@ -1,6 +1,8 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import itinerary.history.HistoryBoundException;
 import itinerary.history.HistoryBoundException.BoundType;
 import itinerary.history.InputHistory;

@@ -1,8 +1,9 @@
 package itinerary.userinterface;
 
+import itinerary.main.Logic;
+
 import java.io.IOException;
 
-import itinerary.main.Logic;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

@@ -1,11 +1,17 @@
 package test;
 
-import static org.junit.Assert.*;
-import itinerary.main.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import itinerary.main.DeadlineTask;
+import itinerary.main.ScheduleTask;
+import itinerary.main.Task;
 import itinerary.storage.JsonIOHandler;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;

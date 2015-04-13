@@ -1,7 +1,10 @@
 package test;
 
-import static org.junit.Assert.*;
-import itinerary.main.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import itinerary.main.DeadlineTask;
+import itinerary.main.ScheduleTask;
+import itinerary.main.Task;
 import itinerary.storage.JsonStringTagger;
 
 import java.util.Calendar;
@@ -9,7 +12,7 @@ import java.util.Calendar;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
 
 //@author A0121409R
 public class JsonStringTaggerTest {

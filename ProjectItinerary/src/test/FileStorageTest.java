@@ -1,14 +1,22 @@
 package test;
 
-import static org.junit.Assert.*;
-import itinerary.main.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import itinerary.main.DeadlineTask;
+import itinerary.main.ScheduleTask;
+import itinerary.main.Task;
 import itinerary.storage.FileStorage;
 import itinerary.storage.StorageException;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.gson.Gson;

@@ -1,7 +1,8 @@
 package test;
-import itinerary.main.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import itinerary.main.DeadlineTask;
 import itinerary.main.ScheduleTask;
+import itinerary.main.Task;
 import itinerary.search.Search;
 import itinerary.search.SearchException;
 import itinerary.search.SearchTask;
