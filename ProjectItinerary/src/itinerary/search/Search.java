@@ -51,11 +51,17 @@ import java.io.IOException;
 
 //@author A0121810Y
 public class Search {
+	private static final String WORD_FALSE = "false";
+	private static final String WORD_TRUE = "true";
+	private static final String WORD_AND = " and ";
+	private static final String SPECIALCHARACTER_AND = "&";
+	private static final String PARSE_DELIMITER = " ";
+	private static final String EXCEPT_SPECIALCHARACTER = "[^a-zA-Z0-9]";
 	private static final int NUM_HITS = 10;
 	private static final int JSON_SECOND = 24;
 	private static final int JSON_MINUTE = 20;
 	private static final String WILDCARD = "*";
-	private static final String QUERY_DELIMITER = " ";
+	private static final String QUERY_DELIMITER = PARSE_DELIMITER;
 	private static final String DISPLAY_SEARCH = "Searching for: ";
 	private static final String ERROR_INDEX = "Error searching through index";
 	private static final int SPAN_DISTANCE = 5;
@@ -247,8 +253,8 @@ public class Search {
 	 * @return
 	 */
 	private String parseString(String query) {
-		query = query.toLowerCase().replaceAll("&", " and ");
-		return query.toLowerCase().replaceAll("[^a-zA-Z0-9]", " ");
+		query = query.toLowerCase().replaceAll(SPECIALCHARACTER_AND, WORD_AND);
+		return query.toLowerCase().replaceAll(EXCEPT_SPECIALCHARACTER, PARSE_DELIMITER);
 	}
 
 	/**
@@ -389,7 +395,7 @@ public class Search {
 	}
 
 	private String setTrueOrFalse(boolean setTrue) {
-		return setTrue ? "true" : "false";
+		return setTrue ? WORD_TRUE : WORD_FALSE;
 	}
 
 	/**
