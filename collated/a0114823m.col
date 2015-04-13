@@ -1,0 +1,1299 @@
+//@author: a0114823m
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Parser.java
+	 */
+
+public class Parser {
+
+	private static final String ERROR_SCHEDULE_MISSING_DATE = "Error! Schedule task must have both from and to";
+	private static final String ERROR_BOTH_DEADLINE_SCHEDULE = "Error! Invalid input format, cannot be both deadline and schedule";
+	private static final String ERROR_DUPLICATE_KEYWORDS = "Error! Duplicate keywords detected";
+	private static final String ERROR_NO_DESCRIPTION_CATEGORY = "Error! Please enter description for category";
+	private static final String ERROR_NO_DESCRIPTION_BY =  "Error! Please enter date after \"by\"";
+	private static final String ERROR_NO_DESCRIPTION_FROM =  "Error! Please enter date after \"from\"";
+	private static final String ERROR_NO_DESCRIPTION_TO =  "Error! Please enter date after \"to\"";
+	private static final String ERROR_NO_TASK_ID = "Error! Unable to identify target task";
+	private static final String ERROR_INVALID_TASK_ID = "Error! Invalid target task id";
+	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contents for edit";
+	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description for the task to be added";
+	private static final String ERROR_NO_DESCRIPTION_FOR_SEARCH = "Error! Please enter content for search";
+	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
+	private static final String LOGGER_CHECKED_ARGUMENT_VALIDITY = "Finish checking argument validity";
+	private static final String LOGGER_CHECK_TASK_ID = "Checking task ID validity";
+	private static final String DELETE_CATEGORY = "del";
+	private static final String ESCAPE_STRING = "+";
+	private static final String COMMAND_ADD_PLUS = "+";
+	private static final String COMMAND_HELP_QUESTIONMARK = "?";
+	private static final Character ESCAPE_CHARACTER = '+';
+
+	private static final String KEYWORD_SCHEDULE_TO = "to";
+	private static final String KEYWORD_SCHEDULE_FROM = "from";
+	private static final String KEYWORD_DEADLINE = "by";
+	private static final String KEYWORD_PRIORITY = "pri";
+	private static final String KEYWORD_CATEGORY = "cat";
+	private static final String KEYWORD_COMPLETE = "com";
+
+	private static final String[] KEYWORDS = {KEYWORD_PRIORITY,  KEYWORD_CATEGORY,
+		KEYWORD_DEADLINE, KEYWORD_SCHEDULE_FROM, KEYWORD_SCHEDULE_TO, KEYWORD_COMPLETE};
+
+	private static Logger logger = Logger.getGlobal();
+
+	/**
+	 * Called by logic when language processing is needed
+	 *
+	 * @param  input   The sentence input by user
+	 * @throws ParserException  If the user input format is invalid
+	 * @return             Command object obtained from the input
+	 */
+	public static Command parseCommand(String input) throws ParserException {
+		assert input != null;
+		String firstWord = extractFirstWord(input);
+		String argument = removeFirstWord(input);
+		checkArgumentValidity(argument);
+		CommandType commandType = determineCommandType(firstWord);
+		Task task = createTask(commandType, argument);
+		commandType = convertUnmarkToMark(commandType);
+		Command command = new Command(task, commandType);
+		return command;
+	}
+
+	/**
+	 * Create a CommandType object according to the first word of user input
+	 *
+	 * @param  command   The first word of user input
+	 * @exception ParserException  If the commandType in invalid
+	 * @return             		 A CommandType object obtained from command
+	 */
+	private static CommandType determineCommandType(String command){
+		command = command.toLowerCase();
+		return CommandType.identifyCommandType(command);
+	}
+
+	/**
+	 * Create a task object according to the CommandType and details of input
+	 *
+	 * @param  type   		The first word of user input
+	 * @param  argument  The remaining words of user input
+	 * @exception ParserException  If the details of the task cannot be recognized
+	 * @return             		 A task object obtained from argument
+	 */
+	private static Task createTask(CommandType type, String argument) throws ParserException {
+		if(type.equals(CommandType.ADD)){
+			return createTaskToAdd(argument);
+		}
+		if(type.equals(CommandType.DELETE)){
+			return createTaskToDelete(argument);
+		}
+		if(type.equals(CommandType.EDIT)){
+			return createTaskToEdit(argument);
+		}
+		if(type.equals(CommandType.SEARCH)){
+			return createTaskToSearch(argument);
+		}
+		if(type.equals(CommandType.MARK)){
+			return createTaskToMark(argument);
+		}
+		if(type.equals(CommandType.UNMARK)){
+			return createTaskToUnmark(argument);
+		}	
+		if(type.equals(CommandType.HELP)){
+			return new Task (-1,null,null,null,null);
+		}
+		return null;
+	}
+
+	private static boolean hasDuplicateKeywords(String[] inputWords){
+		for (String keyword: KEYWORDS) {
+			int count = countKeywordOccurrences(inputWords, keyword);
+			if (count > 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static String replaceKeywordInContent(String argument){
+		if (argument.length() == 0){
+			return argument;
+		}
+
+		String resultString = "";
+		String[] words = convertStringToArray(argument);
+
+		for(int i = 0; i < words.length; i++){
+			String stringAfterFirstChar = words[i].substring(1);
+			String letterString = removeNonLetterChar(stringAfterFirstChar);
+			if(words[i].charAt(0) == ESCAPE_CHARACTER && identifyKeyword(letterString) > -1){
+				words[i] = stringAfterFirstChar;
+			}
+			resultString = resultString + words[i] + " ";
+		}
+
+		resultString = resultString.substring(0, resultString.length()-1);
+		return resultString;
+	}
+
+	private static String removeNonLetterChar(String word){
+		for(int i = word.length()-1; i >= 0; i--){
+			if(!Character.isLetter(word.charAt(i))){
+				word = word.substring(0,i);
+			}else{
+				return word;
+			}
+		}
+		return word;
+	}
+
+	/**
+	 * Interpreting user input and divide the input into different parts 
+	 * according to the keywords
+	 * Also determines the type of task
+	 *
+	 * @param  argument   The input without the first word
+	 * @exception ParserException  If unable to extract the contents
+	 * @return                     A task with some attributes determined
+	 */
+	private static Task extractContent(String argument) throws ParserException {
+		String[] argumentWords = convertStringToArray(argument);
+
+		String description = extractDescription(argument);
+		String category = extractCategory(argument);
+		boolean isPriority = hasPriority(argument);
+		boolean isComplete = false;
+
+		if(category != null){
+			if(category.equals(ESCAPE_STRING + DELETE_CATEGORY)){
+				category = category.substring(1, category.length());
+			}
+		}
+
+		if (isDeadline(argumentWords)) {
+			Calendar deadline = extractDeadline(argument);
+			return new DeadlineTask(-1, description, category, isPriority, isComplete, deadline);
+		} else if (isSchedule(argumentWords)) {
+			Calendar fromDate = extractFromDate(argument);
+			Calendar toDate = extractToDate(argument);
+
+			if (toDate.compareTo(fromDate) < 0) {
+				Calendar tempDate = toDate;
+				toDate = fromDate;
+				fromDate = tempDate;
+			}
+			return new ScheduleTask(-1, description, category, isPriority, isComplete, fromDate, toDate);
+		} else {
+			return new Task(-1, description, category, isPriority, isComplete);
+		}
+	}
+
+	private static void checkArgumentValidity(String argument) throws ParserException {
+		String[] words = convertStringToArray(argument);
+		logger.log(Level.INFO, LOGGER_CHECK_ARGUMENT_VALIDITY);
+
+		if (hasDuplicateKeywords(words)) {
+			logger.log(Level.WARNING, ERROR_DUPLICATE_KEYWORDS);
+			throw new ParserException(ERROR_DUPLICATE_KEYWORDS);
+		}
+
+		boolean hasDeadline = containsKeyword(words, KEYWORD_DEADLINE);
+		boolean hasFrom = containsKeyword(words, KEYWORD_SCHEDULE_FROM);
+		boolean hasTo = containsKeyword(words, KEYWORD_SCHEDULE_TO);
+
+		if (hasDeadline && (hasFrom || hasTo)) {
+			logger.log(Level.WARNING, ERROR_BOTH_DEADLINE_SCHEDULE);
+			throw new ParserException(ERROR_BOTH_DEADLINE_SCHEDULE);
+		} else if (hasFrom ^ hasTo) {
+			logger.log(Level.WARNING, ERROR_SCHEDULE_MISSING_DATE);
+			throw new ParserException(ERROR_SCHEDULE_MISSING_DATE);
+		}
+
+		logger.log(Level.INFO, LOGGER_CHECKED_ARGUMENT_VALIDITY);
+	}
+
+	private static boolean isDeadline(String[] words){
+		return containsKeyword(words, KEYWORD_DEADLINE);
+	}
+
+	private static boolean isSchedule(String[] words){
+		return containsKeyword(words, KEYWORD_SCHEDULE_FROM)
+				&& containsKeyword(words, KEYWORD_SCHEDULE_TO);
+	}
+
+	private static Calendar extractToDate(String arg) throws ParserException {
+		String toDateString =  extractAfterKeyword(arg, KEYWORDS[4], ERROR_NO_DESCRIPTION_TO);
+		return parseDateFromText(toDateString);
+	}
+
+	private static Calendar extractFromDate(String arg) throws ParserException {
+		String fromDateString =  extractAfterKeyword(arg, KEYWORDS[3], ERROR_NO_DESCRIPTION_FROM);
+		return parseDateFromText(fromDateString);
+	}
+
+	private static Calendar extractDeadline(String arg) throws ParserException{
+		String deadlineString =  extractAfterKeyword(arg, KEYWORDS[2], ERROR_NO_DESCRIPTION_BY);
+		return parseDateFromText(deadlineString);
+	}
+
+	/**
+	 * Interpreting dateString from the user input
+	 * Creates an instance of ParserDate class and parse date and time
+	 *
+	 * @param  argument   The input after keyword "from" and "to" or "by"
+	 * @exception ParserException  If unable to parse the date and time
+	 * @return                     A Calendar object which represents the date and time
+	 */
+	private static Calendar parseDateFromText(String dateString) throws ParserException {
+		ParserDate parserDate = new ParserDate();
+		Calendar calendar = parserDate.getDate(dateString);
+		return calendar;
+	}
+
+	private static boolean hasPriority(String arg) {
+		String[] words = convertStringToArray(arg);
+		return containsKeyword(words, KEYWORDS[0]);
+	}
+
+	private static boolean hasComplete(String arg) {
+		String[] words = convertStringToArray(arg);
+		return containsKeyword(words, KEYWORDS[5]);
+	}
+
+	private static String extractAfterKeyword(String arg, String keyword, String error) throws ParserException{
+		String[] words = convertStringToArray(arg);
+		String[] textsAroundKeyword = {};
+		String textAfterKeyword = "";
+		int keywordIndex = 0;
+
+		if (!containsKeyword(words, keyword)) {
+			return null;
+		}
+
+		for(int i = 0; i < words.length; i++){
+			if(words[i].equals(keyword)){
+				keywordIndex = i;
+			}
+		}
+
+		if(keywordIndex == words.length-1){
+			throw new ParserException(error);
+		}
+
+		String nextWord = words[keywordIndex + 1];
+		if(identifyKeyword(nextWord) != -1){
+			throw new ParserException(error);
+		}
+
+		if( !words[0].equals(keyword)){
+			textsAroundKeyword = arg.split(" " + keyword + " ");	
+			textAfterKeyword = textsAroundKeyword[1].trim();
+		}
+
+		if(words[0].equals(keyword)){
+			textsAroundKeyword = arg.split(keyword + " ");	
+			textAfterKeyword = textsAroundKeyword[1].trim();		
+		}
+		words = convertStringToArray(textAfterKeyword);
+		String textNeeded = removeExtraWords(words, textAfterKeyword);
+
+		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(DELETE_CATEGORY)){
+			return textNeeded;
+		}
+
+		if(keyword.equals(KEYWORDS[1]) && textNeeded.equals(ESCAPE_STRING + DELETE_CATEGORY)){
+			return textNeeded;
+		}
+		return replaceKeywordInContent(textNeeded).trim();
+	}
+
+	private static String extractCategory(String arg) throws ParserException {		
+		return extractAfterKeyword(arg, KEYWORDS[1], ERROR_NO_DESCRIPTION_CATEGORY);
+	}
+
+	private static String removeExtraWords(String[] words, String text) {
+		int nextType = findNextKeywordType(words);
+
+		if (nextType != -1) {
+			int index = text.indexOf(" " + KEYWORDS[nextType] + " ");
+			if (index < 0) {
+				index = text.indexOf(" " + KEYWORDS[nextType]);
+			}
+			if (index < 0) {
+				index = text.indexOf(KEYWORDS[nextType] + " ");
+			}
+			if (index < 0) {
+				index = text.indexOf(KEYWORDS[nextType]);
+			}
+			text = text.substring(0, index);
+		}
+
+		return text.trim();
+	}
+
+	private static boolean containsKeyword(String[] words, String keyword) {
+		return countKeywordOccurrences(words, keyword) > 0;
+	}
+
+	private static int countKeywordOccurrences(String[] words, String keyword) {
+		int count = 0;
+		for (String word: words) {
+			if (word.equals(keyword)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	private static String extractDescription(String arg) {
+		String[] words = convertStringToArray(arg);
+		String description = removeExtraWords(words, arg);
+		return  replaceKeywordInContent(description).trim();
+	}
+
+	private static int findNextKeywordType(String[] words) {
+		for (int i = 0; i < words.length; i++) {
+			int identity = identifyKeyword(words[i]);
+			if (identity != -1) {
+				return identity;
+			}
+		}
+		return -1;
+	}
+
+	private static int identifyKeyword (String word) {
+		for (int i = 0; i < KEYWORDS.length; i++) {
+			if (word.equals(KEYWORDS[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static boolean hasDescriptionForAdd(String input){
+		if(input.equals("") || input == null){
+			return false;
+		}
+		String firstWord = extractFirstWord(input);
+		for(String keyword: KEYWORDS){
+			if(firstWord.equals(keyword)){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static Task createTaskToAdd(String input) throws ParserException {
+		assert input != null;
+		if(!hasDescriptionForAdd(input)){
+			throw new ParserException(ERROR_NO_DESCRIPTION_FOR_ADD);
+		}
+		return extractContent(input);
+	}
+
+	private static Task createTaskToDelete(String argument) throws ParserException {
+		assert argument != null;
+		String[] arguments = convertStringToArray(argument);
+		int id = identifyTargetId(arguments);
+		return new Task (id, null, null, null, null);
+	}
+
+	private static Task createTaskToEdit(String input) throws ParserException {
+		assert input != null;
+
+		int taskId = identifyTargetId(convertStringToArray(input));
+		String textAfterIndex= removeFirstWord(input);
+
+		if(textAfterIndex.length() == 0){
+			throw new ParserException(ERROR_NO_CONTENT_FOR_EDIT);
+		}
+
+		Task task = extractContent(textAfterIndex);
+		task.setTaskId(taskId);
+		if (task.getText().equals("")) {
+			task.setText(null);
+		}
+
+		String category = extractCategory(textAfterIndex);
+		if(category != null){
+			if(category.equals(ESCAPE_CHARACTER + DELETE_CATEGORY)){
+				category = category.substring(1, category.length());
+			}else if(category.equals(DELETE_CATEGORY)){
+				category = "";
+			}
+		}
+
+		task.setComplete(null);
+		task.setCategory(category);
+		return task;
+	}
+
+	private static Task createTaskToSearch(String input) throws ParserException{
+		if(input.equals("") || input == null){
+			throw new ParserException(ERROR_NO_DESCRIPTION_FOR_SEARCH);
+		}
+
+		Task task = extractContent(input);
+		boolean isCompleted = hasComplete(input);
+
+		if(isCompleted){
+			task.setComplete(true);
+		}
+		if (task.getText() != null && task.getText().equals("")) {
+			task.setText(null);
+		}
+		if (task.getCategory() != null &&  task.getCategory().equals("")) {
+			task.setCategory(null);
+		}
+		return task;
+	}
+
+	private static Task createTaskToMark(String argument) throws ParserException {
+		assert argument != null;	
+		String[] arguments = convertStringToArray(argument);
+		int id = identifyTargetId(arguments);
+		boolean isComplete = true;
+		return new Task (id, null, null, null, isComplete);
+	}
+
+	private static Task createTaskToUnmark(String argument) throws ParserException {
+		assert argument != null;
+		String[] arguments = convertStringToArray(argument);		
+		int id = identifyTargetId(arguments);
+		boolean isComplete = false;
+		return new Task (id, null, null, null, isComplete);
+	}
+
+	private static int identifyTargetId(String[] arguments) throws ParserException {
+		logger.log(Level.INFO, LOGGER_CHECK_TASK_ID);
+		if (arguments.length == 0) {
+			logger.log(Level.WARNING, ERROR_NO_TASK_ID);
+			throw new ParserException(ERROR_NO_TASK_ID);
+		}
+		try {
+			return Integer.parseInt(arguments[0]);
+		} catch (NumberFormatException e) {
+			logger.log(Level.WARNING, ERROR_INVALID_TASK_ID);
+			throw new ParserException(ERROR_INVALID_TASK_ID);
+		}
+	}
+
+	private static String[] convertStringToArray(String input){
+		return input.trim().split("\\s+");
+	}
+
+	private static String extractFirstWord (String input) {
+		assert input != null;
+		return convertStringToArray(input)[0];
+	}
+
+	private static String removeFirstWord (String input) {
+		assert input != null;
+		String firstWord = extractFirstWord(input);
+		if(firstWord.equals(COMMAND_ADD_PLUS)){
+			firstWord = "\\" + COMMAND_ADD_PLUS;
+		}
+		if(firstWord.equals(COMMAND_HELP_QUESTIONMARK)){
+			firstWord = "\\" + COMMAND_HELP_QUESTIONMARK;
+		}
+
+		return input.replaceFirst(firstWord, "").trim();
+	}
+
+	private static CommandType convertUnmarkToMark(CommandType commandType){
+		if(commandType.equals(CommandType.UNMARK)){
+			commandType = CommandType.MARK;
+		}
+		return commandType;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Parser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserDate.java
+	 */
+
+public class ParserDate {
+
+	private static final String ERROR_DATE_FORMAT = "Error! Date format error";
+	private static final String ERROR_INVALID_DATE = "Error! The date does not exist";
+	private static final String ERROR_INVALID_TIME = "Error! The time does not exist";
+	private static final String AFTER_TEN_YEAR = "after 10 years";
+	private static final String FUTURE = "future";
+	private static final String STRING_A = "a";
+	private static final String STRING_ONE = "one";
+	private static final String STRING_COLON = ":";
+	private static final String STRING_DOT = ".";
+	private static final String STRING_DASH = "-";
+	private static final String STRING_UNDERSCORE = "_";
+	private static final String STRING_SLASH = "/";
+
+	private int[] numOfDaysEachMonth = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+
+	public ParserDate(){ 
+	}
+
+	/**
+	 * Called by Parser when a DeadlineTask or a ScheduleTask is to be created
+	 *
+	 * @param  dateString   The input which Parser interpret as date or time
+	 * @throws ParserException  If the input format is invalid or
+	 * 												the date and time does not exist
+	 * @return                       A calendar object which reflects the date and/or time
+	 * 										from dateString
+	 */
+	public Calendar getDate(String dateString) throws ParserException {
+		dateString = changeDateFormat(dateString);
+		dateString = changeDotToColon(dateString);
+
+		if(!isValidDate(dateString)){
+			throw new ParserException(ERROR_DATE_FORMAT);
+		}
+		if(!isValidDayOfMonth(dateString)){
+			throw new ParserException(ERROR_INVALID_DATE);
+		}
+
+		if(!isValidTime(dateString)){
+			throw new ParserException(ERROR_INVALID_TIME);
+		}
+
+		dateString = switchDateMonth(dateString);
+		dateString = convertAToOne(dateString);
+		return parseDateByNatty(dateString);
+	}
+
+	private String changeDotToColon(String dateString){
+		dateString = dateString.replaceAll("\\" + STRING_DOT, STRING_COLON);
+		return dateString;
+	}
+
+	private int countAppearance(String dateString, String string){
+		int counter = 0;
+		for(int i = 0; i < dateString.length(); i++){
+			if(dateString.charAt(i) == string.charAt(0)){
+				counter++;
+			}
+		}
+		return counter;
+	}
+
+	private String changeDateFormat(String dateString){ 
+		String changedFormat = dateString;
+
+		if(countAppearance(dateString, STRING_DASH) > 0){
+			changedFormat = dateString.replaceAll( STRING_DASH, STRING_SLASH);
+			return changedFormat;
+		}
+		if(countAppearance(dateString, STRING_UNDERSCORE) > 0){
+			changedFormat = dateString.replaceAll( STRING_UNDERSCORE, STRING_SLASH);
+			return changedFormat;
+		}
+
+		return dateString;
+	}
+
+	private String switchDateMonth(String dateString){
+		String[] dateWords = convertStringToArray(dateString);
+
+		String date = "";
+		for(int i = 0; i < dateWords.length; i++){
+			if(dateWords[i].indexOf(STRING_SLASH) != -1){
+				date = dateWords[i];
+				break;
+			}
+		}
+
+		if(date.indexOf(STRING_SLASH) != -1){
+			String switchedDate = "";
+			String switchedString = "";
+			String[] textsAroundSlash = {};
+			textsAroundSlash = date.split(STRING_SLASH);
+
+			if(textsAroundSlash.length  > 1){
+				try{
+					Integer.parseInt(textsAroundSlash[0]);
+				}catch(NumberFormatException e){
+					return dateString;
+				}
+
+				int firstNumber = Integer.parseInt(textsAroundSlash[0]);
+				if(firstNumber < 32){
+					String temp = textsAroundSlash[0];
+					textsAroundSlash[0] = textsAroundSlash[1];
+					textsAroundSlash[1] = temp;
+					for(String text: textsAroundSlash){
+						switchedDate = switchedDate + text + STRING_SLASH;
+					}
+					switchedDate = switchedDate.substring(0, switchedDate.length()-1);
+					switchedString = dateString.replaceAll(date, switchedDate);
+					return switchedString;
+				}
+			}
+		}
+		return dateString;
+	}
+
+	private String convertFutureToTenYear(String dateString){
+		if(dateString.equalsIgnoreCase(FUTURE)){
+			dateString = AFTER_TEN_YEAR;
+		}
+		return dateString;
+	}
+
+	/**
+	 * Every dateString will be passed to this method and parsed by Natty
+	 *
+	 * @param  dateString   The string after checking invalid format and/or
+	 * 										change format when necessary
+	 * @throws ParserException  If Natty is unable to parse the dateString
+	 * @return                        A calendar object which reflects the date and/or time
+	 * 										from dateString
+	 */
+	private Calendar parseDateByNatty(String dateString) throws ParserException{
+		dateString = convertFutureToTenYear(dateString);
+		com.joestelmach.natty.Parser dateParser = new com.joestelmach.natty.Parser();
+		List<DateGroup> dateGroups = dateParser.parse(dateString);
+
+		if (dateGroups.isEmpty()) {
+			throw new ParserException(ERROR_DATE_FORMAT);
+		}
+
+		List<Date> dates = dateGroups.get(0).getDates();
+		Date date = dates.get(0);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar;
+	}
+
+	private boolean isValidDate (String dateString) throws ParserException{				
+		if(countAppearance(dateString, STRING_SLASH) == 2 ){
+			return isValidArguments(dateString);
+		}
+		return true;
+	}
+
+	private boolean isValidArguments (String dateString) throws ParserException{
+		int valueExceedDay = 0;
+		int valueWithinMonth = 0;		
+		String[] dateWords = convertStringToArray(dateString);
+
+		for(int i = 0; i < dateWords.length; i++){
+			if(dateWords[i].indexOf(STRING_SLASH) != -1){
+				dateString = dateWords[i];
+			}
+		}
+		String[] textAroundCharacter = dateString.split(STRING_SLASH);
+		if(textAroundCharacter.length > 3){
+			return false;
+		}
+
+		for(String text: textAroundCharacter){			
+			try{
+				Integer.parseInt(text);
+			}catch(NumberFormatException e){
+			}
+
+			if(Integer.parseInt(text) <= 0){
+				return false;
+			}
+			if(Integer.parseInt(text) > 31){
+				valueExceedDay++;
+			}
+			if(Integer.parseInt(text) <= 12){
+				valueWithinMonth++;
+			}			
+		}	
+		return isValidValues(valueExceedDay, valueWithinMonth);
+	}
+
+	private boolean isValidValues (int valueExceedDay, int valueWithinMonth){
+		if(valueExceedDay >= 2 || valueExceedDay == 0){
+			return false;
+		}
+		if( valueWithinMonth < 1){
+			return false;
+		}
+		return true;
+	}
+
+	private static boolean isLeapYear(int year){
+		if (year % 400 == 0){ 
+			return true;
+		}else if (year % 4 == 0 && year % 100 != 0){ 
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isValidDayOfMonth(String dateString) throws ParserException{
+		String[] dateWords = convertStringToArray(dateString);
+
+		for(int i = 0; i < dateWords.length; i++){
+			if(dateWords[i].indexOf(STRING_SLASH) != -1){
+				dateString = dateWords[i];
+			}
+		}
+
+		if(countAppearance(dateString, STRING_SLASH) == 2 || 
+				countAppearance(dateString, STRING_SLASH) == 1	){
+			String[] textAroundCharacter = dateString.split(STRING_SLASH);
+
+			if(textAroundCharacter.length  > 1){
+				try{
+					Integer.parseInt(textAroundCharacter[1]);
+					if(Integer.parseInt(textAroundCharacter[1]) >= 13){
+						return false;
+					}
+				}catch(NumberFormatException e){
+				}
+			}
+
+			int[] monthDay = {0,0};
+			for(String text: textAroundCharacter){
+				try{
+					Integer.parseInt(text);		
+					int number = Integer.parseInt(text);		
+					number = processYear(number);
+					if(number < 32 && number > 12){
+						monthDay[1] = number;
+					}
+					if(number <= 12){
+						monthDay[0] = number;
+					}		
+				}catch(NumberFormatException e){
+				}
+			}
+
+			if(monthDay[1] != 0){
+				int month = monthDay[0];
+				if(monthDay[1] > numOfDaysEachMonth[month]){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private int  processYear(int year) throws ParserException{
+		if(year > 31 && year < 1900){
+			throw new ParserException (ERROR_INVALID_DATE );
+		}
+
+		if(year > 1900){
+			if(isLeapYear(year)){
+				numOfDaysEachMonth[2] = 29;
+			}
+		}
+		return year;
+	}
+
+	private boolean isValidTime(String dateString){
+		String[]dateWords = convertStringToArray(dateString);
+		for(String word: dateWords){	
+			int colonIndex = word.indexOf(STRING_COLON);
+			if(colonIndex != -1){
+				word = word.replaceAll("\\" + STRING_COLON, "");
+			}
+			try{
+				int time = Integer.parseInt(word);	
+				if( time > 2400 ){
+					return false;
+				}
+			}catch(NumberFormatException e){
+			}
+		}
+		if(countAppearance(dateString, STRING_COLON) > 1){
+			return false;
+		}
+		return true;
+	}
+
+	private String convertAToOne(String dateString){
+		String[]dateWords = convertStringToArray(dateString);
+		String newDateString = "";
+		for(int i = 0; i<dateWords.length; i++){
+			if(dateWords[i].equalsIgnoreCase(STRING_A)){
+				dateWords[i] = STRING_ONE;
+			}
+			newDateString = newDateString + dateWords[i] + " ";
+		}
+		return newDateString.trim();
+	}
+
+	private static String[] convertStringToArray(String input){
+		return input.trim().split("\\s+");
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserDate.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserDateTest.java
+	 */
+
+public class ParserDateTest {
+
+	ParserDate parserDate = new ParserDate();
+
+	@Test
+	public void testWithoutTime() throws ParserException{
+		String dateString = "5/8/2009";
+		assertNotNull(parserDate.getDate(dateString));
+	}
+
+	@Test
+	public void testFuture() throws ParserException{
+		String dateString = "future";
+		assertNotNull(parserDate.getDate(dateString));
+	}
+
+	@Test
+	public void testNormal() throws ParserException{
+		String dateString = "2017/3/4 3pm";
+		assertNotNull(parserDate.getDate(dateString));
+	}
+
+	@Test 
+	public void testTimeWithDot () throws ParserException {
+		String dateString = "9.30pm";
+		assertNotNull(parserDate.getDate(dateString));
+	}
+
+	@Test
+	public void testValidDayOfMonthWithYear () throws ParserException {
+		String dateString = "2012/3/31 2pm";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+
+	@Test
+	public void testValidDayOfFeb () throws ParserException {
+		String dateString = "2012/2/29 2pm";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+
+	@Test
+	public void testValidTime () throws ParserException {
+		String dateString = "2012/1/2 0930";
+		assertNotNull(parserDate.getDate(dateString));
+	}	
+
+	@Test
+	public void testAToOne () throws ParserException {
+		assertNotNull(parserDate.getDate("a month"));
+	}	
+
+	@Test
+	public void testTomorrow () throws ParserException {
+		assertNotNull(parserDate.getDate("tomorrow night"));
+	}	
+
+	@Test
+	public void testFridayNoon () throws ParserException {
+		assertNotNull(parserDate.getDate("next Friday noon"));
+	}	
+
+	@Test
+	public void testFourDigitTime () throws ParserException {
+		assertNotNull(parserDate.getDate("23:59"));
+	}	
+
+	@Test
+	public void testOnlyDayMonth () throws ParserException {
+		assertNotNull(parserDate.getDate("3/8 2pm"));
+	}	
+
+	@Test
+	public void testChristmas() throws ParserException{
+		String dateString = "Christmas";
+		assertNotNull(parserDate.getDate(dateString));
+	}
+
+	@Test
+	public void testChangeDateFormat() throws NoSuchMethodException, SecurityException,
+	                                                                        IllegalAccessException, IllegalArgumentException,
+	                                                                         InvocationTargetException, ClassNotFoundException, 
+	                                                                        InstantiationException{		
+		String input = "2015-1-28 2pm";	
+		String expected = "2015/1/28 2pm";
+		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
+		Object obj = parserDate.newInstance();
+		Class<?>[] paramTypes = new Class[1];
+		paramTypes[0]=String.class;
+		Method method = parserDate.getDeclaredMethod("changeDateFormat", paramTypes);
+		method.setAccessible(true);
+		String result = (String) method.invoke(obj, input);	
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testChangeDotToColon() throws ClassNotFoundException, InstantiationException, 
+	                                                                        IllegalAccessException, NoSuchMethodException, 
+	                                                                         SecurityException, IllegalArgumentException, 
+	                                                                          InvocationTargetException{
+		String input = "3 aug 9.30pm";	
+		String expected =  "3 aug 9:30pm";
+		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
+		Object obj = parserDate.newInstance();
+		Class<?>[] paramTypes = new Class[1];
+		paramTypes[0]=String.class;
+		Method method = parserDate.getDeclaredMethod("changeDotToColon", paramTypes);
+		method.setAccessible(true);
+		String result = (String) method.invoke(obj, input);	
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testSwitchDateMonth() throws ClassNotFoundException, InstantiationException, 
+	IllegalAccessException, NoSuchMethodException, 
+	SecurityException, IllegalArgumentException, 
+	InvocationTargetException{
+		String input = "1/28/2015 2pm";	
+		String expected =  "28/1/2015 2pm";
+		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
+		Object obj = parserDate.newInstance();
+		Class<?>[] paramTypes = new Class[1];
+		paramTypes[0]=String.class;
+		Method method = parserDate.getDeclaredMethod("switchDateMonth", paramTypes);
+		method.setAccessible(true);
+		String result = (String) method.invoke(obj, input);	
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testSwitchDateMonthFail() throws ClassNotFoundException, InstantiationException, 
+	IllegalAccessException, NoSuchMethodException, 
+	SecurityException, IllegalArgumentException, 
+	InvocationTargetException{		
+		String input = "2018/12/5 2pm";	
+		String expected =  "2018/12/5 2pm";
+		Class<?> parserDate = Class.forName("itinerary.parser.ParserDate");
+		Object obj = parserDate.newInstance();
+		Class<?>[] paramTypes = new Class[1];
+		paramTypes[0]=String.class;
+		Method method = parserDate.getDeclaredMethod("switchDateMonth", paramTypes);
+		method.setAccessible(true);
+		String result = (String) method.invoke(obj, input);	
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testWordForMonth () throws ParserException {
+		assertNotNull(parserDate.getDate("3 aug 06:35"));
+	}	
+
+	/* This is a boundary case for when the month is >12*/
+	@Test (expected = ParserException.class)
+	public void testInvalidMonth () throws ParserException {
+		parserDate.getDate("2018/23/23 3pm");
+	}
+
+	/* This is a boundary case for when the day is > 32*/
+	@Test (expected = ParserException.class)
+	public void testInvalidDay () throws ParserException {
+		parserDate.getDate("2018/12/32 3pm");
+	}
+
+	/* This is a boundary case for when the year is invalid */
+	@Test (expected = ParserException.class)
+	public void testInvalidYear () throws ParserException {
+		parserDate.getDate("12/12/23 3pm");
+	}
+
+	/* This is a boundary case for when there is 29th for February for non-leap year */
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfFeb () throws ParserException {
+		parserDate.getDate("2015/2/29 3pm");
+	}	
+
+	/* This is a boundary case for when the day is > maximum day of that month */
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfMonthWithYear () throws ParserException {
+		parserDate.getDate("2015/4/31 3pm");
+	}	
+
+	/* This is a boundary case for when the day is > maximum day of that month */
+	@Test (expected = ParserException.class)
+	public void testInvalidDayOfMonth () throws ParserException {
+		parserDate.getDate("31/4 3pm");
+	}	
+
+	/* This is a boundary case for when YYYY DD MM is input with dot */
+	@Test (expected = ParserException.class)
+	public void testInvalidYearDot () throws ParserException {
+		parserDate.getDate("2015.4.31 3pm");
+	}	
+
+	/* This is a boundary case for when HH:MM is beyond 24:00 */
+	@Test (expected = ParserException.class)
+	public void testInvalidTimeColon () throws ParserException {
+		parserDate.getDate("2015/4/5 34:21");
+	}	
+}
+
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserDateTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserTest.java
+	 */
+
+public class ParserTest {
+
+	/* This is a boundary case for when the keyword "pri" appears twice */
+	@Test (expected = ParserException.class)
+	public void testTwoPriKeyword () throws ParserException {
+		Parser.parseCommand("add this pri pri");
+	}
+
+	/* This is a boundary case for when the keyword "by" appears twice */
+	@Test (expected = ParserException.class)
+	public void testTwoByKeyword () throws ParserException {
+		Parser.parseCommand("add this by by");
+	}
+
+	/* This is a boundary case for when the keyword "cat" appears twice */
+	@Test (expected = ParserException.class)
+	public void testTwoCatKeyword () throws ParserException {
+		Parser.parseCommand("add this cat cat");
+	}
+
+	/* This is a boundary case for when the keyword "from,to" and "by" appears together*/
+	@Test (expected = ParserException.class)
+	public void testBothScheduleDeadline () throws ParserException {
+		Parser.parseCommand("add this by tomorrow from now to tomorrow");
+	}
+
+	/* This is a boundary case for when the keyword "from" appears but "to" does not */
+	@Test (expected = ParserException.class)
+	public void testScheduleMissingOne () throws ParserException {
+		Parser.parseCommand("add this from tomorrow");
+	}
+
+	/* This is a boundary case for when add task without description after keyword "by" */
+	@Test (expected = ParserException.class)
+	public void testAddByMissing () throws ParserException {
+		Parser.parseCommand("add this by");
+	}
+
+	/* This is a boundary case for when add task without description after keyword "from,to" */
+	@Test (expected = ParserException.class)
+	public void testAddFromToMissing () throws ParserException {
+		Parser.parseCommand("add this from to");
+	}
+
+	/* This is a boundary case for when edit task without description after keyword "by" */
+	@Test (expected = ParserException.class)
+	public void testEditByMissing () throws ParserException {
+		Parser.parseCommand("edit 1 by");
+	}
+
+	/* This is a boundary case for when delete without task ID */
+	@Test (expected = ParserException.class)
+	public void testParseTaskIDMissing () throws ParserException {
+		Parser.parseCommand("delete");
+	}
+
+	/* This is a boundary case for when delete with invalid task ID */
+	@Test (expected = ParserException.class)
+	public void testInvalidTaskID () throws ParserException {
+		Parser.parseCommand("delete job");
+	}
+
+	/* This is a boundary case for when edit without any task ID and description */
+	@Test (expected = ParserException.class)
+	public void testEditMissing () throws ParserException {
+		Parser.parseCommand("edit");
+	}
+
+	/* This is a boundary case for when edit without description */
+	@Test (expected = ParserException.class)
+	public void testEditContentMissing () throws ParserException {
+		Parser.parseCommand("edit 1");
+	}
+
+	/* This is a boundary case for when edit without contents for keyword "cat" */
+	@Test (expected = ParserException.class)
+	public void testEditCatMissing () throws ParserException {
+		Parser.parseCommand("edit 1 cat");
+	}
+
+	/* This is a boundary case for when delete without contents for keyword "cat" */
+	@Test (expected = ParserException.class)
+	public void testEditCatMissingWithKeyword () throws ParserException {
+		Parser.parseCommand("edit 1 cat pri");
+	}
+
+	/* This is a boundary case for when add without description and keywords*/
+	@Test (expected = ParserException.class)
+	public void testAddContentMissing () throws ParserException {
+		Parser.parseCommand("add");
+	}
+
+	/* This is a boundary case for when search without description */
+	@Test (expected = ParserException.class)
+	public void testSearchContentMissing () throws ParserException {
+		Parser.parseCommand("search");
+	}
+
+	/* This is a boundary case for when edit without description but with keywords*/
+	@Test (expected = ParserException.class)
+	public void testAddContentMissingWithKeyword() throws ParserException {
+		Parser.parseCommand("add by Sunday");
+	}
+
+	/* This is a boundary case for when add without contents for keyword "cat" */
+	@Test (expected = ParserException.class)
+	public void testAddCatMissing () throws ParserException {
+		Parser.parseCommand("add this cat");
+	}
+
+	@Test
+	public void testAdd () throws ParserException {
+		Command command = Parser.parseCommand("add swim");
+		assertEquals(command.getType(), CommandType.ADD);
+		Task task = command.getTask();
+		assertEquals(task.getText(), "swim");
+	}
+
+	@Test
+	public void testAddNormal () throws ParserException {
+		Command command = Parser.parseCommand("add swim pri cat sports");
+		assertEquals(command.getType(), CommandType.ADD);
+		Task task = command.getTask();
+		assertEquals(task.getText(), "swim");
+		assertEquals(task.getCategory(), "sports");
+		assertTrue(task.isPriority());
+	}
+
+	@Test
+	public void testAddSchedule () throws ParserException {
+		Command command = Parser.parseCommand("add do homework pri cat study from 2017/3/4 8pm to 2017/5/6 9pm");
+		assertEquals(command.getType(), CommandType.ADD);
+		Task task = command.getTask();
+		assertTrue(task instanceof ScheduleTask);
+		ScheduleTask scheduleTask = (ScheduleTask) task;
+		assertEquals(scheduleTask.getText(), "do homework");
+		assertEquals(scheduleTask.getCategory(), "study");
+		assertTrue(scheduleTask.isPriority());
+		assertNotNull(scheduleTask.getFromDate());
+		assertNotNull(scheduleTask.getToDate());
+	}
+
+	@Test
+	public void testSearchFull () throws ParserException {
+		Command command = Parser.parseCommand("search CS pri cat exam com from 2015/3/4 to future");
+		assertEquals(command.getType(), CommandType.SEARCH);
+		Task task = command.getTask();
+		assertTrue(task instanceof ScheduleTask);
+		ScheduleTask scheduleTask = (ScheduleTask) task;
+		assertEquals(scheduleTask.getText(), "CS");
+		assertEquals(scheduleTask.getCategory(), "exam");
+		assertTrue(scheduleTask.isComplete());
+		assertTrue(scheduleTask.isPriority());
+		assertNotNull(scheduleTask.getFromDate());
+		assertNotNull(scheduleTask.getToDate());
+	}
+
+	@Test
+	public void testSearch () throws ParserException {
+		Command command = Parser.parseCommand("search pri");
+		assertEquals(command.getType(), CommandType.SEARCH);
+		Task task = command.getTask();
+		assertNull(task.getText());
+		assertNull(task.getCategory());
+		assertTrue(task.isPriority());
+	}
+
+	@Test
+	public void testAddDeadline () throws ParserException {
+		Command command = Parser.parseCommand("add swim pri cat sports by tomorrow");
+		assertEquals(command.getType(), CommandType.ADD);
+		Task task = command.getTask();
+		assertTrue(task instanceof DeadlineTask);
+		DeadlineTask scheduleTask = (DeadlineTask) task;
+		assertEquals(scheduleTask.getText(), "swim");
+		assertEquals(scheduleTask.getCategory(), "sports");
+		assertTrue(scheduleTask.isPriority());
+		assertNotNull(scheduleTask.getDeadline());
+	}
+
+	@Test
+	public void testReplaceKeywordInContent () throws ParserException {
+		String inputString = "add Take a look at this +cat, I bought it +from a pet shop +by the road cat +cat meow";
+		Command command = Parser. parseCommand(inputString);
+		Task task = command.getTask();
+		assertEquals(task.getText(), "Take a look at this cat, I bought it from a pet shop by the road");
+		assertEquals(task.getCategory(), "cat meow");
+	}
+
+	@Test
+	public void testAddReplcaeKeyword () throws ParserException {
+		Command command = Parser.parseCommand("add buy +cat +dog, go home pri cat www.entertainment +from animal. +com");
+		assertEquals(command.getType(), CommandType.ADD);
+		Task task = command.getTask();
+		assertEquals(task.getText(), "buy cat +dog, go home");
+		assertEquals(task.getCategory(), "www.entertainment from animal. com");
+		assertTrue(task.isPriority());
+	}
+
+	@Test
+	public void testEdit () throws ParserException {
+		Command command = Parser.parseCommand("edit 1 +cat catches mouse");
+		assertEquals(command.getType(), CommandType.EDIT);
+		Task task = command.getTask();
+		assertEquals((int)task.getTaskId(), 1);
+		assertEquals(task.getText(), "cat catches mouse");
+	}
+
+	@Test
+	public void testUnmark () throws ParserException {
+		Command command = Parser.parseCommand("Unmark 1");
+		assertEquals(command.getType(), CommandType.MARK);
+		Task task = command.getTask();
+		assertEquals((int)task.getTaskId(), 1);
+		assertFalse( task.isComplete());
+	}
+
+	@Test
+	public void testMark () throws ParserException {
+		Command command = Parser.parseCommand("Mark 1");
+		assertEquals(command.getType(), CommandType.MARK);
+		Task task = command.getTask();
+		assertEquals((int)task.getTaskId(), 1);
+		assertTrue( task.isComplete());
+	}
+
+	@Test
+	public void testEditDeadline () throws ParserException {
+		Command command = Parser.parseCommand("edit 1 eat pri cat gain weight by tomorrow");
+		assertEquals(command.getType(), CommandType.EDIT);
+		Task task = command.getTask();
+		assertTrue(task instanceof DeadlineTask);
+		DeadlineTask scheduleTask = (DeadlineTask) task;
+		assertEquals((int)scheduleTask.getTaskId(), 1);
+		assertEquals(scheduleTask.getText(), "eat");
+		assertEquals(scheduleTask.getCategory(), "gain weight");
+		assertTrue(scheduleTask.isPriority());
+		assertNotNull(scheduleTask.getDeadline());
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserTest.java
+
+
+
+
+

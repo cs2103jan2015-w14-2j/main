@@ -1,0 +1,1800 @@
+//@author: a0121409r
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\DeadlineTask.java
+	 */
+
+    @Override
+	public DeadlineTask clone() {
+        // Note the String objects might not be deep copied.
+        return new DeadlineTask(this.getTaskId(), this.getText(),
+                                this.getCategory(), this.isPriority(),
+                                this.isComplete(), this.getDeadline());
+    }
+
+    @Override
+    public boolean equals(Object deadlineTask) {
+        // Overrides default Object equals()
+        if (!super.equals(deadlineTask)) {
+            return false;
+        }
+
+        if (!(deadlineTask instanceof DeadlineTask)) {
+            return false;
+        }
+
+        Gson gson = new Gson();
+        String deadline1 =
+                           gson.toJson(((DeadlineTask) deadlineTask).getDeadline());
+        String deadline2 = gson.toJson(this.deadline);
+
+        if (!deadline1.equals(deadline2)) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\ScheduleTask.java
+	 */
+
+    @Override
+	public ScheduleTask clone() {
+        // Note the String objects might not be deep copied.
+        return new ScheduleTask(this.getTaskId(), this.getText(),
+                                this.getCategory(), this.isPriority(),
+                                this.isComplete(), this.getFromDate(),
+                                this.getToDate());
+    }
+
+    @Override
+    public boolean equals(Object scheduleTask) {
+        // Overrides Object equals() method
+        if (!super.equals(scheduleTask)) {
+            return false;
+        }
+
+        if (!(scheduleTask instanceof ScheduleTask)) {
+            return false;
+        }
+
+        Gson gson = new Gson();
+
+        String fromDate1 =
+                           gson.toJson(((ScheduleTask) scheduleTask).getFromDate());
+        String fromDate2 = gson.toJson(this.fromDate);
+
+        if (!fromDate1.equals(fromDate2)) {
+            return false;
+        }
+
+        String toDate1 =
+                         gson.toJson(((ScheduleTask) scheduleTask).getFromDate());
+        String toDate2 = gson.toJson(this.toDate);
+
+        if (!toDate1.equals(toDate2)) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\ScheduleTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Task.java
+	 */
+
+    @Override
+	public Task clone() {
+        // Note the String objects might not be deep copied.
+        return new Task(this.getTaskId(), this.getText(),
+                        this.getCategory(), this.isPriority(),
+                        this.isComplete());
+    }
+    
+    public Boolean hasNoText() {
+        if (this.text == null || this.text.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean hasNoCategory() {
+        if (this.category == null || this.category.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    
+
+    @Override
+    public boolean equals(Object object) {
+        //Overrides default Object equals().
+        if (object == null) {
+            return false;
+        }
+        if (!(object instanceof Task)) {
+            return false;
+        }
+        Task task = (Task) object;
+		if (task.getTaskId() != this.taskId) {
+            return false;
+        }
+        if (!task.getText().equals(this.text)) {
+            return false;
+        }
+        if (task.getCategory() != null && !task.getCategory().equals(this.category)) {
+            return false;
+        }
+        if (task.isPriority() != this.isPriority) {
+            return false;
+        }
+        if (task.isComplete() != this.isComplete) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\SearchTask.java
+	 */
+
+	@Override
+	public SearchTask clone() {
+		// Note the String objects might not be deep copied.
+		return new SearchTask(this.getTaskId(), this.getText(),
+		        this.getCategory(), this.isPriority(), this.isComplete(),
+		        this.getFromDate(), this.getToDate());
+	}
+
+	@Override
+	public boolean equals(Object searchTask) {
+		// Overrides Object equals() method
+		if (!super.equals(searchTask)) {
+			return false;
+		}
+
+		if (!(searchTask instanceof SearchTask)) {
+			return false;
+		}
+
+		Gson gson = new Gson();
+
+		String fromDate1 = gson.toJson(((SearchTask) searchTask).getFromDate());
+		String fromDate2 = gson.toJson(this.fromDate);
+
+		if (!fromDate1.equals(fromDate2)) {
+			return false;
+		}
+
+		String toDate1 = gson.toJson(((SearchTask) searchTask).getFromDate());
+		String toDate2 = gson.toJson(this.toDate);
+
+		if (!toDate1.equals(toDate2)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public Calendar getDeadline() {
+		return deadline;
+	}
+
+	public void setDeadline(Calendar deadline) {
+		this.deadline = deadline;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\SearchTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\FileStorage.java
+	 */
+
+/**
+ * Class for handling the data and saving it onto file. <br>
+ * <br>
+ * Assumptions:
+ * <p>
+ * <ul>
+ * <li>1) Writes to a tempFile first. Only upon exit will it overwrite the old file.
+ * <li>2) Assume Task taskIds start from 1, not 0.
+ * <li>3) When returning the list of Tasks, it will return a duplicated copy and
+ * not the direct reference.
+ * <li>4) After adding or removing a certain item in listTask, the taskIds for
+ * each of the Task objects in listTask will be auto-updated.
+ * <li>5) If no fileName is given, a default fileName will be used.
+ * <ul>
+ * </p>
+ */
+public class FileStorage extends Storage {
+    
+    private static final String ERROR_ADD_NO_TASK_DESC =
+                                                         "Please ensure the Task to be added actually has a description.";
+    private static final String ERROR_EDIT_TASK_ID =
+                                                     "Unable to edit task, invalid Task ID!";
+    private static final String ERROR_DELETE_TASK_ID =
+                                                       "Unable to delete task, invalid Task ID!";
+    private static final String ERROR_IO = "Error writing to file.";
+    
+    private static final String DEFAULT_FILENAME = "default.txt";
+    
+    private static final String TEMP_FILENAME = "temp.txt";
+    
+    private File currFile;
+    private File tempFile;
+    private List<Task> listTask;
+
+    // Constructors
+
+    public FileStorage() {
+        this(DEFAULT_FILENAME);
+    }
+    
+    public FileStorage(File file) {
+        this(file.toString());
+    }
+
+    public FileStorage(String fileName) {
+        
+        if (fileName == "") {
+            
+            fileName = DEFAULT_FILENAME;
+        }
+        
+        this.currFile = new File(fileName);
+        this.listTask = JsonIOHandler.readJSONFileListTask(currFile);
+        
+        this.tempFile = new File(TEMP_FILENAME);
+
+        this.updateTaskId();
+    }
+
+    // Getters
+
+    public String getCurrFileName() {
+        return currFile.toString();
+    }
+    
+    /**
+     * This returns a list of all categories currently held in listTask.
+     * 
+     * @return A List<String> object containing all the categories.
+     */
+    public List<String> getAllCategories() {
+        List<String> list = new ArrayList<String>();
+        List<Task> taskList = getAllTasks();
+        for (Task task : taskList) {
+            if (!list.contains(task.getCategory())) {
+                list.add(task.getCategory());
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Duplicates the current state of the list of Tasks held in this instance
+     * of FileStorage. The duplicateTask variable indicates if Task objects in
+     * listTask will be deep copied as well.
+     * 
+     * @param duplicateTask
+     *            If true, will deep copy Task objects as well.
+     * @return A duplicated list of Tasks held in this instance of FileStorage.
+     */
+    public List<Task> duplicateCurrentListTask(boolean duplicateTask) {
+        List<Task> duplicateList = new ArrayList<Task>();
+
+        for (Task item : this.listTask) {
+
+            if (!duplicateTask) {
+                duplicateList.add(item);
+            } else {
+                duplicateList.add(item.clone());
+            }
+        }
+
+        return duplicateList;
+    }
+
+    /**
+     * Returns a printable ready String of the current contents held in tempFile
+     * in JSON format.
+     * 
+     * @param toAddTags
+     *            If true, it will add in the tags alongside the JSON formatted
+     *            String object.
+     * @return A String object containing all current contents in currFile in
+     *         JSON format.
+     */
+    public String currentListTaskString(boolean toAddTags) {
+        return JsonIOHandler.readJSON(tempFile, toAddTags);
+    }
+    
+    /**
+     * Sorts listTask. Super inefficient.
+     */
+    private void sortList() {
+        this.listTask = TaskSorter.sort(this.listTask);
+    }
+
+    /**
+     * Update the taskId variables in each Task object after operation.
+     */
+    private void updateTaskId() {
+        if (this.listTask != null && this.listTask.size() != 0) {
+            
+            sortList();
+            
+            List<Task> tempTaskList = this.getAllTasks();
+            int currentTaskId = 1;
+
+            for (Task item : tempTaskList) {
+                item.setTaskId(currentTaskId);
+                currentTaskId++;
+            }
+
+            this.listTask = tempTaskList;
+        } else {
+            this.listTask = new ArrayList<Task>();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#addLine(itinerary.main.Command)
+     */
+    @Override
+	public void addTask(Task task) throws StorageException {
+        
+        assert task != null;
+        
+        Task toAdd = task.clone();
+        
+        if (toAdd.hasNoText()) {
+            throw new StorageException(ERROR_ADD_NO_TASK_DESC);
+        }
+        
+        int taskId = toAdd.getTaskId();
+
+        if (taskId == -1) {
+            taskId = listTask.size() + 1;
+            toAdd.setTaskId(taskId);
+        }
+
+        listTask.add(taskId - 1, toAdd);
+        updateTaskId();
+
+        writeToFile();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#editLine(itinerary.main.Command)
+     */
+    @Override
+	public void editTask(Task task) throws StorageException {
+        
+        assert task != null;
+
+        int taskIndex = task.getTaskId() - 1;
+        if (isInvalidIndex(taskIndex)) {
+            throw new StorageException(ERROR_EDIT_TASK_ID);
+        }
+
+        Task originalTask = listTask.remove(taskIndex).clone();
+        Task editedTask = super.updateTaskDetails(originalTask, task);
+        listTask.add(taskIndex, editedTask);
+        updateTaskId();
+
+        writeToFile();
+    }
+
+    private boolean isInvalidIndex(int taskIndex) {
+        return taskIndex < 0 || taskIndex >= listTask.size();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
+     */
+    @Override
+	public void deleteTask(Task task) throws StorageException {
+        
+        assert task != null;
+        
+        int taskIndex = task.getTaskId() - 1;
+        if (isInvalidIndex(taskIndex)) {
+            throw new StorageException(ERROR_DELETE_TASK_ID);
+        }
+
+        listTask.remove(taskIndex);
+        updateTaskId();
+
+        writeToFile();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
+     */
+    @Override
+	public List<Task> getAllTasks() {
+        return duplicateCurrentListTask(true);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
+     */
+    @Override
+	public void clearAll() throws StorageException {
+        listTask.clear();
+
+        writeToFile();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
+     */
+    @Override
+	public void refillAll(List<Task> tasks) throws StorageException {
+        
+        assert tasks != null;
+        
+        listTask = tasks;
+        updateTaskId();
+
+        writeToFile();
+    }
+
+    /**
+     * The method which saves the current list stored in virtual memory to
+     * currFile.
+     * 
+     * @throws StorageException
+     *             If an IOException is thrown in JsonIOHandler.
+     */
+    public void writeToFile() throws StorageException {
+        try {
+            JsonIOHandler.writeJSONList(tempFile, listTask);
+        } catch (IOException e) {
+            throw new StorageException(ERROR_IO);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#close(itinerary.main.Command)
+     */
+    @Override
+	public void close() {
+        if (tempFile.exists()) {
+            if (!currFile.delete()) {
+                Logger.getGlobal().log(Level.WARNING, "Old file not deleted.");
+            }
+            
+            if (!tempFile.renameTo(currFile)) {
+                Logger.getGlobal().log(Level.WARNING, "System unable to replace old file.");
+            }
+            
+            File tempFile = new File(TEMP_FILENAME);
+            tempFile.delete();
+        }
+    }
+
+    /**
+     * The sub-class which helps to sort the Tasks in ITnerary afetr every command. 
+     */
+    private static class TaskSorter {
+    	private static final Comparator<Task> byComplete = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        int returnVal = 0;
+		        //Check against Completeness.
+		        if (o1.isComplete() && !o2.isComplete()) { //o1 is greater.
+		            returnVal = 1;
+		        } else if (!o1.isComplete() && o2.isComplete()) { //o2 is greater.
+		            returnVal = -1;
+		        }
+		        return returnVal;
+			}
+		};
+		
+		private static final Comparator<Task> byDates = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        int returnVal = 0;
+
+		        String classType1 = o1.getClass().getSimpleName();
+		        String classType2 = o2.getClass().getSimpleName();
+
+		        String deadlineTaskClassName = DeadlineTask.class.getSimpleName();
+		        String scheduleTaskClassName = ScheduleTask.class.getSimpleName();
+
+		        // o1 and o2 are of the same class type.
+		        // Check against their Calendar arguments
+		        if (classType1.equals(deadlineTaskClassName)
+		            && classType2.equals(deadlineTaskClassName)) {
+		            // o1 == DeadlineTask
+		            // o2 == DeadlineTask
+		            if (((DeadlineTask) o1).getDeadline()
+		                                   .before(((DeadlineTask) o2).getDeadline())) {
+		                // o1 has the earlier Deadline.
+		            	// o1 is greater.
+		                returnVal = -1;
+		            } else if (((DeadlineTask) o2).getDeadline()
+		                                          .before(((DeadlineTask) o1).getDeadline())) {
+		                // o2 has the earlier Deadline.
+		            	// o2 is greater.
+		                returnVal = 1;
+		            } else {
+		                // o1 and o2 have the exact same Deadlines.
+		                return 0;
+		            }
+		        } else if (classType1.equals(scheduleTaskClassName)
+		                   && classType2.equals(scheduleTaskClassName)) {
+		            // o1 == ScheduleTask
+		            // o2 == ScheduleTask
+		            if (((ScheduleTask) o1).getToDate()
+		                                   .before(((ScheduleTask) o2).getToDate())) {
+		                // o1 has the earlier ToDate.
+		                // o1 is greater.
+		                returnVal = -1;
+		            } else if (((ScheduleTask) o2).getToDate()
+		                                          .before(((ScheduleTask) o1).getToDate())) {
+		                // o2 has the earlier ToDate.
+		                // o2 is greater.
+		                returnVal = 1;
+		            } else {
+		                // o1 and o2 have the exact same ToDates.
+		                return 0;
+		            }
+		        } else {
+		            // o1 and o2 are regular Tasks.
+		            return 0;
+		        }
+		        return returnVal;
+			}
+		};
+		
+		private static final Comparator<Task> byDescription = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        return o1.getText().compareTo(o2.getText());
+			}
+		};
+		
+		private static final Comparator<Task> byPriority = new Comparator<Task>() {
+			@Override
+		    public int compare(Task o1, Task o2) {
+		        int returnVal = 0;
+		        //Check against Priority.
+		        if (o1.isPriority() == true && o2.isPriority() == false) { //o1 is greater.
+		            returnVal = -1;
+		        } else if (o2.isPriority() == true && o1.isPriority() == false) { //o2 is greater.
+		            returnVal = 1;
+		        } else {
+		            returnVal = 0;
+		        }		        
+		        return returnVal;
+		    }
+		};
+		
+		private static final Comparator<Task> byType = new Comparator<Task>() {
+			@Override
+			public int compare(Task o1, Task o2) {
+		        String classType1 = o1.getClass().getSimpleName();
+		        String classType2 = o2.getClass().getSimpleName();
+
+		        String taskClassName = Task.class.getSimpleName();
+		        String deadlineTaskClassName = DeadlineTask.class.getSimpleName();
+		        String scheduleTaskClassName = ScheduleTask.class.getSimpleName();
+
+		        int returnVal = 0;
+
+		        if (!classType1.equals(classType2)) { // o1 and o2 are not of the same class type.
+		            if (classType1.equals(deadlineTaskClassName)
+		                && !classType2.equals(deadlineTaskClassName)) {
+		                // o1 == DeadlineTask
+		                // o2 == ScheduleTask || Task
+
+		                // o1 is greater.
+		                returnVal = -1;
+		            } else if (classType2.equals(deadlineTaskClassName)
+		                       && !classType1.equals(deadlineTaskClassName)) {
+		                // o1 == ScheduleTask || Task
+		                // o2 == DeadlineTask
+
+		                // o2 is greater.
+		                returnVal = 1;
+		            } else if (classType1.equals(scheduleTaskClassName)
+		                       && classType2.equals(taskClassName)) {
+		                // o1 == ScheduleTask
+		                // o2 == Task
+
+		                // o1 is greater.
+		                returnVal = -1;
+		            } else {
+		                // o1 == Task
+		                // o2 == ScheduleTask
+
+		                // o2 is greater.
+		                returnVal = 1;
+		            }
+		        } else {
+		            returnVal = 0;
+		        }
+
+		        return returnVal;
+			}
+		};
+		
+		public static List<Task> sort(List<Task> tasks) {
+			Collections.sort(tasks, byDescription);
+			Collections.sort(tasks, byType);
+			Collections.sort(tasks, byDates);
+			Collections.sort(tasks, byPriority);
+			Collections.sort(tasks, byComplete);
+			
+			return tasks;
+		}
+    }
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\FileStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\JsonIOHandler.java
+	 */
+
+public class JsonIOHandler {
+    
+    static File defaultFile = new File("default");
+    
+    public static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
+
+    /**
+     * Writes/Appends a given Task object into the given File object in a JSON
+     * format. Inserts the taskId of each task before the JSON String.
+     * 
+     * @param currFile
+     *            The File object to write to.
+     * @param task
+     *            The Task object to write into currFile.
+     * @param willOverwrite
+     *            Configures if the function will overwrite and delete any
+     *            content in currFile when writing the task.
+     */
+    public static void writeJSON(File currFile, Task task, boolean willOverwrite) throws IOException {
+        
+        if (currFile == null) {
+            writeJSON(defaultFile, task, willOverwrite);
+            return;
+        }
+        
+        FileOutputStream writer = new FileOutputStream(currFile, !willOverwrite);
+
+        if (task != null) {
+            String taskString = JsonStringTagger.convertTasktoTaggedJsonString(task);
+            writer.write(taskString.getBytes());
+            writer.write(NEWLINE_SEPARATOR.getBytes());
+        }
+        writer.close();
+    }
+
+    /**
+     * Given a list of tasks, this function will write all Task objects in the
+     * given List<Task> object to the given File Object. The behavior of the
+     * function is to always overwrite whatever contents there is in the file.
+     * 
+     * @param currFile
+     *            The File object to write to.
+     * @param taskList
+     *            The List object containing all the Task objects that will be
+     *            written onto currFile.
+     */
+    public static void writeJSONList(File currFile, List<Task> taskList) throws IOException {
+        boolean firstLineOverwrite = true;
+        if (taskList == null || taskList.isEmpty()) {
+            writeJSON(currFile, null, firstLineOverwrite);
+        } else {
+            for (int i = 0; i < taskList.size(); i++) {
+                writeJSON(currFile, taskList.get(i), firstLineOverwrite);
+                firstLineOverwrite = false;
+            }
+        }
+    }
+
+    /**
+     * Reads all the lines in a given File object and returns a String object.
+     * This String object can then be printed.
+     * 
+     * @param currFile
+     *            The File object to read from.
+     * @param toAddTags
+     *            If true, it adds in the tags in each line to the final String
+     *            object.
+     * @return The String object which contains all file contents.
+     */
+    public static String readJSON(File currFile, boolean toAddTags) {
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        try {
+            FileInputStream reader = new FileInputStream(currFile);
+            InputStreamReader isr = new InputStreamReader(reader);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+
+            while ((line = bufferedReader.readLine()) != null) {
+                String stringArray[] = line.split(JsonStringTagger.STRING_DELIMITER);
+                if (toAddTags) {
+                    if (JsonStringTagger.checkStringArray(stringArray)) {
+                        sb.append(stringArray[0] + " ");
+                        sb.append(stringArray[1] + " ");
+                        sb.append(stringArray[2]);
+                    }
+                } else {
+                    sb.append(stringArray[2]);
+                }
+                sb.append(NEWLINE_SEPARATOR);
+            }
+            bufferedReader.close();
+        } catch (NullPointerException e) {
+            readJSON(defaultFile, true);
+        } catch (FileNotFoundException e) {
+            try {
+				writeJSON(currFile, null, true);
+				readJSON(currFile, true);
+			} catch (IOException io) {
+				io.printStackTrace();
+			}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Reads all the lines in a given File object and returns a List<String>
+     * object containing all the JSONs in the given file.
+     * 
+     * @param currFile
+     *            The File object to be read from.
+     * @param toAddTags
+     *            If true, it adds the tags in each line to the final String
+     *            object.
+     * @return A List<String> object containing all separated JSON strings in
+     *         cuffFile.
+     */
+    public static List<String> readJSONFileListString(File currFile, boolean toAddTags) {
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        List<String> jsonList = new ArrayList<String>();
+
+        try {
+            FileInputStream reader = new FileInputStream(currFile);
+            InputStreamReader isr = new InputStreamReader(reader);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+
+            while ((line = bufferedReader.readLine()) != null) {
+                String stringArray[] = line.split(JsonStringTagger.STRING_DELIMITER);
+                if (toAddTags) {
+                    if (JsonStringTagger.checkStringArray(stringArray)) {
+                        sb.append(stringArray[0] + " ");
+                        sb.append(stringArray[1] + " ");
+                        sb.append(stringArray[2]);
+                    }
+                } else {
+                    sb.append(stringArray[2]);
+                }
+
+                jsonList.add(sb.toString());
+                sb.setLength(0);  // To clear buffer
+            }
+            bufferedReader.close();
+        } catch (NullPointerException e) {
+            readJSON(defaultFile, true);
+        } catch (FileNotFoundException e) {
+            try {
+                writeJSON(currFile, null, true);
+                readJSON(currFile, true);
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return jsonList;
+    }
+
+    /**
+     * Given a file, this method will return a List object containing all the
+     * Task objects in the file.
+     * 
+     * @param currFile
+     *            The File object to be read from.
+     * @return A List<Task> object containing all the items in currFile.
+     */
+    public static List<Task> readJSONFileListTask(File currFile) {
+        String line = "";
+        List<Task> taskList = new ArrayList<Task>();
+
+        try {
+            FileInputStream reader = new FileInputStream(currFile);
+            InputStreamReader isr = new InputStreamReader(reader);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            
+            while ((line = bufferedReader.readLine()) != null) {
+                taskList.add(JsonStringTagger.convertTaggedJsonStringtoTask(line));
+            }
+            bufferedReader.close();
+        } catch (NullPointerException e) {
+            readJSON(defaultFile, true);
+        } catch (FileNotFoundException e) {
+            try {
+                writeJSON(currFile, null, true);
+                readJSON(currFile, true);
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return taskList;
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\JsonIOHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\JsonStringTagger.java
+	 */
+
+public class JsonStringTagger {
+
+    public static final String STRING_DELIMITER = "<SPLIT>";
+
+    /**
+     * Given a String array object, this method checks if the array is suitable
+     * for use in the methods below.
+     * 
+     * @param stringArray
+     *            The String array to be checked.
+     * @return A boolean indicating if the array can be used in the methods
+     *         below.
+     */
+    public static boolean checkStringArray(String stringArray[]) {
+
+        if (stringArray == null) {
+
+            return false;
+        }
+
+        if (stringArray.length <= 2) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Given a Task object, this converts it into a String object containing the
+     * taskID of the Task object, the type of Task object and it's JSON String
+     * representation.
+     * 
+     * @param task
+     *            The Task object to be converted into a String object.
+     * @return The String version of the Task Object.
+     */
+    public static String convertTasktoTaggedJsonString(Task task) {
+
+        assert task != null;
+
+        Gson gson = new Gson();
+        String s =
+                   task.getTaskId() + JsonStringTagger.STRING_DELIMITER
+                           + task.getClass().getSimpleName()
+                           + JsonStringTagger.STRING_DELIMITER
+                           + gson.toJson(task);
+
+        return s;
+    }
+
+    /**
+     * Given a tagged JSON String object made from the
+     * convertTasktoTaggedJsonString() method it will convert it to the
+     * corresponding Task object.
+     * 
+     * @param taggedJSONString
+     *            A String object that has an additional tag in front of the
+     *            JSON String stating what type of Task the JSON String part
+     *            represents.
+     * @return The corresponding Task object that formattedJSONString
+     *         represents. If taggedJSONString is in the wrong format, method
+     *         will return null.
+     */
+    public static Task convertTaggedJsonStringtoTask(String taggedJSONString) {
+
+        Gson gson = new Gson();
+
+        String stringArray[] =
+                               taggedJSONString.split(JsonStringTagger.STRING_DELIMITER);
+
+        if (checkStringArray(stringArray)) {
+
+            if (stringArray[1].equals(ScheduleTask.class.getSimpleName())) {
+
+                return gson.fromJson(stringArray[2], ScheduleTask.class);
+
+            } else if (stringArray[1].equals(DeadlineTask.class.getSimpleName())) {
+
+                return gson.fromJson(stringArray[2], DeadlineTask.class);
+
+            } else {
+
+                // Default Task Object
+                return gson.fromJson(stringArray[2], Task.class);
+
+            }
+        }
+
+        return null;
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\JsonStringTagger.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\Storage.java
+	 */
+
+public abstract class Storage implements Closeable{
+
+    /**
+     * Call this to add a task to the file. Asserts that task cannot be null.
+     * 
+     * @param task
+     *            the task to be added
+     * @throws StorageException
+     *             thrown if any error occurs trying to add task
+     */
+	public abstract void addTask(Task task) throws StorageException;
+
+    /**
+     * Call this to edit a task in the file. Asserts that task cannot be null.
+     * 
+     * @param task
+     *            the taskId to be edited with the details to be modified
+     * @throws StorageException
+     *             thrown if any error occurs trying to edit task
+     */
+	public abstract void editTask(Task task) throws StorageException;
+
+    /**
+     * Call this to delete a line in the file. Asserts that task cannot be null.
+     * 
+     * @param task
+     *            the taskId to be deleted
+     * @throws StorageException
+     *             thrown if any error occurs trying to delete task
+     */
+	public abstract void deleteTask(Task task) throws StorageException;
+
+    /**
+     * Call this to get all current content in the file.
+     * 
+     * @return A List<Task> object containing all tasks.
+     */
+	public abstract List<Task> getAllTasks();
+
+    /**
+     * Call this to delete everything from the file.
+     * 
+     * @throws StorageException
+     *             thrown if any error occurs trying to clear all tasks
+     */
+	public abstract void clearAll() throws StorageException;
+
+    /**
+     * Call this to undo replace all the tasks in file with the tasks in tasks.
+     * Asserts that tasks cannot be null.
+     * 
+     * @param tasks
+     *            A List<Task> object containing all the tasks to be refilled
+     * @throws StorageException
+     *             thrown if any error occurs trying to refill all tasks
+     */
+	public abstract void refillAll(List<Task> tasks) throws StorageException;
+    
+    
+    /**
+     * Replaces the old file with the new tempFile.
+     */
+    @Override
+	public abstract void close();
+
+    /**
+     * Called by editTask to overwrite originalTask's non-null variables in
+     * details
+     * 
+     * @param originalTask
+     *            the task object to be edited
+     * @param details
+     *            the details to be added or replaced
+     * @return a new Task object with updated details
+     */
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageStub.java
+	 */
+
+public class StorageStub extends Storage {
+    private static final String ERROR_INVALID_ID = "Invalid Task ID!";
+    private List<Task> tasks;
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageStub.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\AssertionFailure.java
+	 */
+
+
+/*
+ * To let JUnit know a test fails due to a assertion violation within the
+ * function: 
+ * 1) Add this line to the class file: 
+ *    @Rule public ExpectedFailure rule = new ExpectedFailure(); 
+ * 2) Add this line to the test:
+ *    @AssertionFailure.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AssertionFailure {
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\AssertionFailure.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ExpectedFailure.java
+	 */
+
+
+/*
+ * To let JUnit know a test fails due to a assertion violation within the
+ * function: 
+ * 1) Add this line to the class file: 
+ *    @Rule public ExpectedFailure rule = new ExpectedFailure(); 
+ * 2) Add this line to the test:
+ *    @AssertionFailure.
+ */
+public class ExpectedFailure implements TestRule {
+    @Override
+	public Statement apply(Statement base, Description description) {
+        return statement(base, description);
+    }
+
+    private Statement statement(final Statement base,
+                                final Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    base.evaluate();
+                } catch (Throwable e) {
+                    if (description.getAnnotation(AssertionFailure.class) != null) {
+                        System.err.println("Assertion Failure Caught.");
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+        };
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ExpectedFailure.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\FileStorageTest.java
+	 */
+
+public class FileStorageTest {
+
+    static final String NEWLINE_SEPARATOR = System.lineSeparator();
+    
+    static Gson gson = new Gson();
+
+    static Calendar calendar = Calendar.getInstance();
+
+    static File testFile = new File("testFile.txt");
+    static FileStorage fileStorage = null;
+
+    static Task task1;
+    static Task task2;
+    static Task task3;
+    static Task task4;
+
+    static Task sortedTask1;
+    static Task sortedTask2;
+    static Task sortedTask3;
+
+    static Task invalidTask1;
+    static Task invalidTask2;
+
+    static String task1String;
+    static String task2String;
+    static String task3String;
+    static String task4String;
+
+    static String sortedTask1String;
+    static String sortedTask2String;
+    static String sortedTask3String;
+
+    static List<Task> taskList;
+    static List<Task> sortedList;
+
+    @Rule
+    public ExpectedFailure rule = new ExpectedFailure();
+
+    @Before
+    public void setUp() {
+
+        task1 = new Task(1, "T", "ExampleCategory", true, true);
+        task2 =
+                new ScheduleTask(2, "S", "ExampleCategory", true, true,
+                                 calendar, calendar);
+        task3 =
+                new DeadlineTask(3, "D", "ExampleCategory", true, true,
+                                 calendar);
+        task4 = new Task(1, "T", "NewCategory", true, true);
+
+        invalidTask1 = null;
+        invalidTask2 = new Task(-1000, "T", "ExampleCategory", true, true);
+
+        task1String = gson.toJson(task1);
+        task2String = gson.toJson(task2);
+        task3String = gson.toJson(task3);
+        task4String = gson.toJson(task4);
+
+        taskList = new ArrayList<Task>() {
+
+            private static final long serialVersionUID = 1L;
+
+            {
+                add(task1);
+                add(task2);
+                add(task3);
+            }
+        };
+
+        sortedTask1 = task1.clone();
+        sortedTask1.setTaskId(3);
+        sortedTask2 = task2.clone();
+        sortedTask3 = task3.clone();
+        sortedTask3.setTaskId(1);
+
+        sortedTask1String = gson.toJson(sortedTask1);
+        sortedTask2String = gson.toJson(sortedTask2);
+        sortedTask3String = gson.toJson(sortedTask3);
+
+        sortedList = new ArrayList<Task>() {
+
+            private static final long serialVersionUID = 1L;
+
+            {
+                add(sortedTask3);
+                add(sortedTask2);
+                add(sortedTask1);
+            }
+        };
+
+        testFile.delete();
+        fileStorage = new FileStorage(testFile);
+    }
+    
+    /**
+     * Tests if FileStorage is able to correctly assert that given Tasks
+     * should not be null. They should not be null so as to prevent 
+     * data integrity issues. If the Task given is null, an Assertion 
+     * Failure should be activated.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @AssertionFailure
+    @Test
+    public void testAddTaskNull() throws StorageException {
+
+        fileStorage.addTask(invalidTask1);
+    }
+
+    /**
+     * Tests if FileStorage is able to correctly add Tasks into a List.
+     * Accounts for Auto-Sorting behavior of the class.
+     * If this fails, it's likely that the sorting order has been changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testAddTask() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.addTask(task2);
+        fileStorage.addTask(task3);
+
+        assertEquals(sortedTask3String + NEWLINE_SEPARATOR + sortedTask2String
+                             + NEWLINE_SEPARATOR + sortedTask1String
+                             + NEWLINE_SEPARATOR,
+                     fileStorage.currentListTaskString(false));
+    }
+
+    /**
+     * Tests if FileStorage is able to assert that given Tasks should not be
+     * null. They should not be null so as to prevent data integrity issues.
+     * If the Task given is null, an Assertion Failure should be activated.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @AssertionFailure
+    @Test
+    public void testEditTaskNull() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.editTask(invalidTask1);
+    }
+
+    /**
+     * Tests if FileStorage is able to handle an incorrectly formatted given Task 
+     * for editing. If this fails, it's likely that the error-handling mechanism 
+     * within editTask() has been changed.
+     * 
+     * @throws StorageException To indicate an incorrectly formatted Task was given.
+     */
+    @Test(expected = StorageException.class)
+    public void testEditTaskInvalid() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.editTask(invalidTask2);
+
+    }
+
+    /**
+     * Tests if FileStorage is able to correctly replace the Task in the List it has 
+     * that represents the state of the system. If this fails, it's likely that the 
+     * error-handling mechanism within editTask() has been changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testEditTask() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.editTask(task4);
+
+        assertNotEquals(task4String + "\n",
+                        fileStorage.currentListTaskString(false));
+    }
+
+    /**
+     * Tests if FileStorage is able to assert that a given Task should not be 
+     * null. They should not be null so as to prevent data integrity issues.
+     * If the Task given is null, an Assertion Failure should be activated.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @AssertionFailure
+    @Test
+    public void testDeleteTaskNull() throws StorageException {
+
+        fileStorage.deleteTask(invalidTask1);
+    }
+
+    /**
+     * Tests if FileStorage is able to handle an incorrectly formatted Task for 
+     * deletion. This particular tests for the deletion of a non-existent Task 
+     * within the List. If this fails, it's likely that the error-handling mechanism 
+     * within deleteTask() was changed.
+     * 
+     * @throws StorageException To indicate that a invalid Task was given.
+     */
+    @Test(expected = StorageException.class)
+    public void testDeleteTaskInvalid() throws StorageException {
+
+        fileStorage.deleteTask(invalidTask2);
+    }
+
+    /**
+     * Tests if FileStorage can correctly delete the given Task in the List
+     * that it has representing the current state of the system. If this fails, 
+     * it's likely that the behavior of deleteTask() has been changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testDeleteTask() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.editTask(task4);
+        fileStorage.deleteTask(task4);
+
+        assertEquals("", fileStorage.currentListTaskString(false));
+    }
+
+    /**
+     * Tests if FileStorage is able to correctly return a copy of the List it has
+     * representing the state of the system. If this fails, it's likely due to a 
+     * change in the clone() or the equals() methods in the Task objects.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testGetAllTasks() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.addTask(task2);
+        fileStorage.addTask(task3);
+
+        List<Task> currentListTask = fileStorage.getAllTasks();
+
+        for (Task item : currentListTask) {
+
+            assertTrue(sortedList.contains(item));
+        }
+    }
+
+    /**
+     * Tests if FileStorage can correctly clear out the system state. This shoudln't fail,
+     * unless the behavior of clearAll() was changed.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testClearAll() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.addTask(task2);
+        fileStorage.addTask(task3);
+
+        fileStorage.clearAll();
+
+        assertEquals("", fileStorage.currentListTaskString(false));
+    }
+
+    /**
+     * Tests if FileStorage can correctly assert that the List given to refill the state of the 
+     * system with should not be null.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @AssertionFailure
+    @Test
+    public void testRefillAllNull() throws StorageException {
+
+        fileStorage.refillAll(null);
+    }
+
+    /**
+     * Tests if FileStorage can correctly restore the state of the system with a given List.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testRefillAll() throws StorageException {
+
+        fileStorage.refillAll(taskList);
+
+        assertEquals(sortedTask3String + NEWLINE_SEPARATOR + sortedTask2String
+                             + NEWLINE_SEPARATOR + sortedTask1String
+                             + NEWLINE_SEPARATOR,
+                     fileStorage.currentListTaskString(false));
+    }
+
+    /**
+     * Tests if FileStorage can correctly return a deep copy of the current state of the 
+     * system. If this fails, it's likely due to a 
+     * change in the clone() or the equals() methods in the Task objects.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testDuplicateCurrentListTask() throws StorageException {
+
+        List<Task> listTask = new ArrayList<Task>();
+
+        fileStorage.addTask(task1);
+        fileStorage.addTask(task2);
+        fileStorage.addTask(task3);
+
+        listTask = fileStorage.duplicateCurrentListTask(true);
+
+        for (Task item : listTask) {
+
+            assertTrue(sortedList.contains(item));
+        }
+
+    }
+
+    /**
+     * Tests if FileStorage can return a List containing all currently active category
+     * tags for all the Tasks in the system state.
+     * 
+     * @throws StorageException For any abnormal behavior that arises.
+     * Check for Exceptions thrown in JsonIOHandler or JsonStringTagger.
+     */
+    @Test
+    public void testGetAllCategories() throws StorageException {
+
+        fileStorage.addTask(task1);
+        fileStorage.addTask(task2);
+        fileStorage.addTask(task3);
+
+        fileStorage.editTask(task4);
+
+        assertEquals(2, fileStorage.getAllCategories().size());
+
+    }
+
+    @After
+    public void close() {
+        fileStorage.close();
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\FileStorageTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\JsonIOHandlerTest.java
+	 */
+
+public class JsonIOHandlerTest {
+    
+    static final String NEWLINE_SEPARATOR = JsonIOHandler.NEWLINE_SEPARATOR;
+
+    static Gson gson = new Gson();
+
+    static Calendar calendar = Calendar.getInstance();
+    
+    static File testFile = new File("testFile");
+
+    static Task task1 = new Task(1, "T", "ExampleCategory", true, true);
+    static Task task2 = new ScheduleTask(2, "S", "ExampleCategory", true, true,
+                                         calendar, calendar);
+    static Task task3 = new DeadlineTask(3, "D", "ExampleCategory", true, true,
+                                         calendar);
+
+    static String task1String = gson.toJson(task1);
+    static String task2String = gson.toJson(task2);
+    static String task3String = gson.toJson(task3);
+
+    static List<Task> listError = new ArrayList<Task>() {
+
+        private static final long serialVersionUID = 1L;
+
+        {
+            add(null);
+            add(null);
+            add(task1);
+            add(null);
+            add(task2);
+            add(null);
+            add(task3);
+        }
+    };
+
+    static List<Task> taskList = new ArrayList<Task>() {
+
+        private static final long serialVersionUID = 1L;
+
+        {
+            add(task1);
+            add(task2);
+            add(task3);
+        }
+    };
+
+    @Before
+    public void wipe() {
+        
+        testFile.delete();
+    }
+
+    @Test
+    public void testWriteJSON() {
+        try {
+            JsonIOHandler.writeJSON(null, null, true);
+            wipe();
+            JsonIOHandler.writeJSON(null, task1, true);
+            wipe();
+            JsonIOHandler.writeJSON(testFile, null, true);
+            wipe();
+            JsonIOHandler.writeJSON(testFile, task1, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("testWriteJSON() has failed.");
+        }
+    }
+
+    @Test
+    public void testWriteJSONList() {
+        try {
+            JsonIOHandler.writeJSONList(null, null);
+            wipe();
+            JsonIOHandler.writeJSONList(null, new ArrayList<Task>());
+            wipe();
+            JsonIOHandler.writeJSONList(testFile, null);
+            wipe();
+            JsonIOHandler.writeJSONList(testFile, new ArrayList<Task>());
+            wipe();
+            JsonIOHandler.writeJSONList(testFile, taskList);
+            wipe();
+            JsonIOHandler.writeJSONList(null, listError);
+            wipe();
+            JsonIOHandler.writeJSONList(testFile, listError);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("testWriteJSONList() has failed.");
+        }
+    }
+
+    /**
+     * Tests if JsonIOHandler can correctly read and obtain a Task in String
+     * format from a file whose contents contain GSON-formatted Tasks. Also
+     * tests for correct handling of null Tasks - skip them.
+     * 
+     * @throws Exception
+     *             To detect for new abnormal behavior not expected previously.
+     */
+    @Test
+    public void testReadJSON() throws Exception {
+        assertEquals("", JsonIOHandler.readJSON(null, false));
+        wipe();
+        assertEquals("", JsonIOHandler.readJSON(testFile, false));
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, null);
+        assertEquals("", JsonIOHandler.readJSON(testFile, false));
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, listError);
+        assertEquals(task1String + NEWLINE_SEPARATOR + task2String
+                             + NEWLINE_SEPARATOR + task3String
+                             + NEWLINE_SEPARATOR,
+                     JsonIOHandler.readJSON(testFile, false));
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, taskList);
+        assertEquals(task1String + NEWLINE_SEPARATOR + task2String
+                             + NEWLINE_SEPARATOR + task3String
+                             + NEWLINE_SEPARATOR,
+                     JsonIOHandler.readJSON(testFile, false));
+    }
+
+    /**
+     * Tests if JsonIOHandler can correctly obtain a List of Tasks in String format
+     * from the GSON formatted file containing GSON formatted Task objects. Also
+     * tests for the correct handling of null Files - skip them.
+     * 
+     * @throws Exception To detect for new abnormal behavior not expected previously.
+     */
+    @Test
+    public void testReadJSONFileListString() throws Exception {
+
+        List<String> testList = null;
+
+        testList = JsonIOHandler.readJSONFileListString(null, false);
+        assertEquals(0, testList.size());
+        wipe();
+        testList = JsonIOHandler.readJSONFileListString(testFile, false);
+        assertEquals(0, testList.size());
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, null);
+        testList = JsonIOHandler.readJSONFileListString(testFile, false);
+        assertEquals(0, testList.size());
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, listError);
+        testList = JsonIOHandler.readJSONFileListString(testFile, false);
+        assertEquals(3, testList.size());
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, taskList);
+        testList = JsonIOHandler.readJSONFileListString(testFile, false);
+        assertEquals(3, testList.size());
+    }
+
+    /**
+     * Tests if JsonIOHandler can correctly obtain a Task from a GSON formatted
+     * file. Also tests for the correct handling of null Files - just skip them.
+     * 
+     * @throws IOException To detect for any unaccounted behavior.
+     */
+    @Test
+    public void testReadJsonFileListTask() throws IOException {
+        List<Task> testList = null;
+
+        testList = JsonIOHandler.readJSONFileListTask(null);
+        assertEquals(0, testList.size());
+        wipe();
+        testList = JsonIOHandler.readJSONFileListTask(testFile);
+        assertEquals(0, testList.size());
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, null);
+        testList = JsonIOHandler.readJSONFileListTask(testFile);
+        assertEquals(0, testList.size());
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, listError);
+        testList = JsonIOHandler.readJSONFileListTask(testFile);
+        assertEquals(3, testList.size());
+        wipe();
+        JsonIOHandler.writeJSONList(testFile, taskList);
+        testList = JsonIOHandler.readJSONFileListTask(testFile);
+        assertEquals(3, testList.size());
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\JsonIOHandlerTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\JsonStringTaggerTest.java
+	 */
+
+public class JsonStringTaggerTest {
+    
+    static Gson gson = new Gson();
+    
+    static Calendar calendar = Calendar.getInstance();
+    
+    static String delimiter = JsonStringTagger.STRING_DELIMITER;
+    
+    static Task task1 = new Task(1, "T", "ExampleCategory", true, true);
+    static Task task2 = new ScheduleTask(2, "S", "ExampleCategory", true, true, calendar, calendar);
+    static Task task3 = new DeadlineTask(3, "D", "ExampleCategory", true, true, calendar);
+    
+    static String taggedTask1 = JsonStringTagger.convertTasktoTaggedJsonString(task1);
+    static String taggedTask2 = JsonStringTagger.convertTasktoTaggedJsonString(task2);
+    static String taggedTask3 = JsonStringTagger.convertTasktoTaggedJsonString(task3);
+    
+    static String task1String = gson.toJson(task1);
+    static String task2String = gson.toJson(task2);
+    static String task3String = gson.toJson(task3);
+    
+    static String task1Name = task1.getClass().getSimpleName();
+    static String task2Name = task2.getClass().getSimpleName();
+    static String task3Name = task3.getClass().getSimpleName();
+    
+    @Rule public ExpectedFailure rule = new ExpectedFailure();
+    
+    /**
+     * Tests for avoiding execution on null arrays.
+     * Prevents system from crashing due to thrown NullPointerExceptions.
+     */
+    @Test
+    public void testCheckStringArray() {
+        assertFalse("test for handling null String arrays: ", JsonStringTagger.checkStringArray(null));
+    }
+    
+    /**
+     * Tests for the behavior of asserting for no null tasks.
+     * Prevents abnormal behavior or data loss when in standard operation.
+     */
+    @AssertionFailure
+    @Test
+    public void testConvertTasktoTaggedJsonStringNull() {
+        JsonStringTagger.convertTasktoTaggedJsonString(null);
+    }
+
+    /**
+     * Tests the ability of the class to convert the different types of Tasks to the intended String format.
+     * If this fails, this means the format of the String was changed. The format is supposed to be:
+     * "TaskID""SPLIT""Type of Task""SPLIT""Gson representation of the Task object""Newline character"
+     * where "Type of Task" ::=  Task | ScheduleTask | DeadlineTask
+     */
+    @Test
+    public void testConvertTasktoTaggedJsonString() {
+        assertEquals("Task to Tag: ", "1" + delimiter + task1Name + delimiter + task1String, taggedTask1);
+        assertEquals("ScheduleTask to Tag: ", "2" + delimiter + task2Name + delimiter + task2String, taggedTask2);
+        assertEquals("DeadlineTask to Tag: ", "3" + delimiter + task3Name + delimiter + task3String, taggedTask3);
+    }
+    
+    /**
+     * Tests the ability for the class to convert back to the different types of Tasks given their 
+     * intended String forms.
+     * If this fails, this means the format of the String was changed. The format is supposed to be:
+     * "TaskID""SPLIT""Type of Task""SPLIT""Gson representation of the Task object""Newline character"
+     * where "Type of Task" ::=  Task | ScheduleTask | DeadlineTask
+     */
+    @Test
+    public void testConvertTaggedJsonStringtoTask() {
+        assertEquals(task1, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask1));
+        assertEquals(task2, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask2));
+        assertEquals(task3, JsonStringTagger.convertTaggedJsonStringtoTask(taggedTask3));
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\JsonStringTaggerTest.java
+
+
+
+
+

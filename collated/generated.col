@@ -1,0 +1,29 @@
+//@author: generated
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+	 */
+
+	public Command(Task task, CommandType type) {
+		super();
+		this.task = task;
+		this.type = type;
+	}
+
+	public Task getTask() {
+		return task;
+	}
+
+	public CommandType getType() {
+		return type;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+
+
+
+
+

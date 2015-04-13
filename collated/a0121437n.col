@@ -1,0 +1,2360 @@
+//@author: a0121437n
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\AbstractHistory.java
+	 */
+
+public abstract class AbstractHistory <T> {
+	
+	protected HistoryNode current;
+	
+	/**
+	 * Adds a value to the history
+	 * 
+	 * @param t the value to be added
+	 */
+	public void add (T t) {
+		current = new HistoryNode(current, t);
+	}
+	
+	/**
+	 * Gets the previous value in the history while simultaneously
+	 * setting the current pointer to that value
+	 * 
+	 * @return The previous value
+	 * @throws HistoryBoundException if at the beginning of history or history is empty
+	 */
+	public T getPrevious () throws HistoryBoundException {
+		if (current == null) {
+			throw new HistoryBoundException(BoundType.EMPTY);
+		}
+		HistoryNode temp = current.getPrevious();
+		if (temp == null) {
+			throw new HistoryBoundException(BoundType.LOWER_BOUND);
+		}
+		current = temp;
+		return current.getValue();
+	}
+	
+	/**
+	 * Gets the next value in the history while simultaneously
+	 * setting the current pointer to that value
+	 * 
+	 * @return The next value
+	 * @throws HistoryBoundException if at the end of history or history is empty
+	 */
+	public T getNext () throws HistoryBoundException {
+		if (current == null) {
+			throw new HistoryBoundException(BoundType.EMPTY);
+		}
+		HistoryNode temp = current.getNext();
+		if (temp == null) {
+			throw new HistoryBoundException(BoundType.UPPER_BOUND);
+		}
+		current = temp;
+		return current.getValue();
+	}
+	
+	protected class HistoryNode {
+		private HistoryNode previous = null;
+		private HistoryNode next = null;
+		private T value;
+		
+		HistoryNode (HistoryNode back, T value) {
+			if (back != null) {
+				back.next = this;
+			}
+			this.previous = back;
+			this.value = value;
+		}
+
+		protected HistoryNode getPrevious() {
+			return previous;
+		}
+
+		protected HistoryNode getNext() {
+			return next;
+		}
+
+		protected T getValue() {
+			return value;
+		}
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\AbstractHistory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\HistoryBoundException.java
+	 */
+
+/**
+ * An exception that is thrown when the bounds of the History are met
+ * i.e. there are no nodes in that direction
+ */
+public class HistoryBoundException extends Exception {
+	
+	private static final long serialVersionUID = 1L;
+	private BoundType boundType;
+	
+	/**
+	 * Used to identify the reason behind the exception.
+	 */
+	public enum BoundType {
+		UPPER_BOUND,
+		LOWER_BOUND,
+		EMPTY
+	}
+	
+	public HistoryBoundException (BoundType b) {
+		this.boundType = b;
+	}
+	
+	public BoundType getBoundType () {
+		return this.boundType;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\HistoryBoundException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\InputHistory.java
+	 */
+
+public class InputHistory extends AbstractHistory<String> {
+
+	private HistoryNode latest;
+	
+	public InputHistory () {
+		latest = new HistoryNode(null, null);
+		current = new HistoryNode(latest, null);
+	}
+	
+	/**
+	 * Adds a String to the end of the History and an additional value which is null
+	 * 
+	 * @param t The String to be added
+	 */
+	@Override
+	public void add (String t) {
+		latest = new HistoryNode(latest, t);
+		current = new HistoryNode(latest, null);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\InputHistory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\StateHistory.java
+	 */
+
+public class StateHistory extends AbstractHistory<List<Task>> {
+	public StateHistory (List<Task> initial) {
+		super.add(initial);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\StateHistory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\DeadlineTask.java
+	 */
+
+public class DeadlineTask extends Task implements Cloneable {
+    private Calendar deadline;
+
+    public DeadlineTask(Integer taskId, String text, String category,
+                        Boolean isPriority, Boolean isComplete,
+                        Calendar deadline) {
+        super(taskId, text, category, isPriority, isComplete);
+        this.deadline = deadline;
+    }
+
+    public Calendar getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Calendar deadline) {
+        this.deadline = deadline;
+    }
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Logic.java
+	 */
+
+public class Logic {
+	private static final String MESSAGE_REDO_NOTHING = "You do not have anything to redo.";
+	private static final String MESSAGE_UNDO_NOTHING = "You do not have anything to undo.";
+	private static final String MESSAGE_OPEN_HELP = "Opening help.";
+	private static final String MESSAGE_WELCOME = "Welcome to ITnerary! %1$s is ready for use.";
+	private static final String MESSAGE_DELETE_SUCCESS = "Deleted task %1$s.";
+	private static final String MESSAGE_CLEAR_SUCCESS = "Cleared all tasks.";
+	private static final String MESSAGE_ADD_SUCCESS = "Added \"%1$s\".";
+	private static final String MESSAGE_EDIT_SUCCESS = "Edited task %1$d.";
+	private static final String MESSAGE_DISPLAY_ALL = "Displaying all tasks.";
+	private static final String MESSAGE_REDO_ERROR = "Redo error.";
+	private static final String MESSAGE_REDO_SUCCESS = "Redo successful.";
+	private static final String MESSAGE_UNDO_ERROR = "Undo error.";
+	private static final String MESSAGE_UNDO_SUCCESS = "Undo successful.";
+	private static final String MESSAGE_INVALID_COMMAND = "Invalid command: \"%1$s\"";
+	private static final String MESSAGE_SEARCH_ERROR = "Search error.";
+	private static final String MESSAGE_SEARCH_SUCCESS = "Search success. %1$d result(s) found.";
+	
+	private static final Logger logger = Logger.getGlobal();
+	static {
+		try {
+			logger.addHandler(new FileHandler(Constants.LOG_FILE, Constants.LOG_FILE_SIZE_LIMIT, 1, true));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String fileName;
+	private Storage storage;
+	private StateHistory stateHistory;
+	private InputHistory inputHistory = new InputHistory();
+	private ConfigStorage config;
+	private List<HelpListener> helpListeners = new ArrayList<HelpListener>();
+	
+	/**
+	 * Must call setUpLogicVariables to initialize variables
+	 * in logic if this constructor is called
+	 */
+	public Logic () {
+		config = new ConfigStorage();
+	}
+	
+	/**
+	 * Constructor that can be used in instances where a user 
+	 * always has to specify their preferred filename
+	 * 
+	 * @param filename
+	 */
+	public Logic (String filename) {
+		this();
+		setupLogicVariables(filename);
+	}
+	
+	/**
+	 * Constructor used for testing, setUpLogicVariables not required
+	 * 
+	 * @param filename the filename that will be printed after initial launch
+	 * @param storage the storage object which will be referenced
+	 * @param stateHistory the history object which will be referenced
+	 */
+	public Logic (String filename, Storage storage, StateHistory stateHistory) {
+		this.fileName = filename;
+		this.storage = storage;
+		this.stateHistory = stateHistory;
+	}
+
+	public UserInterfaceContent executeUserInput (String userInput) {
+		logger.log(Level.INFO, "executing user input: " + userInput);
+		Command userCommand;
+		inputHistory.add(userInput);
+		try {
+			userCommand = Parser.parseCommand(userInput);
+		} catch (ParserException e) {
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+		}
+		return determineActions(userCommand, userInput);
+	}
+	
+	/**
+	 * A method to check if config file with storage file name is found.
+	 * If found, it will initialize all required objects.
+	 * 
+	 * @return True if config file was found, false otherwise
+	 */
+	public boolean isFileConfigured () {
+		String fileName = null;
+		try {
+			fileName = config.getStorageFileName();
+		} catch (IOException e) {
+			// should not result in errors, for safety
+			e.printStackTrace();
+		}
+		if (fileName == null) {
+			return false;
+		}
+		File file = new File(fileName);
+		if (!file.isDirectory() && file.exists()) {
+			setupLogicVariables(fileName);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Saves the string provided to configStorage.
+	 * 
+	 * @param fileName The filename to be saved
+	 */
+	public void saveStorageFileName (String fileName) {
+		try {
+			config.setStorageFileName(fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Gets the current file name from configStorage, returns null if
+	 * there isn't a current file name 
+	 * 
+	 * @return The current file name
+	 */
+	public String getCurrentFileName () {
+		try {
+			return config.getStorageFileName();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sets up the variables in Logic to the given file name.
+	 * Must be called before executing anything if default constructor was used.
+	 * 
+	 * @param fileName The file name to set variables to align with.
+	 */
+	public void setupLogicVariables (String fileName) {
+		this.fileName = fileName;
+		storage = new FileStorage(this.fileName);
+		stateHistory = new StateHistory(storage.getAllTasks());
+	}
+	
+	/**
+	 * Gets the initial data and message to be displayed
+	 * 
+	 * @return The content to be displayed
+	 */
+	public UserInterfaceContent initialLaunch () {
+		UserInterfaceContent displayContent = executeDisplay();
+		String welcomeMessage = formatWelcomeMessage();
+		return new UserInterfaceContent(welcomeMessage, displayContent.getDisplayableTasks());
+	}
+	
+	/**
+	 * Adds a listener that will execute when the user enters a help command
+	 * 
+	 * @param listener The listener that is to be executed.
+	 */
+	public void addHelpListener (HelpListener listener) {
+		this.helpListeners.add(listener);
+	}
+	
+	/**
+	 * To be run when the user exits the program.
+	 */
+	public void exitOperation () {
+		storage.close();
+	}
+	
+	private UserInterfaceContent determineActions (Command command, String userInput) {
+		CommandType type = command.getType();
+		switch (type) {
+			case ADD :
+				return executeAdd(command);
+			case CLEAR :
+				return executeClear();
+			case DELETE :
+				return executeDelete(command);
+			case DISPLAY :
+				return executeDisplay();
+			case MARK :
+				// Fallthrough
+			case EDIT :
+				return executeEdit(command);
+			case SEARCH :
+				return executeSearch(command);
+			case REDO :
+				return executeRedo();
+			case UNDO :
+				return executeUndo();
+			case HELP :
+				return executeHelp();
+			default :
+				return unknownCommand(userInput);
+		}
+	}
+
+	private UserInterfaceContent executeAdd(Command command) {
+		try {
+			storage.addTask(command.getTask());
+		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful add", e);
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+		}
+		updateHistory();
+		String consoleMessage = formatAddSuccess(command.getTask());
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+
+	private UserInterfaceContent executeClear() {
+		try {
+			storage.clearAll();
+		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful clear", e);
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+		}
+		updateHistory();
+		return new UserInterfaceContent(MESSAGE_CLEAR_SUCCESS, storage.getAllTasks());
+	}
+
+	private UserInterfaceContent executeDelete(Command command) {
+		try {
+			storage.deleteTask(command.getTask());
+		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful delete", e);
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+		}
+		updateHistory();
+		
+		int deleteTaskId = command.getTask().getTaskId();
+		String consoleMessage = formatDeleteSuccess(deleteTaskId);
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+
+	private UserInterfaceContent executeDisplay() {
+		return new UserInterfaceContent(MESSAGE_DISPLAY_ALL, storage.getAllTasks());
+	}
+	
+	private UserInterfaceContent executeEdit(Command command) {
+		try {
+			storage.editTask(command.getTask());
+		} catch (StorageException e) {
+			logger.log(Level.WARNING, "Unsuccessful edit", e);
+			return new UserInterfaceContent(e.getMessage(), storage.getAllTasks());
+		}
+		updateHistory();
+		
+		int editTaskId = command.getTask().getTaskId();
+		String consoleMessage = formatEditSuccess(editTaskId);
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+
+	private void updateHistory() {
+		List<Task> newState = storage.getAllTasks();
+		stateHistory.add(newState);
+	}
+
+	private UserInterfaceContent executeRedo() {
+		List<Task> nextState;
+		try {
+			nextState = stateHistory.getNext();
+		} catch (HistoryBoundException e1) {
+			return new UserInterfaceContent(MESSAGE_REDO_NOTHING, storage.getAllTasks());
+		}
+		try {
+			storage.clearAll();
+			storage.refillAll(nextState);
+		} catch (StorageException e) {
+			try {
+				stateHistory.getPrevious();
+			} catch (HistoryBoundException e1) {
+				// This should not result in any exception
+				e1.printStackTrace();
+			}
+			logger.log(Level.WARNING, "Error in trying to refill new state", e);
+			return new UserInterfaceContent(MESSAGE_REDO_ERROR, storage.getAllTasks());
+		}
+		return new UserInterfaceContent(MESSAGE_REDO_SUCCESS, storage.getAllTasks());
+	}
+
+	private UserInterfaceContent executeSearch(Command command) {
+		Task task = command.getTask();
+		String text = task.getText();
+		String category = task.getCategory();
+		Boolean priority = task.isPriority();
+		priority = priority ? true : null;
+		Calendar from = null;
+		Calendar to = null;
+		if (task instanceof ScheduleTask) {
+			ScheduleTask sTask = (ScheduleTask) task;
+			from = sTask.getFromDate();
+			to = sTask.getToDate();
+		}
+		SearchTask searchTask = new SearchTask(0, text, category, priority, null, from, to);
+		return executeAdvancedSearch(searchTask);
+	}
+	
+	/**
+	 * Executes a basic search which only searches through task descriptions
+	 * 
+	 * @param query The string to be searched
+	 * @return The content that result from the search
+	 */
+	public UserInterfaceContent executeBasicSearch (String query) {
+		List<Task> searchList= new ArrayList<Task>();
+		List<Task> allTasks = storage.getAllTasks();
+		try {
+        	Search search = new Search(allTasks);
+            searchList = search.query(query ,"text");
+        } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
+        }
+		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
+	}
+	
+	/**
+	 * Executes an advanced search which searches through pre-defined parameters
+	 * 
+	 * @param task Container for the parameters to be searched
+	 * @return The content that result from the search
+	 */
+	public UserInterfaceContent executeAdvancedSearch (SearchTask task) {
+		List<Task> searchList= new ArrayList<Task>();
+		List<Task> allTasks = storage.getAllTasks();
+		try {
+        	Search search = new Search(allTasks);
+            searchList = search.query(task);
+        } catch (SearchException e) {
+			logger.log(Level.WARNING, "Unsuccessful search", e);
+			return new UserInterfaceContent(MESSAGE_SEARCH_ERROR, allTasks);
+        }
+		return new UserInterfaceContent(formatSearchSuccess(searchList), searchList, allTasks);
+	}
+
+	private UserInterfaceContent executeUndo() {
+		List<Task> previousState;
+		try {
+			previousState = stateHistory.getPrevious();
+		} catch (HistoryBoundException e1) {
+			return new UserInterfaceContent(MESSAGE_UNDO_NOTHING, storage.getAllTasks());
+		}
+		try {
+			storage.clearAll();
+			storage.refillAll(previousState);
+		} catch (StorageException e) {
+			try {
+				stateHistory.getNext();
+			} catch (HistoryBoundException e1) {
+				// This should not result in any exception
+				e1.printStackTrace();
+			}
+			logger.log(Level.WARNING, "Error in trying to refill new state", e);
+			return new UserInterfaceContent(MESSAGE_UNDO_ERROR, storage.getAllTasks());
+		}
+		return new UserInterfaceContent(MESSAGE_UNDO_SUCCESS, storage.getAllTasks());
+	}
+	
+	private UserInterfaceContent executeHelp() {
+		notifyHelpListeners();
+		return new UserInterfaceContent(MESSAGE_OPEN_HELP, storage.getAllTasks());
+	}
+	
+	private void notifyHelpListeners () {
+		for (HelpListener listener : this.helpListeners) {
+			listener.onHelpEntered();
+		}
+	}
+
+	private String formatAddSuccess(Task task) {
+		return String.format(MESSAGE_ADD_SUCCESS, task.getText());
+	}
+
+	private String formatDeleteSuccess(int deleteTaskId) {
+		return String.format(MESSAGE_DELETE_SUCCESS, deleteTaskId);		
+	}
+
+	private String formatEditSuccess(int editTaskId) {
+		return String.format(MESSAGE_EDIT_SUCCESS, editTaskId);
+	}
+	
+	private String formatSearchSuccess (List<Task> tasks) {
+		return String.format(MESSAGE_SEARCH_SUCCESS, tasks.size());
+	}
+
+	private String formatInvalidCommand(String userInput) {
+		return String.format(MESSAGE_INVALID_COMMAND, userInput);
+	}
+
+	private String formatWelcomeMessage() {
+		return String.format(MESSAGE_WELCOME, fileName);
+	}
+	
+	private UserInterfaceContent unknownCommand(String userInput) {
+		String consoleMessage = formatInvalidCommand(userInput);
+		return new UserInterfaceContent(consoleMessage, storage.getAllTasks());
+	}
+
+	public String getPreviousInput () {
+		try {
+			return inputHistory.getPrevious();
+		} catch (HistoryBoundException e) {
+			return null;
+		}
+	}
+	
+	public String getNextInput () {
+		try {
+			return inputHistory.getNext();
+		} catch (HistoryBoundException e) {
+			return null;
+		}
+	}
+	
+	public interface HelpListener {
+		void onHelpEntered();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\ScheduleTask.java
+	 */
+
+public class ScheduleTask extends Task implements Cloneable {
+    private Calendar fromDate;
+    private Calendar toDate;
+
+    public ScheduleTask(Integer taskId, String text, String category,
+                        Boolean isPriority, Boolean isComplete,
+                        Calendar fromDate, Calendar toDate) {
+        super(taskId, text, category, isPriority, isComplete);
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+    }
+
+    public Calendar getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Calendar fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Calendar getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Calendar toDate) {
+        this.toDate = toDate;
+    }
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\ScheduleTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Task.java
+	 */
+
+public class Task implements Cloneable {
+    private Integer taskId;
+    private String text;
+    private String category;
+    private Boolean isPriority;
+    private Boolean isComplete;
+
+    public Task(Integer taskId, String text, String category,
+                Boolean isPriority, Boolean isComplete) {
+        super();
+        this.setTaskId(taskId);
+        this.setText(text);
+        this.setCategory(category);
+        this.setPriority(isPriority);
+        this.setComplete(isComplete);
+    }
+
+    public Integer getTaskId() {
+        return taskId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public Boolean isPriority() {
+        return isPriority;
+    }
+
+    public Boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setTaskId(Integer taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setText(String text) {        
+        this.text = text;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setPriority(Boolean isPriority) {
+        this.isPriority = isPriority;
+    }
+
+    public void setComplete(Boolean isComplete) {
+        this.isComplete = isComplete;
+    }
+    
+    public static Task updateDetails (Task template, Task details) {
+    	if (details instanceof DeadlineTask) {
+    		template = new DeadlineTask(template.taskId, template.text, template.category,
+    				template.isPriority, template.isComplete,
+    				((DeadlineTask)details).getDeadline());
+    	} else if (details instanceof ScheduleTask) {
+    		template = new ScheduleTask(template.taskId, template.text, template.category,
+    				template.isPriority, template.isComplete,
+    				((ScheduleTask)details).getFromDate(),
+    				((ScheduleTask)details).getToDate());
+    	}    	
+    	if (details.text != null) {
+    		template.setText(details.getText());
+    	}    	
+    	if (details.category != null) {
+    		template.setCategory(details.getCategory());
+    	}    	
+    	if (details.isComplete != null && details.isComplete != template.isComplete) {
+    		template.setComplete(details.isComplete());
+    	}    	
+    	if (details.isPriority != null && details.isPriority == true) {
+    		if(template.isPriority){
+    			template.setPriority(false);
+    		}
+    		else{
+    			template.setPriority(true);
+    		}
+    	}
+    	return template;
+    }
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+	 */
+
+public class Command {
+	private Task task;
+	private CommandType type;
+	
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\CommandType.java
+	 */
+
+public enum CommandType {
+	ADD ("Add a task", "add", "+"),
+	CLEAR ("Clear all tasks", "clear"),
+	DELETE ("Delete a task", "delete", "-", "del", "remove", "cancel"),
+	DISPLAY ("Display all tasks", "display", "show", "list"),
+	EDIT ("Edit a task", "edit", "change", "update"),
+	SEARCH ("Search for tasks", "search", "find"),
+	REDO ("Redo an action", "redo"),
+	UNDO ("Undo an action", "undo"),
+	MARK ("Mark a task as complete", "mark", "complete", "finish", "done"),
+	UNMARK ("Unmark a task as complete", "unmark"),
+	HELP ("Get help", "help", "?"),
+	UNABLE_TO_DETERMINE ("");
+	
+	private final String commandTitle;
+	private final List<String> commandAliases = new ArrayList<String>();
+	
+	private static final List<CommandType> allTypes;
+	static {
+		allTypes = new ArrayList<CommandType>();
+		for (CommandType type : EnumSet.allOf(CommandType.class)) {
+			allTypes.add(type);
+		}
+	}
+	
+	CommandType (String commandTitle, String... commandAliases) {
+		this.commandTitle = commandTitle;
+		for (String alias : commandAliases) {
+			this.commandAliases.add(alias);
+		}
+	}
+	
+	public String getCommandTitle () {
+		return this.commandTitle;
+	}
+	
+	public List<String> getCommandAliases () {
+		List<String> copies = new ArrayList<String>();
+		for (String alias : commandAliases) {
+			copies.add(alias);
+		}
+		return copies;
+	}
+	
+	public static List<CommandType> getAllTypes () {
+		Comparator<CommandType> alphabeticalComparator = new Comparator<CommandType>() {
+			@Override
+			public int compare(CommandType type1, CommandType type2) {
+				return type1.getCommandTitle().compareTo(type2.getCommandTitle());
+			}
+		};
+		Collections.sort(allTypes, alphabeticalComparator);
+		return allTypes;
+	}
+	
+	public static CommandType identifyCommandType (String alias) {
+		for (CommandType commandType : allTypes) {
+			if (commandType.commandAliases.contains(alias)) {
+				return commandType;
+			}
+		}
+		return UNABLE_TO_DETERMINE;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\CommandType.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserException.java
+	 */
+
+public class ParserException extends Exception {
+	private static final long serialVersionUID = 2L;
+	private static final String DEFAULT_ERROR_MESSAGE = "An error occured when trying to parse user input";
+
+	public ParserException() {
+		super(DEFAULT_ERROR_MESSAGE);
+	}
+
+	public ParserException(String message) {
+		super(message);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\ConfigStorage.java
+	 */
+
+public class ConfigStorage {
+	private File configFile;
+	
+	private static final String CONFIG_FILE_NAME = ".ITconfig";
+	
+	public ConfigStorage () {
+		configFile = new File(CONFIG_FILE_NAME);
+		if (!configFile.exists()) {
+			try {
+				configFile.createNewFile();
+			} catch (IOException e) {
+				// Should not result in any errors, catching for safety
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public String getStorageFileName () throws IOException {
+		FileInputStream fileInputStream = new FileInputStream(configFile);
+		Scanner fileScanner = new Scanner(fileInputStream);
+		if (!fileScanner.hasNext()) {
+			fileScanner.close();
+			fileInputStream.close();
+			return null;
+		}
+		String filename = fileScanner.nextLine();
+		fileScanner.close();
+		fileInputStream.close();
+		return filename;
+	}
+	
+	public void setStorageFileName (String storageFileName) throws IOException {
+		FileWriter writer = new FileWriter(configFile, false);
+		writer.write(storageFileName);
+		writer.close();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\ConfigStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\Storage.java
+	 */
+
+    static Task updateTaskDetails (Task originalTask, Task details) {
+    	Task template = originalTask.clone();
+    	Task updated = Task.updateDetails(template, details);
+    	return updated;
+    }
+    
+    // To check if the any file name provided for storage is valid
+ 	public static boolean isValidFileName (String fileName) {
+ 		File file = new File (fileName);
+ 		if (file.isDirectory()) {
+ 			return false;
+ 		}
+ 		try {
+ 			file.createNewFile();
+ 		} catch (IOException e) {
+ 			// filename is invalid, cannot create file
+ 			return false;
+ 		}
+ 		return true;
+ 	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageException.java
+	 */
+
+public class StorageException extends Exception {
+	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "An error occurred in storage!";
+	
+	public StorageException (String message) {
+		super(message);
+	}
+	
+	public StorageException () {
+		super(DEFAULT_MESSAGE);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageStub.java
+	 */
+
+    public StorageStub() {
+        this.tasks = new ArrayList<Task>();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#addLine(itinerary.main.Command)
+     */
+    @Override
+	public void addTask(Task task) throws StorageException {
+    	Task taskClone = task.clone();
+    	tasks.add(taskClone);
+    	updateIds();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#editLine(itinerary.main.Command)
+     */
+    @Override
+	public void editTask(Task task) throws StorageException {
+    	int taskIndex = task.getTaskId() - 1;
+    	if (taskIndex < 0 || taskIndex >= tasks.size()) {
+    		throw new StorageException(ERROR_INVALID_ID);
+    	}
+    	Task originalTask = tasks.remove(taskIndex);
+    	Task editedTask = super.updateTaskDetails(originalTask, task);
+    	tasks.add(taskIndex, editedTask);
+    	updateIds();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#deleteLine(itinerary.main.Command)
+     */
+    @Override
+	public void deleteTask(Task task) throws StorageException {
+    	int taskId = task.getTaskId();
+    	if (taskId < 1 || taskId > tasks.size()) {
+    		throw new StorageException(ERROR_INVALID_ID);
+    	}
+    	tasks.remove(taskId - 1);
+    	updateIds();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#displayAll(itinerary.main.Command)
+     */
+    @Override
+	public List<Task> getAllTasks() {
+    	ArrayList<Task> tempTasks = new ArrayList<Task>();
+    	for (Task task : tasks) {
+    		tempTasks.add(task.clone());
+    	}
+        return tempTasks;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#clearAll(itinerary.main.Command)
+     */
+    @Override
+	public void clearAll() throws StorageException {
+    	tasks.clear();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see itinerary.main.Storage#refillAll(itinerary.main.Command)
+     */
+    @Override
+	public void refillAll(List<Task> tasks) throws StorageException {
+    	this.tasks = tasks;
+    	updateIds();
+    }
+    
+    private void updateIds () {
+    	for (int i = 0; i < tasks.size(); i++) {
+    		tasks.get(i).setTaskId(i + 1);
+    	}
+    }
+    
+    @Override
+	public void close() {
+        //Do nothing
+    }
+
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageStub.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\FileNameRequestDialog.java
+	 */
+
+public class FileNameRequestDialog extends Stage {
+	
+	private static final String LABEL_TEXT = "Preferred file name or path below";
+	private static final String TITLE = "Enter file name";
+	private static FileNameRequestDialog onlyInstance = null;
+	
+	NameRequestListener listener;
+	Label textLabel;
+	TextField fileNameTextField;
+	
+	public FileNameRequestDialog(String currFileName) {		
+		Insets insets = new Insets(5.0);
+		this.setTitle(TITLE);
+		
+		textLabel = new Label(LABEL_TEXT);
+		String currentFontFamily = textLabel.getFont().getFamily();
+		textLabel.setFont(new Font(currentFontFamily, 15));
+		
+		fileNameTextField = new TextField();
+		fileNameTextField.setOnAction(enterPressed);
+		// Set the textfield to the current file name
+		
+		VBox vbox = new VBox();
+		vbox.setSpacing(5.0);
+		vbox.setPadding(insets);
+		vbox.getChildren().addAll(textLabel, fileNameTextField);
+		
+		Scene scene = new Scene(vbox);
+		this.setScene(scene);
+		this.setResizable(false);
+		this.initStyle(StageStyle.UTILITY);
+	}
+	
+	public static FileNameRequestDialog getInstance (NameRequestListener listener, String currFileName) {
+		if (onlyInstance == null) {
+			onlyInstance = new FileNameRequestDialog(currFileName);
+		}
+		onlyInstance.listener = listener;
+		if (currFileName != null) {
+			onlyInstance.fileNameTextField.setText(currFileName);
+			onlyInstance.fileNameTextField.selectAll();
+		}
+		return onlyInstance;
+	}
+	
+	private static boolean isDialogShowing () {
+		if (onlyInstance == null) {
+			return false;
+		}
+		return ((Stage)onlyInstance).isShowing();
+	}
+	
+	public static void closeIfShowing () {
+		if (isDialogShowing()) {
+			onlyInstance.close();
+		}
+	}
+	
+	private EventHandler<ActionEvent> enterPressed = new EventHandler<ActionEvent>() {
+		@Override
+		public void handle(ActionEvent event) {
+			String name = null;
+			do {
+				name = fileNameTextField.getText();
+			} while (!Storage.isValidFileName(name));
+			FileNameRequestDialog.this.close();
+			listener.onFileNameEntered(name);
+		}
+	};
+	
+	public interface NameRequestListener {
+		void onFileNameEntered (String filename);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\FileNameRequestDialog.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpEntry.java
+	 */
+
+public class HelpEntry {
+	public static final String COMMAND_NAME_VARIABLE = "commandName";
+	public static final String COMMAND_ALIAS_VARIABLE = "commandAlias";
+	private final SimpleStringProperty commandName;
+	private final SimpleStringProperty commandAlias;
+	
+	public HelpEntry(String commandName,
+			String commandAlias) {
+		super();
+		this.commandName = new SimpleStringProperty(commandName);
+		this.commandAlias = new SimpleStringProperty(commandAlias);
+	}
+
+	public String getCommandName() {
+		return commandName.get();
+	}
+
+	public String getCommandAlias() {
+		return commandAlias.get();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpEntry.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpStage.java
+	 */
+
+public class HelpStage extends Stage{
+	private static final String HEADER_COMMAND = "Command";
+	private static final String HEADER_KEYWORD = "Keyword(s)";
+	private static final String WINDOW_TITLE = "Help";
+	private static final double WINDOW_MIN_WIDTH = 350.0;
+	private static HelpStage onlyInstance;
+	
+	private TableView<HelpEntry> helpTable = new TableView<HelpEntry>();
+	TableColumn<HelpEntry, String> commandColumn = new TableColumn<HelpEntry, String>(HEADER_COMMAND);
+	TableColumn<HelpEntry, String> aliasColumn = new TableColumn<HelpEntry, String>(HEADER_KEYWORD);
+	
+	private HelpStage () {
+		Pane container = new Pane();
+		setupTable();
+		
+		container.getChildren().add(this.helpTable);
+		Scene scene = new Scene(container);
+		
+		this.setScene(scene);
+		this.setTitle(WINDOW_TITLE);
+		this.setResizable(false);
+		this.initStyle(StageStyle.UTILITY);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void setupTable() {
+		List<CommandType> allTypes = CommandType.getAllTypes();
+		commandColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>(HelpEntry.COMMAND_NAME_VARIABLE));
+		aliasColumn.setCellValueFactory(new PropertyValueFactory<HelpEntry, String>(HelpEntry.COMMAND_ALIAS_VARIABLE));
+		
+		ObservableList<HelpEntry> entries = FXCollections.observableArrayList();
+		for (CommandType type : allTypes) {
+			if (type.getCommandTitle().equals("")) {
+				continue;
+			}
+			String collated = "";
+			List<String> aliases = type.getCommandAliases();
+			for (int i = 0; i < aliases.size(); i++) {
+				collated += aliases.get(i);
+				if (i + 1 != aliases.size()) {
+					collated += ", ";
+				}
+			}
+			entries.add(new HelpEntry(type.getCommandTitle(), collated));
+		}
+		
+		helpTable.getColumns().addAll(commandColumn, aliasColumn);
+		helpTable.setItems(entries);
+		helpTable.setEditable(false);
+		helpTable.setMinWidth(WINDOW_MIN_WIDTH);
+	}
+
+	public static HelpStage getInstance () {
+		if (onlyInstance == null) {
+			onlyInstance = new HelpStage();
+		}
+		return onlyInstance;
+	}
+	
+	public static void closeIfShowing () {
+		if (isHelpShowing()) {
+			onlyInstance.close();
+		}
+	}
+	
+	private static boolean isHelpShowing () {
+		if (onlyInstance == null) {
+			return false;
+		}
+		return onlyInstance.isShowing();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpStage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainController.java
+	 */
+
+public class MainController implements Initializable, SearchResultCallback, HelpListener {
+	
+	@FXML
+	private TextField commandTextField;
+	@FXML
+	private TextArea consoleTextArea;
+	@FXML
+	private ListView<TaskHBox> listView;
+	@FXML
+	private Hyperlink advSearch;
+	@FXML
+	private Hyperlink config;
+	@FXML
+	private TextField basicSearchTextField;
+	
+	private Stage mainStage;
+	private SuggestionBox suggestionBox;
+	
+	private Logic logic = new Logic();	
+	private ObservableList<TaskHBox> list = FXCollections.observableArrayList();
+	private List<Task> allTasks = new ArrayList<Task>();
+	
+	private SearchStage searchStage = null;
+	
+	private OnEnterPressedListener searchBoxEnter = new OnEnterPressedListener() {
+		@Override
+		public void onEnterPressed() {
+			executeBasicSearch();
+		}
+	};
+	
+	private EventHandler<WindowEvent> closeHandler = new EventHandler<WindowEvent> () {
+		@Override
+		public void handle(WindowEvent event) {
+			SearchStage.closeIfShowing();
+			FileNameRequestDialog.closeIfShowing();
+			HelpStage.closeIfShowing();
+			logic.exitOperation();
+		}
+	};
+	
+	private EventHandler<KeyEvent> upDownHandler = new EventHandler<KeyEvent>() {
+		@Override
+		public void handle(KeyEvent event) {
+			KeyCode code = event.getCode();
+			if (code == KeyCode.UP || code == KeyCode.DOWN) {
+				String input = null;
+				switch (code) {
+					case UP :
+						input = logic.getPreviousInput();
+						break;
+					case DOWN :
+						input = logic.getNextInput();
+						break;
+					default :
+						break;
+				}
+				if (input != null) {
+					commandTextField.setText(input);
+				} else {
+					commandTextField.setText("");
+				}
+			}
+		}
+	};
+
+	NameRequestListener nameRequestListener = new NameRequestListener() {
+		@Override
+		public void onFileNameEntered(String name) {
+			logic.saveStorageFileName(name);
+			logic.setupLogicVariables(name);
+			mainStage.setTitle(MainStage.formatTitle(name));
+			setLaunchContent();
+		}
+	};
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// Do nothing
+	}
+	
+	public void setUpController (Logic logic, Stage stage) {
+		this.logic = logic;
+		this.logic.addHelpListener(this);
+		setupStageAndListeners(stage);
+		this.mainStage = stage;
+		setLaunchContent();
+	}
+
+	private void setLaunchContent() {
+		consoleTextArea.setFocusTraversable(false);
+		UserInterfaceContent launch = logic.initialLaunch();
+		
+		suggestionBox = new SuggestionBox(basicSearchTextField, searchBoxEnter);
+		updateContent(launch);
+	}
+
+	private void setupStageAndListeners(Stage stage) {
+		stage.setOnCloseRequest(closeHandler);
+		commandTextField.addEventHandler(KeyEvent.KEY_PRESSED, upDownHandler);
+	}
+	
+	public void commandEntered () {
+		// adding things to the console
+		String command = commandTextField.getText();
+		if (command != null && !command.equals("")) {
+			UserInterfaceContent result = logic.executeUserInput(command);
+			updateContent(result);
+			commandTextField.setText("");
+		}
+	}
+
+	private void updateContent(UserInterfaceContent content) {
+		appendConsoleMessage(content.getConsoleMessage());
+		updateTaskList(content.getDisplayableTasks());
+		allTasks = content.getAllTasks();
+		updateDescriptions(allTasks);
+		if (searchStage != null) {
+			searchStage.updateTasks(allTasks);		
+		}
+	}
+	
+	private void updateDescriptions(List<Task> tasks) {
+		List<String> suggestions = new ArrayList<String>();
+		for (Task task : tasks) {
+			suggestions.add(task.getText());
+		}
+		suggestionBox.updateSource(suggestions);
+	}
+
+	public void openAdvancedSearch () throws IOException {
+		if (searchStage == null) {
+			searchStage = SearchStage.getInstance(this, allTasks);
+		}
+		searchStage.show();
+	}
+	
+	@Override
+	public void executeAdvancedSearch(SearchTask searchTask) {
+		UserInterfaceContent result = logic.executeAdvancedSearch(searchTask);
+		updateContent(result);
+	}
+	
+	public void executeBasicSearch () {
+		UserInterfaceContent result = logic.executeBasicSearch(basicSearchTextField.getText());
+		updateContent(result);
+	}
+
+	private void appendConsoleMessage(String consoleMessage) {
+		boolean isConsoleEmpty = consoleTextArea.getText().equals("");
+		if (!isConsoleEmpty) {
+			consoleTextArea.appendText(System.lineSeparator());
+		}
+		consoleTextArea.appendText(consoleMessage);
+	}
+	
+	private void updateTaskList (List<Task> tasks) {
+		list = convertTasksToHBoxes(tasks);
+		listView.setItems(list);
+	}
+	
+	private static ObservableList<TaskHBox> convertTasksToHBoxes (List<Task> tasks) {
+		ObservableList<TaskHBox> list = FXCollections.observableArrayList();
+		for (Task task : tasks) {
+			list.add(new TaskHBox(task));
+		}
+		return list;
+	}
+	
+	public void onConfigSourceClicked () {
+		String current = logic.getCurrentFileName();
+		logic.exitOperation();
+		FileNameRequestDialog.getInstance(nameRequestListener, current).show();
+	}
+	
+	@Override
+	public void onHelpEntered() {
+		HelpStage.getInstance().show();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainStage.java
+	 */
+
+public class MainStage extends Stage {
+
+	private static final String WINDOW_TITLE = "ITnerary - %1$s";
+	private static final String WINDOW_FILE_NAME = "ApplicationWindow.fxml";
+	
+	public MainStage(Logic logic) {
+		super();
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(WINDOW_FILE_NAME));
+		Parent root = null;
+		try {
+			root = (Parent)loader.load();
+		} catch (IOException e) {
+			// Should not result in any exceptions, if it does, check window file name
+			e.printStackTrace();
+		}
+		Scene scene = new Scene(root);
+		this.setScene(scene);
+		String windowTitle = formatTitle(logic.getCurrentFileName());
+		this.setTitle(windowTitle);
+		
+		MainController controller = (MainController)loader.getController();
+		controller.setUpController(logic, this);
+	}
+	
+	public static String formatTitle (String name) {
+		return String.format(WINDOW_TITLE, name);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainStage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchController.java
+	 */
+
+public class SearchController implements Initializable {
+
+	@FXML
+	Button searchButton, clearButton;
+	@FXML
+	CheckBox priorityCheckBox, completedCheckBox;
+	@FXML
+	TextField descText, catText;
+	SuggestionBox descBox, catBox;
+	@FXML
+	DatePicker fromDatePicker, toDatePicker;
+	
+	private OnEnterPressedListener enterListener = new OnEnterPressedListener() {
+		@Override
+		public void onEnterPressed() {
+			// do nothing on enter press
+		}
+	};
+		
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		descBox = new SuggestionBox(descText, enterListener);
+		catBox = new SuggestionBox(catText, enterListener);
+	}
+
+	public void executeSearch () {
+		SearchStage searchStage = (SearchStage) searchButton.getScene().getWindow();
+		if (isAtLeastOneFilled()) {
+			// Get values from all of the entries
+			String description = getStringToSearch(descText.getText());
+			String category = getStringToSearch(catText.getText());
+			
+			Boolean searchPriority = getBooleanToSearch(priorityCheckBox.isSelected());
+			Boolean searchCompleted = getBooleanToSearch(completedCheckBox.isSelected());
+			
+			Calendar from = getCalendarToSearch(fromDatePicker.getValue());
+			Calendar to = getCalendarToSearch(toDatePicker.getValue());
+			
+			SearchTask searchTask = new SearchTask(0, description, category,
+					searchPriority, searchCompleted, from, to);
+			searchStage.invokeCaller(searchTask);
+		}
+		searchStage.close();
+	}
+
+	private Calendar getCalendarToSearch(LocalDate date) {
+		Calendar calendar = null;
+		if (date != null) {
+			calendar = Calendar.getInstance();
+			calendar.set(date.getYear(), date.getMonthValue() - 1,
+					date.getDayOfMonth(), 0, 0);
+		}
+		return calendar;
+	}
+
+	private Boolean getBooleanToSearch(Boolean bool) {
+		return bool ? true : null;
+	}
+
+	private String getStringToSearch(String string) {
+		return string != null && !string.equals("") ? string : null;
+	}
+
+	public void updateDetails(List<Task> tasks) {
+		ObservableList<String> taskDescriptions = FXCollections.observableArrayList();
+		ObservableList<String> taskCategories = FXCollections.observableArrayList();
+		
+		for (Task task : tasks) {
+			taskDescriptions.add(task.getText());
+			taskCategories.add(task.getCategory());
+		}
+		
+		descBox.updateSource(taskDescriptions);
+		catBox.updateSource(taskCategories);
+	}
+	
+	public void clearFields() {
+		descText.setText(null);
+		catText.setText(null);
+		fromDatePicker.setValue(null);
+		toDatePicker.setValue(null);
+		
+		priorityCheckBox.setSelected(false);
+		completedCheckBox.setSelected(false);
+	}
+	
+	private boolean isAtLeastOneFilled () {
+		String desc = descText.getText();
+		boolean isDescFilled = desc != null && !desc.equals("");
+		String cat = catText.getText();
+		boolean isCatFilled = cat != null  && !cat.equals("");
+		boolean isFromFilled = fromDatePicker.getValue() != null;
+		boolean isToFilled = toDatePicker.getValue() != null;
+		
+		return isDescFilled || isCatFilled || isFromFilled || isToFilled;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchStage.java
+	 */
+
+public class SearchStage extends Stage {
+	
+	private static final String WINDOW_TITLE = "Search";
+	private static final String WINDOW_FILE_NAME = "SearchWindow.fxml";
+	
+	private static SearchStage onlyInstance = null;
+	private SearchResultCallback callback;
+	private SearchController controller;
+	
+	private SearchStage (SearchResultCallback callback) throws IOException {
+		super();
+		assert callback != null;
+		this.setCaller(callback);
+		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(WINDOW_FILE_NAME));
+		Parent root = (Parent)loader.load();
+		Scene scene = new Scene(root);
+		
+		this.setScene(scene);
+		this.setTitle(WINDOW_TITLE);
+		this.setResizable(false);
+		this.initStyle(StageStyle.UTILITY);
+		
+		controller = (SearchController)loader.getController();
+	}
+	
+	public static SearchStage getInstance (SearchResultCallback callback, List<Task> tasks) throws IOException {
+		if (onlyInstance == null) {
+			onlyInstance = new SearchStage(callback);
+			onlyInstance.updateTasks(tasks);
+		}
+		return onlyInstance;
+	}
+	
+	public static void closeIfShowing () {
+		if (isSearchShowing()) {
+			onlyInstance.close();
+		}
+	}
+	
+	private static boolean isSearchShowing () {
+		if (onlyInstance == null) {
+			return false;
+		}
+		return onlyInstance.isShowing();
+	}
+	
+	public void updateTasks (List<Task> tasks) {
+		controller.updateDetails(tasks);
+	}
+	
+	public void setCaller (SearchResultCallback callback) {
+		assert callback != null;
+		this.callback = callback;
+	}
+	
+	public void invokeCaller (SearchTask searchTask) {
+		callback.executeAdvancedSearch(searchTask);
+	}
+	
+	public static interface SearchResultCallback {
+		void executeAdvancedSearch (SearchTask searchTask);
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchStage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SuggestionBox.java
+	 */
+
+public class SuggestionBox {
+	private static final int MAX_VISIBLE_SUGGESTIONS = 6;
+	private static final double SCROLL_BAR_HEIGHT = 15.0;
+	private static final int SUGGESTION_HEIGHT = 24;
+	
+	private double width = -1.0;
+	private double anchorX = -1.0;
+	private double anchorY = -1.0;
+	
+	private List<String> suggestionSource = new ArrayList<String>();
+	private ObservableList<String> suggestions = FXCollections.observableArrayList();
+	
+	private TextField textField;
+	private Popup suggestionPopup = new Popup();
+	private ListView<String> suggestionListView = new ListView<String>(suggestions);
+	private OnEnterPressedListener listener;
+	
+	public SuggestionBox (TextField textField, OnEnterPressedListener implementation) {
+		this.textField = textField;
+		this.listener = implementation;
+		this.textField.textProperty().addListener(textChangeListener);
+		this.textField.focusedProperty().addListener(focusChangeListener);
+		
+		suggestionListView.setOnKeyReleased(keyReleaseHandler);
+		suggestionListView.setOnMousePressed(mousePressHandler);
+		
+		suggestionPopup.getContent().add(suggestionListView);
+	}
+	
+	private ChangeListener<String> textChangeListener = new ChangeListener<String>() {
+		@Override
+		public void changed(ObservableValue<? extends String> observable,
+				String oldValue, String newValue) {
+			if (newValue == null || newValue.length() == 0) {
+				hidePopup();
+			} else {
+				filterSuggestions(newValue);
+				if (!suggestionPopup.isShowing()) {
+					showPopup();
+				}
+			}
+		}
+	};
+	
+	private ChangeListener<Boolean> focusChangeListener = new ChangeListener<Boolean>() {
+		@Override
+		public void changed(ObservableValue<? extends Boolean> observable,
+				Boolean oldValue, Boolean newValue) {
+			// Show the popup only if it is in focus and the length of text is greater than 0
+			if (newValue && textField.getText().length() > 0) {
+				filterSuggestions(textField.getText());
+				showPopup();
+			} else {
+				hidePopup();
+			}
+		}
+	};
+	
+	private EventHandler<KeyEvent> keyReleaseHandler = new EventHandler<KeyEvent>() {
+		@Override
+		public void handle(KeyEvent event) {
+			boolean isFromListView = event.getSource() == suggestionListView;
+			boolean isEnterPressed = event.getCode() == KeyCode.ENTER;
+			boolean isEscapePressed = event.getCode() == KeyCode.ESCAPE;
+			
+			// The currently selected suggestion
+			String suggestion = suggestionListView.getSelectionModel().getSelectedItem();
+			if (isFromListView && isEnterPressed) {
+				if (suggestion != null) {
+					selectSuggestion(suggestion);
+				} else { // Nothing is selected
+					hidePopup();
+					listener.onEnterPressed();
+				}
+			} else if (isEscapePressed && suggestionPopup.isShowing()) {
+				suggestionPopup.hide();
+			}
+		}
+	};
+	
+	private EventHandler<MouseEvent> mousePressHandler = new EventHandler<MouseEvent>() {
+		@Override
+		public void handle(MouseEvent event) {
+			String suggestion = suggestionListView.getSelectionModel().getSelectedItem();
+			selectSuggestion(suggestion);
+		}
+	};
+	
+	public void setWidth (double width) {
+		this.width = width;
+	}
+	
+	public double getWidth () {
+		if (width < 0) {
+			return textField.getWidth();
+		}
+		return width;
+	}
+	
+	public double getAnchorX() {
+		if (anchorX < 0) {
+			Scene scene = textField.getScene();
+			Window window = scene.getWindow();
+			return window.getX() + textField.localToScene(0, 0).getX() + scene.getX();
+		}
+		return anchorX;
+	}
+
+	public void setAnchorX(double anchorX) {
+		this.anchorX = anchorX;
+	}
+
+	public double getAnchorY() {
+		if (anchorY < 0) {
+			Scene scene = textField.getScene();
+			Window window = scene.getWindow();
+			return window.getY() + textField.localToScene(0, 0).getY() + scene.getY() + textField.getHeight();
+		}
+		return anchorY;
+	}
+
+	public void setAnchorY(double anchorY) {
+		this.anchorY = anchorY;
+	}
+
+	private void selectSuggestion(String suggestion) {
+		if (suggestion != null) {
+			textField.setText(suggestion);
+			textField.requestFocus();
+			textField.end();
+			hidePopup();
+		}
+	}
+	
+	public void updateSource (List<String> source) {
+		suggestionSource.clear();
+		for (String string : source) {
+			suggestionSource.add(string);
+		}
+	}
+	
+	private void filterSuggestions (String filter) {
+		suggestions.clear();
+		String lowerFilter = filter.toLowerCase();
+		for (String string : suggestionSource) {
+			if (string != null && string.toLowerCase().contains(lowerFilter)) {
+				if (!suggestions.contains(string)) {
+					suggestions.add(string);
+				}
+			}
+		}
+		
+		int count = suggestions.size();
+		double height;
+		if (count > MAX_VISIBLE_SUGGESTIONS) {
+			height = calculateSuggestionHeight(MAX_VISIBLE_SUGGESTIONS);
+		} else {
+			height = calculateSuggestionHeight(count);
+		}
+		suggestionListView.setPrefHeight(height);
+		
+		if (count == 0 && suggestionPopup.isShowing()) {
+			hidePopup();
+		}
+	}
+
+	private double calculateSuggestionHeight(int count) {
+		return count * SUGGESTION_HEIGHT  + SCROLL_BAR_HEIGHT;
+	}
+	
+	private void showPopup () {
+		if (suggestions != null && suggestions.size() > 0) {
+			suggestionListView.setPrefWidth(this.getWidth());
+			Scene scene = textField.getScene();
+			Window window = scene.getWindow();
+			suggestionPopup.show(window, getAnchorX(), getAnchorY());
+			suggestionListView.getSelectionModel().clearSelection();
+			suggestionListView.getFocusModel().focus(-1);
+		}
+	}
+	
+	private void hidePopup () {
+		suggestionPopup.hide();
+	}
+	
+	public interface OnEnterPressedListener {
+		void onEnterPressed ();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SuggestionBox.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\TaskHBox.java
+	 */
+
+public class TaskHBox extends HBox {
+	private static final String PACKAGE_PATH = "itinerary/userinterface/";
+	private static final String COMPLETE_IMAGE_PATH = PACKAGE_PATH + "complete.png";
+	private static final String STAR_IMAGE_PATH = PACKAGE_PATH + "star.png";
+	private static final String DATE_SEPARTATOR = " - ";
+	private static final String DAY_DATE_SEPARATOR = ", ";
+	private static final String DOT_AFTER_ID = ". ";
+	
+	private static final double MIN_SPACER_WIDTH = 10.0;
+	private static final double MIN_IMAGE_PANE_WIDTH = 25.0;
+	private static final double PADDING_AMOUNT = 8.0;
+	
+	private static final String STYLE_BOLD = "-fx-font-weight: bold";
+	private static final String DATE_FORMAT = "EEE, dd MMM yyyy";
+	private static final String TIME_FORMAT = "hh:mm aaa";
+	
+	private static final Color COLOR_OVERDUE = Color.RED;
+	private static final Image starImage = new Image(STAR_IMAGE_PATH);
+	private static final Image completeImage = new Image(COMPLETE_IMAGE_PATH);
+	
+	VBox textContainer = new VBox();
+	HBox upperLayer = new HBox();
+	HBox lowerLayer = new HBox();
+	
+	// Upper layer
+	Label taskIdLabel = new Label();
+	Label taskDesLabel = new Label();
+	Label taskDate = new Label();
+	
+	Pane spacerPane = new Pane();
+	Label taskCatLabel = new Label();
+	Pane catImageSpacer = new Pane();
+	Pane priorityPane = new Pane();
+	ImageView starImageView = new ImageView();
+	Pane completePane = new Pane();
+	ImageView completeImageView = new ImageView();
+	
+	Task task;
+	
+	public TaskHBox (Task task) {
+		super();
+		this.task = task;
+		extractNormalTaskDetails(task);
+		extractSpecialTaskDetails(task);
+
+		HBox.setHgrow(spacerPane, Priority.ALWAYS);
+		spacerPane.setMinWidth(MIN_SPACER_WIDTH);
+		catImageSpacer.setMinWidth(MIN_SPACER_WIDTH);
+		
+		priorityPane.getChildren().add(starImageView);
+		priorityPane.setMinWidth(MIN_IMAGE_PANE_WIDTH);
+		
+		completePane.getChildren().add(completeImageView);
+		completePane.setMinWidth(MIN_IMAGE_PANE_WIDTH);
+		
+		getChildren().addAll(textContainer, spacerPane, taskCatLabel, catImageSpacer, priorityPane, completePane);
+		
+		// Set padding around HBox for visual appeal
+		setPadding(new Insets(PADDING_AMOUNT));
+	}
+
+	private void extractSpecialTaskDetails(Task task) {
+		if (task instanceof ScheduleTask || task instanceof DeadlineTask) {
+			taskDate.setText(formatDates(task));
+			if (task instanceof DeadlineTask) {
+				DeadlineTask deadlineTask = (DeadlineTask) task;
+				setOverdueColor(deadlineTask);
+			}
+			lowerLayer.getChildren().addAll(taskDate);
+			textContainer.getChildren().add(lowerLayer);
+		}
+	}
+
+	private void setOverdueColor(DeadlineTask deadlineTask) {
+		Calendar deadline = deadlineTask.getDeadline();
+		Calendar now = Calendar.getInstance();
+		if (deadline.compareTo(now) < 0) {
+			taskDate.setTextFill(COLOR_OVERDUE);
+		}
+	}
+
+	private void extractNormalTaskDetails(Task task) {
+		taskIdLabel.setText(task.getTaskId() + DOT_AFTER_ID);
+		taskIdLabel.setStyle(STYLE_BOLD);
+		
+		taskDesLabel.setText(task.getText());
+		taskDesLabel.setStyle(STYLE_BOLD);
+		
+		taskCatLabel.setText(task.getCategory());
+		
+		if (task.isPriority()) {
+			starImageView.setImage(starImage);
+		}
+		
+		if (task.isComplete()) {
+			completeImageView.setImage(completeImage);
+		}
+		
+		upperLayer.getChildren().addAll(taskIdLabel, taskDesLabel);
+		textContainer.getChildren().add(upperLayer);
+	}
+
+	private String formatDates(Task task) {
+		String result = "";
+		if (task instanceof ScheduleTask) {
+			ScheduleTask scheduleTask = (ScheduleTask) task;
+			Calendar from = scheduleTask.getFromDate();
+			Calendar to = scheduleTask.getToDate();
+			
+			result += formatCalendarDate(from) + DAY_DATE_SEPARATOR;
+			result += formatCalendarTime(from) + DATE_SEPARTATOR;
+			
+			// Don't need to repeat the date again if it is on the same day
+			if (!isSameDay(from, to)) {
+				result += formatCalendarDate(to) + DAY_DATE_SEPARATOR;
+			}
+			result += formatCalendarTime(to);
+			return result;
+		} else {
+			DeadlineTask deadlineTask = (DeadlineTask) task;
+			
+			result += formatCalendarDate(deadlineTask.getDeadline());
+			result += DAY_DATE_SEPARATOR;
+			result += formatCalendarTime(deadlineTask.getDeadline());
+			return result;
+		}
+	}
+	
+	private static String formatCalendarDate (Calendar date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+		return dateFormat.format(date.getTime());
+	}
+	
+	private static String formatCalendarTime (Calendar time) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+		return timeFormat.format(time.getTime());
+	}
+	
+	private static boolean isSameDay (Calendar firstDay, Calendar secondDay) {
+		boolean sameYear = firstDay.get(Calendar.YEAR) == secondDay.get(Calendar.YEAR);
+		boolean sameDate = firstDay.get(Calendar.DAY_OF_YEAR) == secondDay.get(Calendar.DAY_OF_YEAR);
+		return sameYear && sameDate;
+	}
+}
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\TaskHBox.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterface.java
+	 */
+
+public class UserInterface extends Application {
+	private static final double STAGE_MIN_WIDTH = 504.0;
+	private static final double STAGE_MIN_HEIGHT = 629.0;
+	
+	Logic logic = new Logic();
+	Stage stage;
+	String fileName;
+
+	public static void main (String[] args) {
+		launch();
+	}
+	
+	NameRequestListener listener = new NameRequestListener() {
+		@Override
+		public void onFileNameEntered(String name) {
+			logic.saveStorageFileName(name);
+			logic.setupLogicVariables(name);
+			fileName = name;
+			try {
+				openMainApplication();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	};
+	
+	@Override
+	public void start(Stage stage) throws Exception {
+		this.stage = stage;
+		this.stage.setMinHeight(STAGE_MIN_HEIGHT);
+		this.stage.setMinWidth(STAGE_MIN_WIDTH);
+		if (!logic.isFileConfigured()) {
+			FileNameRequestDialog.getInstance(listener, null).show();
+		} else {
+			openMainApplication();
+		}
+	}
+
+	private void openMainApplication() {
+		new MainStage(logic).show();
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterface.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterfaceContent.java
+	 */
+
+public class UserInterfaceContent {
+	private String consoleMessage;
+	private List<Task> displayableTasks;
+	private List<Task> allTasks;
+	
+	public UserInterfaceContent(String consoleMessage, List<Task> allTasks) {
+		this.consoleMessage = consoleMessage;
+		this.displayableTasks = allTasks;
+		this.allTasks = allTasks;
+	}
+	
+	public UserInterfaceContent(String consoleMessage, List<Task> displayableTasks, List<Task> allTasks) {
+		this.consoleMessage = consoleMessage;
+		this.displayableTasks = displayableTasks;
+		this.allTasks = allTasks;
+	}
+
+	public String getConsoleMessage() {
+		return consoleMessage;
+	}
+
+	public List<Task> getDisplayableTasks() {
+		return displayableTasks;
+	}
+	
+	public List<Task> getAllTasks () {
+		return allTasks;
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterfaceContent.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\InputHistoryTest.java
+	 */
+
+public class InputHistoryTest {
+	
+	private static final String COMMAND_1 = "Command 1";
+	private static final String COMMAND_2 = "Command 1";
+	
+	private InputHistory InputHistory;
+	
+	@Before
+	public void setupInputHistory () {
+		InputHistory = new InputHistory();
+	}
+
+	/** 
+	 * Initially, both ends should be null. This test tests if
+	 * both ends of the InputHistory 'linked-list' are indeed null.
+	 */
+	@Test
+	public void testGetInitial() throws HistoryBoundException {
+		assertNull(InputHistory.getPrevious());
+		assertNull(InputHistory.getNext());
+	}
+
+	/**
+	 * Boundary case for when there is no next input at the start.
+	 * A HistoryBoundException is expected to be thrown with the
+	 * BoundType UPPER_BOUND
+	 */
+	@Test
+	public void textNoNextInitial () {
+		try {
+			InputHistory.getNext();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.UPPER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown");
+	}
+	
+	/**
+	 * Boundary case for when there is no next input even after
+	 * the first input is added. A HistoryBoundException is 
+	 * expected to be thrown with the BoundType UPPER_BOUND
+	 */
+	@Test
+	public void textNoNext () {
+		InputHistory.add(COMMAND_1);
+		try {
+			InputHistory.getNext();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.UPPER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown");
+	}
+	
+	/**
+	 * Boundary case for when there is no previous input initially.
+	 * A HistoryBoundException is expected to be thrown with the
+	 * BoundType UPPER_BOUND
+	 */
+	@Test
+	public void textNoPrevInitial () throws HistoryBoundException {
+		assertNull(InputHistory.getPrevious());
+		try {
+			InputHistory.getPrevious();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.LOWER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown");
+	}
+	
+	/**
+	 * Normal test case for when after 2 commands are input
+	 */
+	@Test
+	public void textNormal () throws HistoryBoundException {
+		InputHistory.add(COMMAND_1);
+		InputHistory.add(COMMAND_2);
+		assertEquals(COMMAND_2, InputHistory.getPrevious());
+		assertEquals(COMMAND_1, InputHistory.getPrevious());
+		assertNull(InputHistory.getPrevious());
+		assertEquals(COMMAND_1, InputHistory.getNext());
+		assertEquals(COMMAND_2, InputHistory.getNext());
+		assertNull(InputHistory.getNext());
+	}
+ }
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\InputHistoryTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\StateHistoryTest.java
+	 */
+
+public class StateHistoryTest {
+
+	StateHistory stateHistory;
+	
+	private static final List<Task> TEST_LIST_1 = new ArrayList<Task>();
+	private static final List<Task> TEST_LIST_2 = new ArrayList<Task>();
+	private static final Task TEST_TASK_1 = new Task(1, "TASK 1", null, false, false);
+		
+	@BeforeClass
+	public static void setupLists () {
+		TEST_LIST_2.add(TEST_TASK_1);
+	}
+
+	@Before
+	public void setupHistory () {
+		stateHistory = new StateHistory(TEST_LIST_1);
+	}
+	
+	/**
+	 * This is a boundary case for when there is nothing to undo
+	 * A HistoryBoundException is expected to be thrown with
+	 * BoundType LOWER_BOUND
+	 */
+	@Test
+	public void testUndoNothing () {
+		try {
+			stateHistory.getPrevious();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.LOWER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown");
+	}
+	
+	/**
+	 * This is a boundary case for when there is nothing to redo
+	 * A HistoryBoundException is expected to be thrown with
+	 * BoundType UPPER_BOUND
+	 */
+	@Test
+	public void testRedoNothing () {
+		try {
+			stateHistory.getNext();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.UPPER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown");
+	}
+	
+	/**
+	 * This is a test case testing for when there is nothing to redo
+	 * even after the next state is added
+	 * A HistoryBoundException is expected to be thrown when the first
+	 * getNext is called, with BoundType UPPER_BOUND
+	 */
+	@Test
+	public void testRedoNothingAfterAdd () {
+		stateHistory.add(TEST_LIST_2);
+		try {
+			stateHistory.getNext();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.UPPER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown or BoundType not UPPER_BOUND");
+	}
+	
+	/**
+	 * This is a test case testing for when there is nothing to undo
+	 * after an undo method is called after the next state is added
+	 * A HistoryBoundException is expected to be thrown when the second
+	 * getPrevious is called, with BoundType LOWER_BOUND
+	 */
+	@Test
+	public void testUndoNothingAfterAdd () throws HistoryBoundException {
+		stateHistory.add(TEST_LIST_2);
+		// no exception thrown
+		stateHistory.getPrevious();
+		// exception thrown
+		try {
+			stateHistory.getPrevious();
+		} catch (HistoryBoundException e) {
+			assertEquals(BoundType.LOWER_BOUND, e.getBoundType());
+			return;
+		}
+		fail("No exception thrown or BoundType not LOWER_BOUND");
+	}
+	
+	/**
+	 * This is a test case for the normal scenario, where after a
+	 * new state is added, it is possible to undo once and redo once
+	 * The getPrevious is expected to return TEST_LIST_1
+	 * The getNext is expected to return TEST_LIST_2
+	 * @throws HistoryBoundException
+	 */
+	@Test
+	public void testAddSecondState () throws HistoryBoundException {
+		stateHistory.add(TEST_LIST_2);
+		assertEquals(TEST_LIST_1, stateHistory.getPrevious());
+		assertEquals(TEST_LIST_2, stateHistory.getNext());
+	}
+}
+
+	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\StateHistoryTest.java
+
+
+
+
+
