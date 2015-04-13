@@ -1,8 +1,8 @@
 package itinerary.userinterface;
 
 import itinerary.main.Logic;
-import itinerary.main.Task;
 import itinerary.main.Logic.HelpListener;
+import itinerary.main.Task;
 import itinerary.search.SearchTask;
 import itinerary.userinterface.FileNameRequestDialog.NameRequestListener;
 import itinerary.userinterface.SearchStage.SearchResultCallback;
@@ -17,7 +17,6 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
