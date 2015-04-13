@@ -200,26 +200,29 @@ public class Logic {
 	
 	private UserInterfaceContent determineActions (Command command, String userInput) {
 		CommandType type = command.getType();
-		if (type == CommandType.ADD) {
-			return executeAdd(command);
-		} else if (type == CommandType.CLEAR) {
-			return executeClear();
-		} else if (type == CommandType.DELETE) {
-			return executeDelete(command);
-		} else if (type == CommandType.DISPLAY) {
-			return executeDisplay();
-		} else if (type == CommandType.EDIT || type == CommandType.MARK) {
-			return executeEdit(command);
-		} else if (type == CommandType.SEARCH) {
-			return executeSearch(command);
-		} else if (type == CommandType.REDO) {
-			return executeRedo();
-		} else if (type == CommandType.UNDO) {
-			return executeUndo();
-		} else if (type == CommandType.HELP) {
-			return executeHelp();
-		}else {
-			return unknownCommand(userInput);
+		switch (type) {
+			case ADD :
+				return executeAdd(command);
+			case CLEAR :
+				return executeClear();
+			case DELETE :
+				return executeDelete(command);
+			case DISPLAY :
+				return executeDisplay();
+			case MARK :
+				// Fallthrough
+			case EDIT :
+				return executeEdit(command);
+			case SEARCH :
+				return executeSearch(command);
+			case REDO :
+				return executeRedo();
+			case UNDO :
+				return executeUndo();
+			case HELP :
+				return executeHelp();
+			default :
+				return unknownCommand(userInput);
 		}
 	}
 
