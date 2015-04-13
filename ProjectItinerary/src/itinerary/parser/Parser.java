@@ -20,7 +20,7 @@ public class Parser {
 	private static final String ERROR_NO_DESCRIPTION_TO =  "Error! Please enter date after \"to\"";
 	private static final String ERROR_NO_TASK_ID = "Error! Unable to identify target task";
 	private static final String ERROR_INVALID_TASK_ID = "Error! Invalid target task id";
-	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contenets for edit";
+	private static final String ERROR_NO_CONTENT_FOR_EDIT = "Error! Please enter contents for edit";
 	private static final String ERROR_NO_DESCRIPTION_FOR_ADD = "Error! Please enter description for the task to be added";
 	private static final String ERROR_NO_DESCRIPTION_FOR_SEARCH = "Error! Please enter content for search";
 	private static final String LOGGER_CHECK_ARGUMENT_VALIDITY = "Checking argument validity";
@@ -426,6 +426,7 @@ public class Parser {
 			}
 		}
 
+		task.setComplete(null);
 		task.setCategory(category);
 		return task;
 	}
