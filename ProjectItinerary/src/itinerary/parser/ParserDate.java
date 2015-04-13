@@ -109,23 +109,25 @@ public class ParserDate {
 			String[] textsAroundSlash = {};
 			textsAroundSlash = date.split(STRING_SLASH);
 
-			try{
-				Integer.parseInt(textsAroundSlash[0]);
-			}catch(NumberFormatException e){
-				return dateString;
-			}
-
-			int firstNumber = Integer.parseInt(textsAroundSlash[0]);
-			if(firstNumber < 32){
-				String temp = textsAroundSlash[0];
-				textsAroundSlash[0] = textsAroundSlash[1];
-				textsAroundSlash[1] = temp;
-				for(String text: textsAroundSlash){
-					switchedDate = switchedDate + text + STRING_SLASH;
+			if(textsAroundSlash.length  > 1){
+				try{
+					Integer.parseInt(textsAroundSlash[0]);
+				}catch(NumberFormatException e){
+					return dateString;
 				}
-				switchedDate = switchedDate.substring(0, switchedDate.length()-1);
-				switchedString = dateString.replaceAll(date, switchedDate);
-				return switchedString;
+
+				int firstNumber = Integer.parseInt(textsAroundSlash[0]);
+				if(firstNumber < 32){
+					String temp = textsAroundSlash[0];
+					textsAroundSlash[0] = textsAroundSlash[1];
+					textsAroundSlash[1] = temp;
+					for(String text: textsAroundSlash){
+						switchedDate = switchedDate + text + STRING_SLASH;
+					}
+					switchedDate = switchedDate.substring(0, switchedDate.length()-1);
+					switchedString = dateString.replaceAll(date, switchedDate);
+					return switchedString;
+				}
 			}
 		}
 		return dateString;
