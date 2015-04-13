@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 //@author A0121409R
 public class FileStorageTest {
 
+    static final String NEWLINE_SEPARATOR = System.lineSeparator();
+    
     static Gson gson = new Gson();
 
     static Calendar calendar = Calendar.getInstance();
@@ -137,8 +139,9 @@ public class FileStorageTest {
         fileStorage.addTask(task2);
         fileStorage.addTask(task3);
 
-        assertEquals(sortedTask3String + "\n" + sortedTask2String + "\n"
-                             + sortedTask1String + "\n",
+        assertEquals(sortedTask3String + NEWLINE_SEPARATOR + sortedTask2String
+                             + NEWLINE_SEPARATOR + sortedTask1String
+                             + NEWLINE_SEPARATOR,
                      fileStorage.currentListTaskString(false));
     }
 
@@ -305,8 +308,9 @@ public class FileStorageTest {
 
         fileStorage.refillAll(taskList);
 
-        assertEquals(sortedTask3String + "\n" + sortedTask2String + "\n"
-                             + sortedTask1String + "\n",
+        assertEquals(sortedTask3String + NEWLINE_SEPARATOR + sortedTask2String
+                             + NEWLINE_SEPARATOR + sortedTask1String
+                             + NEWLINE_SEPARATOR,
                      fileStorage.currentListTaskString(false));
     }
 
