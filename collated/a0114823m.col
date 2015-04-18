@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Parser.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\Parser.java
 	 */
 
 public class Parser {
@@ -508,14 +508,14 @@ public class Parser {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Parser.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\Parser.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserDate.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\ParserDate.java
 	 */
 
 public class ParserDate {
@@ -830,14 +830,14 @@ public class ParserDate {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserDate.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\ParserDate.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserDateTest.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\ParserDateTest.java
 	 */
 
 public class ParserDateTest {
@@ -1040,14 +1040,14 @@ public class ParserDateTest {
 }
 
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserDateTest.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\ParserDateTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserTest.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\ParserTest.java
 	 */
 
 public class ParserTest {
@@ -1291,7 +1291,7 @@ public class ParserTest {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ParserTest.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\ParserTest.java
 
 
 

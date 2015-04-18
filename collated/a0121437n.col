@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\AbstractHistory.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\AbstractHistory.java
 	 */
 
 public abstract class AbstractHistory <T> {
@@ -84,14 +84,14 @@ public abstract class AbstractHistory <T> {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\AbstractHistory.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\AbstractHistory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\HistoryBoundException.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\HistoryBoundException.java
 	 */
 
 /**
@@ -121,14 +121,14 @@ public class HistoryBoundException extends Exception {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\HistoryBoundException.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\HistoryBoundException.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\InputHistory.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\InputHistory.java
 	 */
 
 public class InputHistory extends AbstractHistory<String> {
@@ -152,14 +152,14 @@ public class InputHistory extends AbstractHistory<String> {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\InputHistory.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\InputHistory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\StateHistory.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\StateHistory.java
 	 */
 
 public class StateHistory extends AbstractHistory<List<Task>> {
@@ -168,14 +168,14 @@ public class StateHistory extends AbstractHistory<List<Task>> {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\history\StateHistory.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\history\StateHistory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\DeadlineTask.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\DeadlineTask.java
 	 */
 
 public class DeadlineTask extends Task implements Cloneable {
@@ -196,14 +196,14 @@ public class DeadlineTask extends Task implements Cloneable {
         this.deadline = deadline;
     }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\DeadlineTask.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\DeadlineTask.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Logic.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\Logic.java
 	 */
 
 public class Logic {
@@ -628,14 +628,14 @@ public class Logic {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Logic.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\Logic.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\ScheduleTask.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\ScheduleTask.java
 	 */
 
 public class ScheduleTask extends Task implements Cloneable {
@@ -666,14 +666,14 @@ public class ScheduleTask extends Task implements Cloneable {
         this.toDate = toDate;
     }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\ScheduleTask.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\ScheduleTask.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Task.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\Task.java
 	 */
 
 public class Task implements Cloneable {
@@ -764,28 +764,28 @@ public class Task implements Cloneable {
     	return template;
     }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\Task.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\Task.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\Command.java
 	 */
 
 public class Command {
 	private Task task;
 	private CommandType type;
 	
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\Command.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\CommandType.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\CommandType.java
 	 */
 
 public enum CommandType {
@@ -853,14 +853,14 @@ public enum CommandType {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\CommandType.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\CommandType.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserException.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\ParserException.java
 	 */
 
 public class ParserException extends Exception {
@@ -876,14 +876,14 @@ public class ParserException extends Exception {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\ParserException.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\ParserException.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\ConfigStorage.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\ConfigStorage.java
 	 */
 
 public class ConfigStorage {
@@ -924,14 +924,14 @@ public class ConfigStorage {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\ConfigStorage.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\ConfigStorage.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\Storage.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\Storage.java
 	 */
 
     static Task updateTaskDetails (Task originalTask, Task details) {
@@ -956,14 +956,14 @@ public class ConfigStorage {
  	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\Storage.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\Storage.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageException.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\StorageException.java
 	 */
 
 public class StorageException extends Exception {
@@ -979,14 +979,14 @@ public class StorageException extends Exception {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageException.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\StorageException.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageStub.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\StorageStub.java
 	 */
 
     public StorageStub() {
@@ -1079,14 +1079,14 @@ public class StorageException extends Exception {
 
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\storage\StorageStub.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\storage\StorageStub.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\FileNameRequestDialog.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\FileNameRequestDialog.java
 	 */
 
 public class FileNameRequestDialog extends Stage {
@@ -1164,14 +1164,14 @@ public class FileNameRequestDialog extends Stage {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\FileNameRequestDialog.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\FileNameRequestDialog.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpEntry.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\HelpEntry.java
 	 */
 
 public class HelpEntry {
@@ -1196,14 +1196,14 @@ public class HelpEntry {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpEntry.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\HelpEntry.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpStage.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\HelpStage.java
 	 */
 
 public class HelpStage extends Stage{
@@ -1279,14 +1279,14 @@ public class HelpStage extends Stage{
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\HelpStage.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\HelpStage.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainController.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\MainController.java
 	 */
 
 public class MainController implements Initializable, SearchResultCallback, HelpListener {
@@ -1470,14 +1470,14 @@ public class MainController implements Initializable, SearchResultCallback, Help
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainController.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\MainController.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainStage.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\MainStage.java
 	 */
 
 public class MainStage extends Stage {
@@ -1510,14 +1510,14 @@ public class MainStage extends Stage {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\MainStage.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\MainStage.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchController.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\SearchController.java
 	 */
 
 public class SearchController implements Initializable {
@@ -1618,14 +1618,14 @@ public class SearchController implements Initializable {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchController.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\SearchController.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchStage.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\SearchStage.java
 	 */
 
 public class SearchStage extends Stage {
@@ -1693,14 +1693,14 @@ public class SearchStage extends Stage {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SearchStage.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\SearchStage.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SuggestionBox.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\SuggestionBox.java
 	 */
 
 public class SuggestionBox {
@@ -1893,14 +1893,14 @@ public class SuggestionBox {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\SuggestionBox.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\SuggestionBox.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\TaskHBox.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\TaskHBox.java
 	 */
 
 public class TaskHBox extends HBox {
@@ -2047,14 +2047,14 @@ public class TaskHBox extends HBox {
 		return sameYear && sameDate;
 	}
 }
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\TaskHBox.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\TaskHBox.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterface.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\UserInterface.java
 	 */
 
 public class UserInterface extends Application {
@@ -2100,14 +2100,14 @@ public class UserInterface extends Application {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterface.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\UserInterface.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterfaceContent.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\UserInterfaceContent.java
 	 */
 
 public class UserInterfaceContent {
@@ -2140,14 +2140,14 @@ public class UserInterfaceContent {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\userinterface\UserInterfaceContent.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\userinterface\UserInterfaceContent.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\InputHistoryTest.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\InputHistoryTest.java
 	 */
 
 public class InputHistoryTest {
@@ -2238,14 +2238,14 @@ public class InputHistoryTest {
 	}
  }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\InputHistoryTest.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\InputHistoryTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\StateHistoryTest.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\StateHistoryTest.java
 	 */
 
 public class StateHistoryTest {
@@ -2352,7 +2352,7 @@ public class StateHistoryTest {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\StateHistoryTest.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\StateHistoryTest.java
 
 
 

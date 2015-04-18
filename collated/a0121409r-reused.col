@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\AssertionFailure.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\AssertionFailure.java
 	 */
 
 
@@ -20,14 +20,14 @@ public @interface AssertionFailure {
 
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\AssertionFailure.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\AssertionFailure.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ExpectedFailure.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\ExpectedFailure.java
 	 */
 
 
@@ -65,7 +65,7 @@ public class ExpectedFailure implements TestRule {
 
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\ExpectedFailure.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\ExpectedFailure.java
 
 
 

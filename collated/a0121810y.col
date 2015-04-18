@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\JsonConverter.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\JsonConverter.java
 	 */
 
 public class JsonConverter {
@@ -51,14 +51,14 @@ public class JsonConverter {
     }
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\main\JsonConverter.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\main\JsonConverter.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\Search.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\Search.java
 	 */
 
 public class Search {
@@ -268,54 +268,6 @@ public class Search {
 		return query.toLowerCase().replaceAll(EXCEPT_SPECIALCHARACTER, PARSE_DELIMITER);
 	}
 
-	/**
-	 * adds the search results to a hitlist which will then be converted back to
-	 * a List<Task>
-	 * 
-	 * @param hitList
-	 * @param searcher
-	 * @param hits
-	 * @throws IOException
-	 */
-	private void addToHitList(ArrayList<String> hitList,
-	        IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
-		hitTypeList = new ArrayList<String>();
-		for (int i = 0; i < hits.length; i++) {
-			addHitList(hitList, searcher, hits, i);
-		}
-	}
-
-	private void addHitList(ArrayList<String> hitList, IndexSearcher searcher,
-	        ScoreDoc[] hits, int i) throws IOException {
-		int docId = hits[i].doc;
-		Document d = searcher.doc(docId);
-		hitList.add(d.get(FIELD_JSON));
-		hitTypeList.add(typeList.get(docId));
-	}
-
-	/**
-	 * Helper method for search(),searches the index for the top 10 closest
-	 * matches The number of matches to search for can be changed by changing
-	 * the numHits
-	 * 
-	 * @param q
-	 * @param searcher
-	 * @return
-	 * @throws SearchException
-	 */
-	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
-	        throws SearchException {
-		int numHits = NUM_HITS;
-		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
-		try {
-			searcher.search(q, collector);
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, ERROR_INDEX, e);
-			throw new SearchException(ERROR_IO);
-		}
-		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		return hits;
-	}
 
 	/**
 	 * combines a fuzzyQuery and a WildcardQuery into a BooleanQuery This is for
@@ -334,58 +286,15 @@ public class Search {
 		bQuery.add(wildQ, BooleanClause.Occur.SHOULD);
 		return bQuery;
 	}
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\Search.java
+
+
+
+
 
 	/**
-	 * The WILDCARD constant is placed after splitQuery[i] so that it searches
-	 * for any strings that begin with splitQuery[i], to have it search for any
-	 * string that end with splitQuery[i], place the WILDCARD constant before
-	 * it. Note that the time to search for wildCardQuerys can increase quite
-	 * dramatically the more the indexed items.
-	 * 
-	 * @param field
-	 * @param splitQuery
-	 * @return
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\Search.java
 	 */
-	private Query getWildCardQuery(String field, String[] splitQuery) {
-		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
-		for (int i = 0; i < splitQuery.length; i++) {
-			WildcardQuery wildQuery = new WildcardQuery(new Term(field,
-			        splitQuery[i] + WILDCARD));
-			queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(
-			        wildQuery);
-		}
-		SpanNearQuery q = new SpanNearQuery(queryParts, 5, true);
-		return q;
-	}
-
-	/**
-	 * FuzzyQuerys are used in near match search, it done by calculating the
-	 * levenshtein distance.It is considered a hit if the text it is searching
-	 * has a levenshtein distance of LEVENSHTEIN_DISTANCE from the current
-	 * search query.
-	 * 
-	 * @param field
-	 * @param splitQuery
-	 * @return
-	 */
-	private Query getFuzzyQuery(String field, String[] splitQuery) {
-		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
-		FuzzyQuery fuzzyQuery;
-		for (int i = 0; i < splitQuery.length; i++) {
-			if (notMinLength(splitQuery, i)) {
-				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,
-				        LEVENSHTEIN_DISTANCE);
-			} else {
-				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,
-				        LEVENSHTEIN_0);
-			}
-
-			queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(
-			        fuzzyQuery);
-		}
-		SpanNearQuery q = new SpanNearQuery(queryParts, SPAN_DISTANCE, true);
-		return q;
-	}
 
 	private boolean notMinLength(String[] splitQuery, int i) {
 		return splitQuery[i].length() > MIN_LENGTH;
@@ -442,25 +351,6 @@ public class Search {
 		return bQuery;
 	}
 
-	private void createIndex(Directory index, IndexWriterConfig config)
-	        throws SearchException {
-		try {
-			writer = new IndexWriter(index, config);
-			addDocs(writer);
-			closeWriter(writer);
-			reader = DirectoryReader.open(index);
-			searcher = new IndexSearcher(reader);
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
-		}
-	}
-
-	private void addDocs(IndexWriter writer) throws IOException {
-		for (String tasks : list) {
-			obj = parser.parse(tasks).getAsJsonObject();
-			addDoc(writer, obj);
-		}
-	}
 
 	/**
 	 * The fields text,category are indexed by TextField in order to tokenize
@@ -539,14 +429,14 @@ public class Search {
 
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\Search.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\Search.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\SearchException.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\SearchException.java
 	 */
 
 public class SearchException extends Exception {    
@@ -563,14 +453,14 @@ public class SearchException extends Exception {
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\SearchException.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\SearchException.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\SearchTask.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\SearchTask.java
 	 */
 
 /**
@@ -612,14 +502,14 @@ public class SearchTask extends Task implements Cloneable {
 		this.toDate = toDate;
 	}
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\search\SearchTask.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\SearchTask.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\JsonConverterTest.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\JsonConverterTest.java
 	 */
 
 public class JsonConverterTest {
@@ -664,7 +554,7 @@ public class JsonConverterTest {
 
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\test\JsonConverterTest.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\test\JsonConverterTest.java
 
 
 

@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\Command.java
 	 */
 
 	public Command(Task task, CommandType type) {
@@ -21,7 +21,7 @@
 	}
 }
 
-	// End of segment: C:\Users\Ian\Documents\NUS\CS2103T\ITnerary\main\ProjectItinerary\src\itinerary\parser\Command.java
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\parser\Command.java
 
 
 

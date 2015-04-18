@@ -1,0 +1,131 @@
+//@author: a0121810y-reused
+
+
+
+	/**
+	 * origin: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\Search.java
+	 */
+
+	/**
+	 * adds the search results to a hitlist which will then be converted back to
+	 * a List<Task>
+	 * 
+	 * @param hitList
+	 * @param searcher
+	 * @param hits
+	 * @throws IOException
+	 */
+	private void addToHitList(ArrayList<String> hitList,
+	        IndexSearcher searcher, ScoreDoc[] hits) throws IOException {
+		hitTypeList = new ArrayList<String>();
+		for (int i = 0; i < hits.length; i++) {
+			addHitList(hitList, searcher, hits, i);
+		}
+	}
+
+	private void addHitList(ArrayList<String> hitList, IndexSearcher searcher,
+	        ScoreDoc[] hits, int i) throws IOException {
+		int docId = hits[i].doc;
+		Document d = searcher.doc(docId);
+		hitList.add(d.get(FIELD_JSON));
+		hitTypeList.add(typeList.get(docId));
+	}
+
+	/**
+	 * Helper method for search(),searches the index for the top 10 closest
+	 * matches The number of matches to search for can be changed by changing
+	 * the numHits
+	 * 
+	 * @param q
+	 * @param searcher
+	 * @return
+	 * @throws SearchException
+	 */
+	private ScoreDoc[] searchQuery(BooleanQuery q, IndexSearcher searcher)
+	        throws SearchException {
+		int numHits = NUM_HITS;
+		TopScoreDocCollector collector = TopScoreDocCollector.create(numHits);
+		try {
+			searcher.search(q, collector);
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, ERROR_INDEX, e);
+			throw new SearchException(ERROR_IO);
+		}
+		ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		return hits;
+	}
+	/**
+	 * The WILDCARD constant is placed after splitQuery[i] so that it searches
+	 * for any strings that begin with splitQuery[i], to have it search for any
+	 * string that end with splitQuery[i], place the WILDCARD constant before
+	 * it. Note that the time to search for wildCardQuerys can increase quite
+	 * dramatically the more the indexed items.
+	 * 
+	 * @param field
+	 * @param splitQuery
+	 * @return
+	 */
+	private Query getWildCardQuery(String field, String[] splitQuery) {
+		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
+		for (int i = 0; i < splitQuery.length; i++) {
+			WildcardQuery wildQuery = new WildcardQuery(new Term(field,
+			        splitQuery[i] + WILDCARD));
+			queryParts[i] = new SpanMultiTermQueryWrapper<WildcardQuery>(
+			        wildQuery);
+		}
+		SpanNearQuery q = new SpanNearQuery(queryParts, 5, true);
+		return q;
+	}
+	/**
+	 * FuzzyQuerys are used in near match search, it done by calculating the
+	 * levenshtein distance.It is considered a hit if the text it is searching
+	 * has a levenshtein distance of LEVENSHTEIN_DISTANCE from the current
+	 * search query.
+	 * 
+	 * @param field
+	 * @param splitQuery
+	 * @return
+	 */
+	private Query getFuzzyQuery(String field, String[] splitQuery) {
+		SpanQuery[] queryParts = new SpanQuery[splitQuery.length];
+		FuzzyQuery fuzzyQuery;
+		for (int i = 0; i < splitQuery.length; i++) {
+			if (notMinLength(splitQuery, i)) {
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,
+				        LEVENSHTEIN_DISTANCE);
+			} else {
+				fuzzyQuery = createFuzzyQuery(field, splitQuery, i,
+				        LEVENSHTEIN_0);
+			}
+
+			queryParts[i] = new SpanMultiTermQueryWrapper<FuzzyQuery>(
+			        fuzzyQuery);
+		}
+		SpanNearQuery q = new SpanNearQuery(queryParts, SPAN_DISTANCE, true);
+		return q;
+	}
+	private void createIndex(Directory index, IndexWriterConfig config)
+	        throws SearchException {
+		try {
+			writer = new IndexWriter(index, config);
+			addDocs(writer);
+			closeWriter(writer);
+			reader = DirectoryReader.open(index);
+			searcher = new IndexSearcher(reader);
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+	}
+
+	private void addDocs(IndexWriter writer) throws IOException {
+		for (String tasks : list) {
+			obj = parser.parse(tasks).getAsJsonObject();
+			addDoc(writer, obj);
+		}
+	}
+	// End of segment: C:\Users\Gable Heng\Desktop\CS2103\ProjectItinerary\src\itinerary\search\Search.java
+
+
+
+
+
