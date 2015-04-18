@@ -256,6 +256,25 @@ public class Search {
 		return query.toLowerCase().replaceAll(EXCEPT_SPECIALCHARACTER, PARSE_DELIMITER);
 	}
 
+
+	/**
+	 * combines a fuzzyQuery and a WildcardQuery into a BooleanQuery This is for
+	 * near-match as well as wildcard search to work at the same time
+	 * 
+	 * @param field
+	 * @param Query
+	 * @return
+	 */
+	private BooleanQuery createQuery(String field, String Query) {
+		String[] splitQuery = Query.split(QUERY_DELIMITER);
+		BooleanQuery bQuery = new BooleanQuery();
+		Query wildQ = getWildCardQuery(field, splitQuery);
+		Query fuzzyQ = getFuzzyQuery(field, splitQuery);
+		bQuery.add(fuzzyQ, BooleanClause.Occur.SHOULD);
+		bQuery.add(wildQ, BooleanClause.Occur.SHOULD);
+		return bQuery;
+	}
+//@author A0121810Y-reused
 	/**
 	 * adds the search results to a hitlist which will then be converted back to
 	 * a List<Task>
@@ -304,25 +323,6 @@ public class Search {
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		return hits;
 	}
-
-	/**
-	 * combines a fuzzyQuery and a WildcardQuery into a BooleanQuery This is for
-	 * near-match as well as wildcard search to work at the same time
-	 * 
-	 * @param field
-	 * @param Query
-	 * @return
-	 */
-	private BooleanQuery createQuery(String field, String Query) {
-		String[] splitQuery = Query.split(QUERY_DELIMITER);
-		BooleanQuery bQuery = new BooleanQuery();
-		Query wildQ = getWildCardQuery(field, splitQuery);
-		Query fuzzyQ = getFuzzyQuery(field, splitQuery);
-		bQuery.add(fuzzyQ, BooleanClause.Occur.SHOULD);
-		bQuery.add(wildQ, BooleanClause.Occur.SHOULD);
-		return bQuery;
-	}
-
 	/**
 	 * The WILDCARD constant is placed after splitQuery[i] so that it searches
 	 * for any strings that begin with splitQuery[i], to have it search for any
@@ -345,7 +345,6 @@ public class Search {
 		SpanNearQuery q = new SpanNearQuery(queryParts, 5, true);
 		return q;
 	}
-
 	/**
 	 * FuzzyQuerys are used in near match search, it done by calculating the
 	 * levenshtein distance.It is considered a hit if the text it is searching
@@ -374,7 +373,26 @@ public class Search {
 		SpanNearQuery q = new SpanNearQuery(queryParts, SPAN_DISTANCE, true);
 		return q;
 	}
+	private void createIndex(Directory index, IndexWriterConfig config)
+	        throws SearchException {
+		try {
+			writer = new IndexWriter(index, config);
+			addDocs(writer);
+			closeWriter(writer);
+			reader = DirectoryReader.open(index);
+			searcher = new IndexSearcher(reader);
+		} catch (IOException e) {
+			throw new SearchException(ERROR_IO);
+		}
+	}
 
+	private void addDocs(IndexWriter writer) throws IOException {
+		for (String tasks : list) {
+			obj = parser.parse(tasks).getAsJsonObject();
+			addDoc(writer, obj);
+		}
+	}
+//@author A0121810Y
 	private boolean notMinLength(String[] splitQuery, int i) {
 		return splitQuery[i].length() > MIN_LENGTH;
 	}
@@ -430,25 +448,6 @@ public class Search {
 		return bQuery;
 	}
 
-	private void createIndex(Directory index, IndexWriterConfig config)
-	        throws SearchException {
-		try {
-			writer = new IndexWriter(index, config);
-			addDocs(writer);
-			closeWriter(writer);
-			reader = DirectoryReader.open(index);
-			searcher = new IndexSearcher(reader);
-		} catch (IOException e) {
-			throw new SearchException(ERROR_IO);
-		}
-	}
-
-	private void addDocs(IndexWriter writer) throws IOException {
-		for (String tasks : list) {
-			obj = parser.parse(tasks).getAsJsonObject();
-			addDoc(writer, obj);
-		}
-	}
 
 	/**
 	 * The fields text,category are indexed by TextField in order to tokenize
