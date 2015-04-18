@@ -4,7 +4,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-//@author A0121409R
+//@author A0121409R-reused
 
 /*
  * To let JUnit know a test fails due to a assertion violation within the

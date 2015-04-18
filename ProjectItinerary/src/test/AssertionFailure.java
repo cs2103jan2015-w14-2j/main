@@ -3,7 +3,7 @@ package test;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-//@author A0121409R
+//@author A0121409R-reused
 
 /*
  * To let JUnit know a test fails due to a assertion violation within the
